@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs', 'npm']
+nixPkgs = ['nodejs_22', 'npm-9_x']
 
 [phases.install]
-cmds = ['npm ci --only=production']
+cmds = ['npm ci']
 
 [phases.build]
-cmds = ['npm run build']
+cmds = ['npm run build', 'npm prune --production']
 
 [start]
-cmd = 'npm start' 
+cmd = 'npm start'
