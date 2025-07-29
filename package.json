@@ -10,9 +10,7 @@
     "preview": "vite preview",
     "serve": "npm run build && npx serve dist -p $PORT",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "start": "cd backend && npm ci --only=production && npm start",
-    "backend:install": "cd backend && npm install",
-    "backend:start": "cd backend && npm start"
+    "start": "npx serve dist -p $PORT",
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.5.0",
