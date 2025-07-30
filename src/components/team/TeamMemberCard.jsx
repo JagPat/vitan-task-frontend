@@ -13,7 +13,8 @@ import {
   Clock,
   Users,
   Activity,
-  FileText
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -231,6 +232,16 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
                           <span className="text-sm">Project Memberships</span>
                         </div>
                         <Badge variant="secondary">{deletionInfo.relatedData.projectMembers}</Badge>
+                      </div>
+                    )}
+                    
+                    {deletionInfo.relatedData.projectCommunications > 0 && (
+                      <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
+                        <div className="flex items-center space-x-2">
+                          <MessageSquare className="w-4 h-4 text-purple-500" />
+                          <span className="text-sm">Project Communications</span>
+                        </div>
+                        <Badge variant="secondary">{deletionInfo.relatedData.projectCommunications}</Badge>
                       </div>
                     )}
                   </div>
