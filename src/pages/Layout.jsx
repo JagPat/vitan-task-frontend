@@ -55,6 +55,11 @@ const navigationItems = [
     title: "Templates",
     url: createPageUrl("Templates"),
     icon: Settings,
+  },
+  {
+    title: "AI Admin",
+    url: createPageUrl("AIAdminDashboard"),
+    icon: Zap,
   }
 ];
 

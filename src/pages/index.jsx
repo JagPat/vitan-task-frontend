@@ -20,6 +20,8 @@ import TeamTaskView from "./TeamTaskView";
 
 import WhatsAppAdmin from "./WhatsAppAdmin";
 
+import AIAdminDashboard from "./AIAdminDashboard";
+
 import Projects from "./Projects";
 
 import ProjectDetails from "./ProjectDetails";
@@ -47,6 +49,8 @@ const PAGES = {
     TeamTaskView: TeamTaskView,
     
     WhatsAppAdmin: WhatsAppAdmin,
+    
+    AIAdminDashboard: AIAdminDashboard,
     
     Projects: Projects,
     
@@ -98,6 +102,8 @@ function PagesContent() {
                 <Route path="/TeamTaskView" element={<TeamTaskView />} />
                 
                 <Route path="/WhatsAppAdmin" element={<WhatsAppAdmin />} />
+                
+                <Route path="/AIAdminDashboard" element={<AIAdminDashboard />} />
                 
                 <Route path="/Projects" element={<Projects />} />
                 
