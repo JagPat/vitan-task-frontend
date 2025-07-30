@@ -89,6 +89,10 @@ export default function Team() {
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ forceDelete: true }),
       });
 
       if (response.ok) {
