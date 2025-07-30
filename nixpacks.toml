@@ -5,7 +5,7 @@ nixPkgs = ['nodejs_22', 'npm-9_x']
 cmds = ['npm ci']
 
 [phases.build]
-cmds = ['npm run build', 'npm prune --production']
+cmds = ['npm run build']
 
 [start]
-cmd = 'npx serve dist -p $PORT --single'
+cmd = 'npm start'
