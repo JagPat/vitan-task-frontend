@@ -133,13 +133,13 @@ export const User = {
 export const ActivityLog = {
   // Get activity logs for a task
   async getByTaskId(taskId) {
-    const response = await whatsTaskClient.request(`/api/tasks/${taskId}/activity`);
+    const response = await whatsTaskClient.request(`/api/analytics/task/${taskId}/activity`);
     return response.data || [];
   },
 
   // Create activity log
   async create(activityData) {
-    const response = await whatsTaskClient.request('/api/activity', {
+    const response = await whatsTaskClient.request('/api/analytics/activity', {
       method: 'POST',
       body: JSON.stringify(activityData),
     });
@@ -148,16 +148,28 @@ export const ActivityLog = {
 
   // List activity logs
   async list(sort = '') {
-    const response = await whatsTaskClient.request('/api/activity');
+    const response = await whatsTaskClient.request('/api/analytics/activities');
     return response.data || [];
   },
 
   // Filter activity logs
   async filter(filters = {}, sort = '') {
-    const response = await whatsTaskClient.request('/api/activity', {
+    const response = await whatsTaskClient.request('/api/analytics/activities', {
       method: 'GET',
       params: filters
     });
+    return response.data || [];
+  },
+
+  // Get user activity
+  async getUserActivity(whatsappNumber, days = 30) {
+    const response = await whatsTaskClient.request(`/api/analytics/user/${whatsappNumber}/activity?days=${days}`);
+    return response.data || [];
+  },
+
+  // Get activity timeline
+  async getTimeline(startDate, endDate) {
+    const response = await whatsTaskClient.request(`/api/analytics/timeline?start_date=${startDate}&end_date=${endDate}`);
     return response.data || [];
   }
 };
