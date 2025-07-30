@@ -65,15 +65,37 @@ export const User = {
 
   // Get current user (placeholder - implement based on your auth system)
   async me() {
-    // For now, return a mock user or get from localStorage
-    const mockUser = {
-      id: 1,
-      full_name: 'Current User',
-      email: 'user@example.com',
-      whatsapp_number: '+1234567890',
-      role: 'admin'
-    };
-    return mockUser;
+    try {
+      // For now, get the first user (admin) from the backend
+      const response = await whatsTaskClient.getUsers();
+      const users = response.data || [];
+      
+      if (users.length > 0) {
+        // Return the first user (admin) as current user
+        return users[0];
+      }
+      
+      // Fallback to mock user if no users found
+      const mockUser = {
+        id: 1,
+        full_name: 'Current User',
+        email: 'user@example.com',
+        whatsapp_number: '+1234567890',
+        role: 'admin'
+      };
+      return mockUser;
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      // Return mock user as fallback
+      const mockUser = {
+        id: 1,
+        full_name: 'Current User',
+        email: 'user@example.com',
+        whatsapp_number: '+1234567890',
+        role: 'admin'
+      };
+      return mockUser;
+    }
   },
 
   // Create new user
