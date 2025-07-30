@@ -28,7 +28,7 @@ import {
 } from '../ui/alert-dialog';
 import { toast } from '../ui/use-toast';
 
-const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
+const TeamMemberCard = ({ user, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletionInfo, setDeletionInfo] = useState(null);
@@ -262,12 +262,12 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id="forceDelete"
+                      id={`forceDelete-${user.id}`}
                       checked={forceDelete}
                       onChange={(e) => setForceDelete(e.target.checked)}
                       className="rounded"
                     />
-                    <label htmlFor="forceDelete" className="text-sm text-gray-700">
+                    <label htmlFor={`forceDelete-${user.id}`} className="text-sm text-gray-700">
                       Delete user and all related data
                     </label>
                   </div>
