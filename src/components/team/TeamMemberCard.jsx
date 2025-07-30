@@ -34,6 +34,19 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const [deletionInfo, setDeletionInfo] = useState(null);
   const [forceDelete, setForceDelete] = useState(false);
 
+  // Add null checking to prevent errors
+  if (!user) {
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-center">
+            <div className="text-gray-500">Loading user data...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const handleDeleteClick = async () => {
     try {
       // Get deletion info first
@@ -137,13 +150,13 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
                 <User className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <CardTitle className="text-lg font-semibold">{user.full_name}</CardTitle>
+                <CardTitle className="text-lg font-semibold">{user?.full_name || 'Unknown User'}</CardTitle>
                 <div className="flex items-center space-x-2 mt-1">
-                  <Badge className={getRoleColor(user.role)}>
-                    {user.role}
+                  <Badge className={getRoleColor(user?.role || 'member')}>
+                    {user?.role || 'member'}
                   </Badge>
-                  <Badge className={getStatusColor(user.status)}>
-                    {user.status.replace('_', ' ')}
+                  <Badge className={getStatusColor(user?.status || 'active')}>
+                    {(user?.status || 'active').replace('_', ' ')}
                   </Badge>
                 </div>
               </div>
@@ -162,9 +175,9 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Phone className="w-4 h-4" />
-              <span>{user.whatsapp_number}</span>
+              <span>{user?.whatsapp_number || 'No phone'}</span>
             </div>
-            {user.email && (
+            {user?.email && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Mail className="w-4 h-4" />
                 <span>{user.email}</span>
@@ -172,7 +185,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
             )}
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Clock className="w-4 h-4" />
-              <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
+              <span>Joined: {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}</span>
             </div>
           </div>
         </CardContent>
@@ -186,7 +199,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
               <span>Delete User</span>
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <strong>{user.full_name}</strong>?
+              Are you sure you want to delete <strong>{user?.full_name || 'Unknown User'}</strong>?
             </AlertDialogDescription>
           </AlertDialogHeader>
 

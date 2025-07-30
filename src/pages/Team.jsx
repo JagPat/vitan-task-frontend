@@ -71,7 +71,12 @@ export default function Team() {
   };
 
   const handleDeleteUser = async (user) => {
-    if (!confirm(`Are you sure you want to remove ${user.full_name} from the team? This action cannot be undone.`)) {
+    if (!user) {
+      toast.error('Invalid user data');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to remove ${user?.full_name || 'Unknown User'} from the team? This action cannot be undone.`)) {
       return;
     }
 
@@ -81,7 +86,7 @@ export default function Team() {
       });
 
       if (response.ok) {
-        toast.success(`${user.full_name} has been removed from the team`);
+        toast.success(`${user?.full_name || 'User'} has been removed from the team`);
         loadTeamData();
       } else {
         const error = await response.json();
@@ -94,7 +99,7 @@ export default function Team() {
   };
 
   const getTeamMembersWithStats = () => {
-    return users.map(user => {
+    return users.filter(user => user).map(user => {
       const userTasks = tasks.filter(t => t.assigned_to === user.id);
       const completedTasks = userTasks.filter(t => ['completed', 'closed'].includes(t.status));
       const overdueTasks = userTasks.filter(t => {
@@ -114,10 +119,12 @@ export default function Team() {
   };
 
   const filteredUsers = getTeamMembersWithStats().filter(user => {
-    const searchMatch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       user.department?.toLowerCase().includes(searchTerm.toLowerCase());
-    const roleMatch = selectedRole === "all" || user.role === selectedRole;
+    if (!user) return false;
+    
+    const searchMatch = user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       user?.department?.toLowerCase().includes(searchTerm.toLowerCase());
+    const roleMatch = selectedRole === "all" || user?.role === selectedRole;
     return searchMatch && roleMatch;
   });
 
