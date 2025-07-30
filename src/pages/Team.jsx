@@ -224,10 +224,8 @@ export default function Team() {
             {filteredUsers.map((member) => (
               <TeamMemberCard 
                 key={member.id} 
-                member={member} 
-                currentUser={currentUser} 
-                onManageUser={() => handleManageUser(member)}
-                onDeleteUser={() => handleDeleteUser(member)}
+                user={member} 
+                onDelete={handleDeleteUser}
               />
             ))}
           </div>
