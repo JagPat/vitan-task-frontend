@@ -27,8 +27,8 @@ export const Task = {
   },
 
   // Delete task
-  async delete(taskId) {
-    await whatsTaskClient.deleteTask(taskId);
+  async delete(taskId, data = {}) {
+    await whatsTaskClient.deleteTask(taskId, data);
     return { success: true };
   },
 

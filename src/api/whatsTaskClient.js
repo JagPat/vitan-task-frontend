@@ -57,9 +57,10 @@ class WhatsTaskClient {
     });
   }
 
-  async deleteTask(taskId) {
+  async deleteTask(taskId, data = {}) {
     return this.request(`/api/tasks/${taskId}`, {
       method: 'DELETE',
+      body: JSON.stringify(data),
     });
   }
 
