@@ -23,6 +23,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { format } from "date-fns";
+import { parseDate, formatDate } from "../utils/dateUtils";
 
 import EditTaskDialog from "../components/tasks/EditTaskDialog";
 import ReassignTaskDialog from "../components/tasks/ReassignTaskDialog";
@@ -246,7 +247,7 @@ export default function TaskDetails() {
             {task.title}
           </h1>
           <p className="text-slate-600 mt-1">
-            Created {format(new Date(task.created_date), 'PPP')}
+            Created {task.created_date ? format(parseDate(task.created_date) || new Date(), 'PPP') : 'Unknown date'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -307,7 +308,7 @@ export default function TaskDetails() {
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-slate-500" />
                   <span className="text-sm text-slate-600">
-                    Due: {format(new Date(task.due_date), 'PPP')}
+                    Due: {format(parseDate(task.due_date) || new Date(), 'PPP')}
                   </span>
                 </div>
               )}

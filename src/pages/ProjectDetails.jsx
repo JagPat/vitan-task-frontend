@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import CreateProjectTaskDialog from '@/components/projects/CreateProjectTaskDialog';
 import ProjectTeamManager from '@/components/projects/ProjectTeamManager';
+import { parseDate, formatDate } from '../utils/dateUtils';
 
 export default function ProjectDetails() {
   const { projectId } = useParams();
@@ -260,13 +261,13 @@ export default function ProjectDetails() {
                 {project.start_date && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Start Date</span>
-                    <span className="font-medium">{new Date(project.start_date).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatDate(project.start_date, 'toLocaleDateString', 'Invalid date')}</span>
                   </div>
                 )}
                 {project.due_date && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Due Date</span>
-                    <span className="font-medium">{new Date(project.due_date).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatDate(project.due_date, 'toLocaleDateString', 'Invalid date')}</span>
                   </div>
                 )}
               </CardContent>
@@ -335,7 +336,7 @@ export default function ProjectDetails() {
                               <span>Assigned to: {task.assigned_to_whatsapp}</span>
                             )}
                             {task.due_date && (
-                              <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
+                              <span>Due: {formatDate(task.due_date, 'toLocaleDateString', 'Invalid date')}</span>
                             )}
                             {task.estimated_hours && (
                               <span>Est. Hours: {task.estimated_hours}</span>
