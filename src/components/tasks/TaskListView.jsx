@@ -1,7 +1,7 @@
 import React from 'react';
 import TaskCard from './TaskCard';
 
-export default function TaskListView({ tasks }) {
+export default function TaskListView({ tasks, onDelete }) {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-16">
@@ -14,7 +14,7 @@ export default function TaskListView({ tasks }) {
   return (
     <div className="space-y-4">
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard key={task.id} task={task} onDelete={onDelete} />
       ))}
     </div>
   );

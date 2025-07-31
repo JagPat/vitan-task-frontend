@@ -174,6 +174,45 @@ export const ActivityLog = {
   }
 };
 
+// Project entity using WhatsTask API
+export const Project = {
+  // Get all projects
+  async getAll() {
+    const response = await whatsTaskClient.getProjects();
+    return response.data || [];
+  },
+
+  // Get project by ID
+  async getById(projectId) {
+    const response = await whatsTaskClient.getProjectById(projectId);
+    return response.data;
+  },
+
+  // Create new project
+  async create(projectData) {
+    const response = await whatsTaskClient.createProject(projectData);
+    return response.data;
+  },
+
+  // Update project
+  async update(projectId, projectData) {
+    const response = await whatsTaskClient.updateProject(projectId, projectData);
+    return response.data;
+  },
+
+  // Delete project
+  async delete(projectId) {
+    await whatsTaskClient.deleteProject(projectId);
+    return { success: true };
+  },
+
+  // List projects (alias for getAll)
+  async list(sort = '') {
+    const response = await whatsTaskClient.getProjects();
+    return response.data || [];
+  }
+};
+
 // Task Template entity
 export const TaskTemplate = {
   // Get all templates

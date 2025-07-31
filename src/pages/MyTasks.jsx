@@ -70,6 +70,17 @@ export default function MyTasks() {
     }
   };
 
+  const handleTaskDelete = async (taskId) => {
+    try {
+      // Remove the task from the local state immediately
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+      // Reload tasks if deletion failed
+      loadUserAndTasks();
+    }
+  };
+
   const filteredTasks = tasks.filter((task) => {
     const searchMatch = task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
                         task.description?.toLowerCase().includes(filters.search.toLowerCase());
@@ -125,9 +136,9 @@ export default function MyTasks() {
         </div>
       ) : (
         <>
-          {view === 'list' && <TaskListView tasks={filteredTasks} />}
+          {view === 'list' && <TaskListView tasks={filteredTasks} onDelete={handleTaskDelete} />}
           {view === 'board' && (
-            <KanbanBoardView tasks={filteredTasks} onTaskUpdate={handleTaskUpdate} />
+            <KanbanBoardView tasks={filteredTasks} onTaskUpdate={handleTaskUpdate} onDelete={handleTaskDelete} />
           )}
         </>
       )}

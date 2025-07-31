@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import ProjectCard from '@/components/projects/ProjectCard';
 import CreateProjectDialog from '@/components/projects/CreateProjectDialog';
+import { Project } from '@/api/entities';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -30,6 +32,7 @@ export default function Projects() {
     completed: 0,
     on_hold: 0
   });
+  const { toast } = useToast();
 
   useEffect(() => {
     loadProjects();
@@ -38,15 +41,16 @@ export default function Projects() {
   const loadProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/projects');
-      const data = await response.json();
-      
-      if (data.success) {
-        setProjects(data.data);
-        calculateStats(data.data);
-      }
+      const projectsData = await Project.getAll();
+      setProjects(projectsData);
+      calculateStats(projectsData);
     } catch (error) {
       console.error('Error loading projects:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load projects. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -74,8 +78,28 @@ export default function Projects() {
 
   const handleDeleteProject = async (project) => {
     if (confirm(`Are you sure you want to delete "${project.name}"?`)) {
-      // TODO: Implement delete functionality
-      console.log('Delete project:', project);
+      try {
+        await Project.delete(project.id);
+        
+        // Remove the project from the local state
+        setProjects(prev => prev.filter(p => p.id !== project.id));
+        
+        // Recalculate stats
+        const updatedProjects = projects.filter(p => p.id !== project.id);
+        calculateStats(updatedProjects);
+        
+        toast({
+          title: "Success",
+          description: `Project "${project.name}" has been deleted.`,
+        });
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete project. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

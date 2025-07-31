@@ -178,6 +178,35 @@ class WhatsTaskClient {
   async getUserStats() {
     return this.request('/api/users/stats');
   }
+
+  // Projects API
+  async getProjects() {
+    return this.request('/api/projects');
+  }
+
+  async getProjectById(projectId) {
+    return this.request(`/api/projects/${projectId}`);
+  }
+
+  async createProject(projectData) {
+    return this.request('/api/projects', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async updateProject(projectId, projectData) {
+    return this.request(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async deleteProject(projectId) {
+    return this.request(`/api/projects/${projectId}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 // Create and export the client instance
