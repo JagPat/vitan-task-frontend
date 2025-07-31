@@ -247,6 +247,18 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     }
   };
 
+  // Safe date parsing function
+  const parseDate = (dateString) => {
+    if (!dateString) return null;
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? null : date;
+    } catch (error) {
+      console.warn('Invalid date string:', dateString);
+      return null;
+    }
+  };
+
   const pendingTasks = userTasks.filter(task => ['pending', 'in_progress'].includes(task.status));
   const completedTasks = userTasks.filter(task => ['completed', 'closed'].includes(task.status));
 
@@ -339,7 +351,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
               )}
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Clock className="w-4 h-4" />
-                <span>Joined: {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}</span>
+                <span>Joined: {user?.created_at ? (parseDate(user.created_at)?.toLocaleDateString() || 'Unknown') : 'Unknown'}</span>
               </div>
             </div>
 
@@ -555,7 +567,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
                         {task.due_date && (
                           <div className="text-xs text-gray-500">
                             <Calendar className="w-3 h-3 inline mr-1" />
-                            {new Date(task.due_date).toLocaleDateString()}
+                            {parseDate(task.due_date)?.toLocaleDateString() || 'Invalid date'}
                           </div>
                         )}
                       </div>
