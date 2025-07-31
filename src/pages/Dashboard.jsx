@@ -20,6 +20,7 @@ import RecentActivity from "../components/dashboard/RecentActivity";
 import TeamPerformance from "../components/dashboard/TeamPerformance";
 import QuickActions from "../components/dashboard/QuickActions";
 import ApiTest from "../components/ApiTest";
+import { isOverdue } from "../utils/dateUtils";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -58,7 +59,7 @@ export default function Dashboard() {
     const completed = tasks.filter(t => ['completed', 'closed'].includes(t.status)).length;
     const overdue = tasks.filter(t => {
       if (!t.due_date) return false;
-      return new Date(t.due_date) < new Date() && !['completed', 'closed'].includes(t.status);
+      return isOverdue(t.due_date) && !['completed', 'closed'].includes(t.status);
     }).length;
 
     return { total, pending, inProgress, completed, overdue };

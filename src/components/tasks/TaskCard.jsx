@@ -12,6 +12,7 @@ import {
   Flag,
   CheckSquare
 } from "lucide-react";
+import { isOverdue, formatDate } from '../../utils/dateUtils';
 
 const priorityMap = {
   low: { label: 'Low', color: 'bg-slate-100 text-slate-700 border-slate-200', icon: <Flag className="w-3 h-3" /> },
@@ -31,7 +32,7 @@ const statusMap = {
 
 
 export default function TaskCard({ task }) {
-  const isOverdue = task.due_date && new Date(task.due_date) < new Date() && !['completed', 'closed'].includes(task.status);
+  const taskIsOverdue = task.due_date && isOverdue(task.due_date) && !['completed', 'closed'].includes(task.status);
   const priority = priorityMap[task.priority] || priorityMap.medium;
   const status = statusMap[task.status] || statusMap.pending;
 
@@ -65,9 +66,9 @@ export default function TaskCard({ task }) {
           </Badge>
 
           {task.due_date && (
-            <div className={`flex items-center gap-2 ${isOverdue ? 'text-red-600 font-medium' : ''}`}>
+            <div className={`flex items-center gap-2 ${taskIsOverdue ? 'text-red-600 font-medium' : ''}`}>
               <Calendar className="w-4 h-4" />
-              <span>{format(new Date(task.due_date), 'MMM d, yyyy')}</span>
+              <span>{formatDate(task.due_date, 'toLocaleDateString', 'Invalid date')}</span>
             </div>
           )}
           

@@ -45,6 +45,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
+import { parseDate, formatDate } from '../../utils/dateUtils';
 
 const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -247,17 +248,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     }
   };
 
-  // Safe date parsing function
-  const parseDate = (dateString) => {
-    if (!dateString) return null;
-    try {
-      const date = new Date(dateString);
-      return isNaN(date.getTime()) ? null : date;
-    } catch (error) {
-      console.warn('Invalid date string:', dateString);
-      return null;
-    }
-  };
+
 
   const pendingTasks = userTasks.filter(task => ['pending', 'in_progress'].includes(task.status));
   const completedTasks = userTasks.filter(task => ['completed', 'closed'].includes(task.status));

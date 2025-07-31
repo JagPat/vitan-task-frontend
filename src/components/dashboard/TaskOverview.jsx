@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Play
 } from "lucide-react";
+import { isOverdue, formatDate } from '../../utils/dateUtils';
 
 const priorityColors = {
   low: "bg-slate-100 text-slate-700 border-slate-200",
@@ -32,11 +33,11 @@ const statusIcons = {
 };
 
 const TaskCard = ({ task }) => {
-  const isOverdue = task.due_date && new Date(task.due_date) < new Date() && !['completed', 'closed'].includes(task.status);
+  const taskIsOverdue = task.due_date && isOverdue(task.due_date) && !['completed', 'closed'].includes(task.status);
   
   return (
     <div className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md ${
-      isOverdue ? 'border-red-200 bg-red-50' : 'border-slate-200 bg-white hover:border-slate-300'
+      taskIsOverdue ? 'border-red-200 bg-red-50' : 'border-slate-200 bg-white hover:border-slate-300'
     }`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -57,9 +58,9 @@ const TaskCard = ({ task }) => {
             <span>{task.assigned_to_name || 'Unassigned'}</span>
           </div>
           {task.due_date && (
-            <div className={`flex items-center gap-1 ${isOverdue ? 'text-red-600' : ''}`}>
+            <div className={`flex items-center gap-1 ${taskIsOverdue ? 'text-red-600' : ''}`}>
               <Calendar className="w-3 h-3" />
-              <span>{format(new Date(task.due_date), 'MMM d')}</span>
+              <span>{formatDate(task.due_date, 'toLocaleDateString', 'Invalid date')}</span>
             </div>
           )}
         </div>
@@ -86,7 +87,7 @@ export default function TaskOverview({ tasks }) {
       case "overdue":
         return tasks.filter(t => {
           if (!t.due_date) return false;
-          return new Date(t.due_date) < new Date() && !['completed', 'closed'].includes(t.status);
+          return isOverdue(t.due_date) && !['completed', 'closed'].includes(t.status);
         });
       default:
         return tasks.slice(0, 12);
