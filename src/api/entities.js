@@ -182,6 +182,12 @@ export const TaskTemplate = {
     return response.data || [];
   },
 
+  // List templates (alias for getAll)
+  async list(sort = '') {
+    const response = await whatsTaskClient.request('/api/templates');
+    return response.data || [];
+  },
+
   // Create template
   async create(templateData) {
     const response = await whatsTaskClient.request('/api/templates', {
