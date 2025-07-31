@@ -24,10 +24,18 @@ class WhatsTaskClient {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      return await response.json();
+      const data = await response.json();
+      
+      // Validate that we got a proper object/array, not undefined/null
+      if (data === undefined || data === null) {
+        console.warn('API returned undefined/null data:', { endpoint, data });
+        return { success: false, error: 'Invalid response data' };
+      }
+      
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
-      throw error;
+      return { success: false, error: error.message };
     }
   }
 

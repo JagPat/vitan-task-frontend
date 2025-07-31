@@ -73,7 +73,18 @@ export const User = {
         // Try to get user from session storage as fallback
         const sessionUser = sessionStorage.getItem('currentUser');
         if (sessionUser) {
-          return JSON.parse(sessionUser);
+          try {
+            const parsedUser = JSON.parse(sessionUser);
+            if (parsedUser && typeof parsedUser === 'object' && !Array.isArray(parsedUser)) {
+              return parsedUser;
+            } else {
+              console.warn('Invalid session user data:', parsedUser);
+              sessionStorage.removeItem('currentUser');
+            }
+          } catch (error) {
+            console.error('Error parsing session user data:', error);
+            sessionStorage.removeItem('currentUser');
+          }
         }
         
         // Return null if no authentication
@@ -87,10 +98,17 @@ export const User = {
         }
       });
       
-      if (response.success && response.data) {
-        // Store user in session storage for fallback
-        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
-        return response.data;
+      if (response.success && response.data && typeof response.data === 'object') {
+        // Validate user data structure
+        const userData = response.data;
+        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
+          // Store user in session storage for fallback
+          sessionStorage.setItem('currentUser', JSON.stringify(userData));
+          return userData;
+        } else {
+          console.warn('Invalid user data structure:', userData);
+          return null;
+        }
       }
       
       return null;

@@ -93,7 +93,8 @@ export default function Layout({ children, currentPageName }) {
       const token = localStorage.getItem('authToken');
       if (token) {
         const currentUser = await User.me();
-        if (currentUser) {
+        console.log('Current user data:', currentUser); // Debug log
+        if (currentUser && typeof currentUser === 'object') {
           setUser(currentUser);
           setIsAuthenticated(true);
         } else {
@@ -203,19 +204,21 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
               <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">
-                  {user?.full_name?.charAt(0) || 'U'}
+                  {typeof user?.full_name === 'string' && user.full_name.length > 0 ? user.full_name.charAt(0) : 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-slate-800 text-sm truncate">
-                  {user?.full_name || 'User'}
+                  {typeof user?.full_name === 'string' ? user.full_name : 'User'}
                 </p>
                 <p className="text-xs text-slate-500 truncate">
-                  {user?.email || 'user@example.com'}
+                  {typeof user?.email === 'string' ? user.email : 'user@example.com'}
                 </p>
                 <div className="flex items-center gap-1 mt-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-xs text-slate-500">{user?.role || 'Member'}</span>
+                  <span className="text-xs text-slate-500">
+                    {typeof user?.role === 'string' ? user.role : 'Member'}
+                  </span>
                 </div>
               </div>
             </div>
