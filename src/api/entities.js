@@ -63,38 +63,40 @@ export const User = {
     return response.data || [];
   },
 
-  // Get current user (placeholder - implement based on your auth system)
+  // Get current user from authentication
   async me() {
     try {
-      // For now, get the first user (admin) from the backend
-      const response = await whatsTaskClient.getUsers();
-      const users = response.data || [];
+      // Get token from localStorage
+      const token = localStorage.getItem('authToken');
       
-      if (users.length > 0) {
-        // Return the first user (admin) as current user
-        return users[0];
+      if (!token) {
+        // Try to get user from session storage as fallback
+        const sessionUser = sessionStorage.getItem('currentUser');
+        if (sessionUser) {
+          return JSON.parse(sessionUser);
+        }
+        
+        // Return null if no authentication
+        return null;
       }
       
-      // Fallback to mock user if no users found
-      const mockUser = {
-        id: 1,
-        full_name: 'Current User',
-        email: 'user@example.com',
-        whatsapp_number: '+1234567890',
-        role: 'admin'
-      };
-      return mockUser;
+      // Get current user from auth endpoint
+      const response = await whatsTaskClient.request('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.success && response.data) {
+        // Store user in session storage for fallback
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
+        return response.data;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error fetching current user:', error);
-      // Return mock user as fallback
-      const mockUser = {
-        id: 1,
-        full_name: 'Current User',
-        email: 'user@example.com',
-        whatsapp_number: '+1234567890',
-        role: 'admin'
-      };
-      return mockUser;
+      return null;
     }
   },
 

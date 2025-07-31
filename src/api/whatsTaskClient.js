@@ -94,60 +94,66 @@ class WhatsTaskClient {
   }
 
   // Authentication API
-  async sendOTP(phoneNumber, email = null, type = 'whatsapp') {
-    return this.request('/api/auth/send-otp', {
+  async loginWithWhatsApp(whatsappNumber) {
+    return this.request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({
-        phone_number: phoneNumber,
-        email,
-        type,
+        whatsappNumber
       }),
     });
   }
 
-  async verifyOTP(phoneNumber, otp, fullName = null, email = null, type = 'whatsapp') {
-    return this.request('/api/auth/verify-otp', {
+  async loginWithEmail(email, password) {
+    return this.request('/api/auth/login-email', {
       method: 'POST',
       body: JSON.stringify({
-        phone_number: phoneNumber,
-        otp,
-        full_name: fullName,
         email,
-        type,
+        password
       }),
     });
   }
 
-  async logout(sessionToken) {
+  async logout(token) {
     return this.request('/api/auth/logout', {
       method: 'POST',
       body: JSON.stringify({
-        session_token: sessionToken,
+        token
       }),
     });
   }
 
-  async getCurrentUser(sessionToken) {
+  async getCurrentUser(token) {
     return this.request('/api/auth/me', {
       headers: {
-        'Authorization': `Bearer ${sessionToken}`,
-      },
+        'Authorization': `Bearer ${token}`
+      }
     });
   }
 
-  async getUserSessions(sessionToken) {
-    return this.request('/api/auth/sessions', {
+  async getAuthStatus(token) {
+    return this.request('/api/auth/status', {
       headers: {
-        'Authorization': `Bearer ${sessionToken}`,
-      },
+        'Authorization': `Bearer ${token}`
+      }
     });
   }
 
-  async getUserActivity(sessionToken, limit = 50) {
-    return this.request(`/api/auth/activity?limit=${limit}`, {
-      headers: {
-        'Authorization': `Bearer ${sessionToken}`,
-      },
+  async sendVerificationCode(whatsappNumber) {
+    return this.request('/api/auth/verify', {
+      method: 'POST',
+      body: JSON.stringify({
+        whatsappNumber
+      }),
+    });
+  }
+
+  async confirmVerificationCode(whatsappNumber, verificationCode) {
+    return this.request('/api/auth/confirm', {
+      method: 'POST',
+      body: JSON.stringify({
+        whatsappNumber,
+        verificationCode
+      }),
     });
   }
 
