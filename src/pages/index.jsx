@@ -26,6 +26,8 @@ import Projects from "./Projects";
 
 import ProjectDetails from "./ProjectDetails";
 
+import DeletedTasks from "./DeletedTasks";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -55,6 +57,8 @@ const PAGES = {
     Projects: Projects,
     
     ProjectDetails: ProjectDetails,
+    
+    DeletedTasks: DeletedTasks,
     
 }
 
@@ -108,6 +112,8 @@ function PagesContent() {
                 <Route path="/Projects" element={<Projects />} />
                 
                 <Route path="/ProjectDetails/:projectId" element={<ProjectDetails />} />
+                
+                <Route path="/DeletedTasks" element={<DeletedTasks />} />
                 
             </Routes>
         </Layout>

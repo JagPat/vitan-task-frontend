@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -10,9 +24,11 @@ import {
   ArrowRight,
   AlertTriangle,
   Flag,
-  CheckSquare
+  CheckSquare,
+  Trash2
 } from "lucide-react";
 import { isOverdue, formatDate } from '../../utils/dateUtils';
+import { Task } from '@/api/entities';
 
 const priorityMap = {
   low: { label: 'Low', color: 'bg-slate-100 text-slate-700 border-slate-200', icon: <Flag className="w-3 h-3" /> },
@@ -31,10 +47,36 @@ const statusMap = {
 };
 
 
-export default function TaskCard({ task }) {
+export default function TaskCard({ task, onDelete }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
   const taskIsOverdue = task.due_date && isOverdue(task.due_date) && !['completed', 'closed'].includes(task.status);
   const priority = priorityMap[task.priority] || priorityMap.medium;
   const status = statusMap[task.status] || statusMap.pending;
+
+  const handleDelete = async () => {
+    if (!deleteReason.trim()) {
+      alert('Please provide a reason for deletion');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await Task.delete(task.id, { reason: deleteReason });
+      if (onDelete) {
+        onDelete(task.id);
+      }
+      setShowDeleteDialog(false);
+      setDeleteReason('');
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Failed to delete task');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow duration-200 border-slate-200">
@@ -72,12 +114,55 @@ export default function TaskCard({ task }) {
             </div>
           )}
           
-          <Link 
-            to={createPageUrl(`TaskDetails?id=${task.id}`)}
-            className="text-indigo-600 hover:underline flex items-center gap-1 transition-all"
-          >
-            Details <ArrowRight className="w-3 h-3" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link 
+              to={createPageUrl(`TaskDetails?id=${task.id}`)}
+              className="text-indigo-600 hover:underline flex items-center gap-1 transition-all"
+            >
+              Details <ArrowRight className="w-3 h-3" />
+            </Link>
+            
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will move the task to trash. It can be restored later. Please provide a reason for deletion.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="delete-reason">Reason for deletion</Label>
+                    <Input
+                      id="delete-reason"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="Enter reason for deletion..."
+                    />
+                  </div>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isDeleting || !deleteReason.trim()}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete Task'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </CardContent>
     </Card>

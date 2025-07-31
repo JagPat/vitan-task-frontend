@@ -14,7 +14,8 @@ import {
   Plus,
   MessageCircle,
   FolderOpen,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,11 @@ const navigationItems = [
     title: "AI Admin",
     url: createPageUrl("AIAdminDashboard"),
     icon: Zap,
+  },
+  {
+    title: "Deleted Tasks",
+    url: createPageUrl("DeletedTasks"),
+    icon: History,
   }
 ];
 
