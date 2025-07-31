@@ -15,7 +15,9 @@ import {
   MessageCircle,
   FolderOpen,
   Zap,
-  History
+  History,
+  LogOut,
+  LogIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +28,9 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import LoginDialog from "@/components/LoginDialog";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
+import { toast } from "sonner";
 
 const navigationItems = [
   {
@@ -75,11 +80,36 @@ export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [pendingTasks, setPendingTasks] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    loadUser();
+    checkAuthentication();
     loadPendingTasks();
   }, []);
+
+  const checkAuthentication = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const currentUser = await User.me();
+        if (currentUser) {
+          setUser(currentUser);
+          setIsAuthenticated(true);
+        } else {
+          // Token is invalid, clear it
+          localStorage.removeItem('authToken');
+          sessionStorage.removeItem('currentUser');
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+      setIsAuthenticated(false);
+    }
+  };
 
   const loadUser = async () => {
     try {
@@ -96,6 +126,32 @@ export default function Layout({ children, currentPageName }) {
       setPendingTasks(tasks.length);
     } catch (error) {
       console.error("Error loading pending tasks:", error);
+    }
+  };
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+    setShowLoginDialog(false);
+    loadPendingTasks(); // Refresh tasks after login
+  };
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        await whatsTaskClient.logout(token);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear all auth data
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
+      setUser(null);
+      setIsAuthenticated(false);
+      setPendingTasks(0);
+      toast.success('Logged out successfully');
     }
   };
 
@@ -142,25 +198,54 @@ export default function Layout({ children, currentPageName }) {
       </nav>
 
       <div className="p-4 border-t border-slate-200">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-          <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">
-              {user?.full_name?.charAt(0) || 'U'}
-            </span>
+        {isAuthenticated ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+              <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">
+                  {user?.full_name?.charAt(0) || 'U'}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-slate-800 text-sm truncate">
+                  {user?.full_name || 'User'}
+                </p>
+                <p className="text-xs text-slate-500 truncate">
+                  {user?.email || 'user@example.com'}
+                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-xs text-slate-500">{user?.role || 'Member'}</span>
+                </div>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout}
+              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-slate-800 text-sm truncate">
-              {user?.full_name || 'User'}
-            </p>
-            <p className="text-xs text-slate-500 truncate">
-              {user?.email || 'user@example.com'}
-            </p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-xs text-slate-500">{user?.role || 'Member'}</span>
+        ) : (
+          <div className="space-y-3">
+            <div className="text-center p-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-sm text-slate-600 mb-3">Please login to continue</p>
+              <Button 
+                onClick={() => setShowLoginDialog(true)}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Button>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -224,6 +309,13 @@ export default function Layout({ children, currentPageName }) {
           <Plus className="w-6 h-6" />
         </Button>
       </Link>
+
+      {/* Login Dialog */}
+      <LoginDialog 
+        open={showLoginDialog} 
+        onOpenChange={setShowLoginDialog}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }
