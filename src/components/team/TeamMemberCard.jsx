@@ -75,6 +75,21 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     }
   }, [user?.id]);
 
+  // Update editForm when user data changes
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        full_name: user?.full_name || '',
+        email: user?.email || '',
+        role: user?.role || 'member',
+        department: user?.department || '',
+        position: user?.position || '',
+        phone_number: user?.phone_number || '',
+        is_external: user?.is_external || false
+      });
+    }
+  }, [user]);
+
   const loadUserData = async () => {
     setLoadingStats(true);
     try {
@@ -195,27 +210,16 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
       const data = await response.json();
 
       if (data.success) {
-        toast({
-          title: "Success",
-          description: "User updated successfully",
-        });
+        toast.success("User updated successfully");
         setShowEditDialog(false);
         if (onUpdate) {
           onUpdate(data.data);
         }
       } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to update user",
-          variant: "destructive",
-        });
+        toast.error(data.error || "Failed to update user");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update user",
-        variant: "destructive",
-      });
+      toast.error("Failed to update user");
     }
   };
 
@@ -287,6 +291,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
                 variant="outline"
                 size="sm"
                 onClick={() => {
+                  // Refresh editForm with current user data
                   setEditForm({
                     full_name: user?.full_name || '',
                     email: user?.email || '',
