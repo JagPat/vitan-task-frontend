@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { parseDate } from "../../utils/dateUtils";
 import { 
   FileText, 
   UserPlus, 
@@ -30,7 +31,7 @@ const activityColors = {
   commented: "bg-slate-100 text-slate-600"
 };
 
-export default function TaskHistory({ activities }) {
+export default function TaskHistory({ activities = [] }) {
   const formatActivityMessage = (activity) => {
     switch (activity.action) {
       case 'created':
@@ -56,7 +57,7 @@ export default function TaskHistory({ activities }) {
         <CardTitle>Activity History</CardTitle>
       </CardHeader>
       <CardContent>
-        {activities.length === 0 ? (
+        {!Array.isArray(activities) || activities.length === 0 ? (
           <div className="text-center py-8">
             <Clock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
             <p className="text-slate-500">No activity yet</p>
@@ -79,7 +80,7 @@ export default function TaskHistory({ activities }) {
                   )}
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-xs text-slate-400">
-                      {format(new Date(activity.created_date), 'MMM d, h:mm a')}
+                      {activity.created_date ? format(parseDate(activity.created_date) || new Date(), 'MMM d, h:mm a') : 'Unknown date'}
                     </p>
                     {activity.whatsapp_message_sent && (
                       <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">

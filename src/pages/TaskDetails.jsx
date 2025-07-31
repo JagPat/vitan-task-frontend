@@ -61,7 +61,7 @@ export default function TaskDetails() {
       setTask(taskData);
       setCurrentUser(userData);
       setUsers(usersData);
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : []);
     } catch (error) {
       console.error("Error loading task details:", error);
     } finally {
