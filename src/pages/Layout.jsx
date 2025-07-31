@@ -82,6 +82,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAuthentication();
@@ -94,10 +95,27 @@ export default function Layout({ children, currentPageName }) {
       if (token) {
         const currentUser = await User.me();
         console.log('Current user data:', currentUser); // Debug log
-        if (currentUser && typeof currentUser === 'object') {
-          setUser(currentUser);
+        console.log('Current user type:', typeof currentUser); // Debug type
+        console.log('Current user keys:', currentUser ? Object.keys(currentUser) : 'null'); // Debug keys
+        
+        if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
+          // Validate user object structure
+          const validUser = {
+            id: currentUser.id || null,
+            full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : null,
+            email: typeof currentUser.email === 'string' ? currentUser.email : null,
+            role: typeof currentUser.role === 'string' ? currentUser.role : null,
+            whatsapp_number: typeof currentUser.whatsapp_number === 'string' ? currentUser.whatsapp_number : null,
+            company: typeof currentUser.company === 'string' ? currentUser.company : null,
+            location: typeof currentUser.location === 'string' ? currentUser.location : null,
+            verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false
+          };
+          
+          console.log('Validated user data:', validUser); // Debug validated user
+          setUser(validUser);
           setIsAuthenticated(true);
         } else {
+          console.warn('Invalid user data, clearing auth'); // Debug invalid data
           // Token is invalid, clear it
           localStorage.removeItem('authToken');
           sessionStorage.removeItem('currentUser');
@@ -131,10 +149,31 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLoginSuccess = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
-    setShowLoginDialog(false);
-    loadPendingTasks(); // Refresh tasks after login
+    console.log('Login success user data:', userData); // Debug login success
+    console.log('Login success user type:', typeof userData); // Debug type
+    
+    if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
+      // Validate user data structure
+      const validUser = {
+        id: userData.id || null,
+        full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
+        email: typeof userData.email === 'string' ? userData.email : null,
+        role: typeof userData.role === 'string' ? userData.role : null,
+        whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
+        company: typeof userData.company === 'string' ? userData.company : null,
+        location: typeof userData.location === 'string' ? userData.location : null,
+        verified: typeof userData.verified === 'boolean' ? userData.verified : false
+      };
+      
+      console.log('Validated login success user data:', validUser); // Debug validated user
+      setUser(validUser);
+      setIsAuthenticated(true);
+      setShowLoginDialog(false);
+      loadPendingTasks(); // Refresh tasks after login
+    } else {
+      console.error('Invalid user data in login success:', userData);
+      setError("Login failed: Invalid user data");
+    }
   };
 
   const handleLogout = async () => {

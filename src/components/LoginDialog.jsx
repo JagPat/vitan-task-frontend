@@ -55,13 +55,23 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       const response = await whatsTaskClient.loginWithWhatsApp(whatsappForm.whatsappNumber);
       
       if (response.success) {
-        // Store token and user data
-        localStorage.setItem('authToken', response.data.token);
-        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        console.log('WhatsApp login response data:', response.data); // Debug login response
+        console.log('User data from WhatsApp login:', response.data.user); // Debug user data
         
-        toast.success("Login successful!");
-        onLoginSuccess(response.data.user);
-        onOpenChange(false);
+        // Validate user data before storing
+        const userData = response.data.user;
+        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
+          // Store token and user data
+          localStorage.setItem('authToken', response.data.token);
+          sessionStorage.setItem('currentUser', JSON.stringify(userData));
+          
+          toast.success("Login successful!");
+          onLoginSuccess(userData);
+          onOpenChange(false);
+        } else {
+          console.error('Invalid user data in WhatsApp login response:', userData);
+          setError("Login failed: Invalid user data");
+        }
       } else {
         setError(response.error || "Login failed");
       }
@@ -82,13 +92,23 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       const response = await whatsTaskClient.loginWithEmail(emailForm.email, emailForm.password);
       
       if (response.success) {
-        // Store token and user data
-        localStorage.setItem('authToken', response.data.token);
-        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        console.log('Email login response data:', response.data); // Debug login response
+        console.log('User data from email login:', response.data.user); // Debug user data
         
-        toast.success("Login successful!");
-        onLoginSuccess(response.data.user);
-        onOpenChange(false);
+        // Validate user data before storing
+        const userData = response.data.user;
+        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
+          // Store token and user data
+          localStorage.setItem('authToken', response.data.token);
+          sessionStorage.setItem('currentUser', JSON.stringify(userData));
+          
+          toast.success("Login successful!");
+          onLoginSuccess(userData);
+          onOpenChange(false);
+        } else {
+          console.error('Invalid user data in email login response:', userData);
+          setError("Login failed: Invalid user data");
+        }
       } else {
         setError(response.error || "Login failed");
       }
