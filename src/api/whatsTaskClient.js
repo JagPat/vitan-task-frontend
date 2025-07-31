@@ -93,6 +93,64 @@ class WhatsTaskClient {
     });
   }
 
+  // Authentication API
+  async sendOTP(phoneNumber, email = null, type = 'whatsapp') {
+    return this.request('/api/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone_number: phoneNumber,
+        email,
+        type,
+      }),
+    });
+  }
+
+  async verifyOTP(phoneNumber, otp, fullName = null, email = null, type = 'whatsapp') {
+    return this.request('/api/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone_number: phoneNumber,
+        otp,
+        full_name: fullName,
+        email,
+        type,
+      }),
+    });
+  }
+
+  async logout(sessionToken) {
+    return this.request('/api/auth/logout', {
+      method: 'POST',
+      body: JSON.stringify({
+        session_token: sessionToken,
+      }),
+    });
+  }
+
+  async getCurrentUser(sessionToken) {
+    return this.request('/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`,
+      },
+    });
+  }
+
+  async getUserSessions(sessionToken) {
+    return this.request('/api/auth/sessions', {
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`,
+      },
+    });
+  }
+
+  async getUserActivity(sessionToken, limit = 50) {
+    return this.request(`/api/auth/activity?limit=${limit}`, {
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`,
+      },
+    });
+  }
+
   // WhatsApp Integration
   async sendWhatsAppMessage(phoneNumber, message) {
     return this.request('/webhook', {
