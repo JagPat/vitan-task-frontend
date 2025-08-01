@@ -82,6 +82,11 @@ class WhatsTaskClient {
   async sendVerificationCode(phoneNumber) {
     const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
     
+    console.log('Verification attempt:', {
+      original: phoneNumber,
+      normalized: normalizedPhone
+    });
+    
     return this.request('/api/auth/verify', {
       method: 'POST',
       body: JSON.stringify({

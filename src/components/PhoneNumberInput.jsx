@@ -35,17 +35,20 @@ export default function PhoneNumberInput({
   };
 
   const handlePhoneNumberChange = (phoneNumber) => {
-    // Remove any non-digit characters except +
-    const cleaned = phoneNumber.replace(/[^\d+]/g, '');
+    // Remove any non-digit characters
+    const cleaned = phoneNumber.replace(/[^\d]/g, '');
     
-    // Always ensure it starts with the selected country code
-    if (!cleaned.startsWith('+')) {
-      const numberWithoutCountry = cleaned.replace(/^\d+/, '');
-      const fullNumber = selectedCountry.code + numberWithoutCountry;
+    // If user enters a number without country code, add it automatically
+    if (cleaned.length > 0 && cleaned.length <= 10) {
+      // User entered local number, add country code
+      const fullNumber = selectedCountry.code + cleaned;
       onChange(fullNumber);
+    } else if (cleaned.startsWith('91') && cleaned.length > 10) {
+      // User entered full number with country code
+      onChange('+' + cleaned);
     } else {
-      // If it already has a country code, update accordingly
-      onChange(cleaned);
+      // Keep as is
+      onChange(phoneNumber);
     }
   };
 
