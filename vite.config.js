@@ -2,24 +2,24 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 3002,
-    allowedHosts: true
-  },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
-    extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json']
   },
-  optimizeDeps: {
-    esbuildOptions: {
-      loader: {
-        '.js': 'jsx',
-      },
-    },
+  server: {
+    port: 3002, // Changed from 3001
+    allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'https://vitan-task-production.up.railway.app',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
+      }
+    }
   },
 }) 

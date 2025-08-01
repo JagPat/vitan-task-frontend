@@ -1,5 +1,7 @@
 // WhatsTask API Client for Railway Backend
-const API_BASE_URL = 'https://vitan-task-production.up.railway.app';
+const API_BASE_URL = import.meta.env.DEV 
+  ? ''  // Use relative URLs in development (proxy will handle it)
+  : 'https://vitan-task-production.up.railway.app';
 
 class WhatsTaskClient {
   constructor() {
