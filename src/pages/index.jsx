@@ -30,7 +30,7 @@ import DeletedTasks from "./DeletedTasks";
 
 import UnifiedTaskView from "./UnifiedTaskView";
 
-import TestComponents from "../components/TestComponents";
+
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -65,8 +65,6 @@ const PAGES = {
     ProjectDetails: ProjectDetails,
     
     DeletedTasks: DeletedTasks,
-    
-    TestComponents: TestComponents,
     
 }
 
@@ -124,8 +122,6 @@ function PagesContent() {
                 <Route path="/ProjectDetails/:projectId" element={<ProjectDetails />} />
                 
                 <Route path="/DeletedTasks" element={<DeletedTasks />} />
-                
-                <Route path="/TestComponents" element={<TestComponents />} />
                 
             </Routes>
         </Layout>
