@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import Pages from "@/pages/index.jsx"
 import { Toaster } from "@/components/ui/toaster"
-import { finalReactValidation } from "@/utils"
+import { comprehensiveReactValidation } from "@/utils"
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -68,7 +68,7 @@ function NuclearComponentWrapper({ children }) {
       }
       
       // Check if it's a valid React component
-      const validatedType = finalReactValidation(child.type);
+      const validatedType = comprehensiveReactValidation(child.type);
       if (validatedType === null) {
         console.warn('Invalid React component type detected:', child.type);
         return null;
@@ -83,7 +83,7 @@ function NuclearComponentWrapper({ children }) {
     
     // If it's an array, validate each item
     if (Array.isArray(child)) {
-      return child.map(item => finalReactValidation(item)).filter(item => item !== null);
+      return child.map(item => comprehensiveReactValidation(item)).filter(item => item !== null);
     }
     
     // For any other object, return null

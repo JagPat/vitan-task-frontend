@@ -259,10 +259,10 @@ export function safeGet(obj: any, path: string, fallback: any = null): any {
 }
 
 /**
- * Final nuclear approach: Complete object prevention
- * Prevents ANY object from reaching React rendering
+ * Comprehensive nuclear approach: Complete prevention of any non-primitive data
+ * This is the most aggressive possible approach to prevent React error #130
  */
-export function finalNuclearSanitize(obj: any): any {
+export function comprehensiveNuclearSanitize(obj: any): any {
   // Only allow primitives and null
   if (obj === null || obj === undefined) {
     return null;
@@ -277,10 +277,10 @@ export function finalNuclearSanitize(obj: any): any {
 }
 
 /**
- * React component final validation
+ * React component comprehensive validation
  * Only allows primitive values and valid React components
  */
-export function finalReactValidation(component: any): any {
+export function comprehensiveReactValidation(component: any): any {
   // If it's null, undefined, return null
   if (component === null || component === undefined) {
     return null;
@@ -306,5 +306,23 @@ export function finalReactValidation(component: any): any {
   }
   
   // For any other object, return null
+  return null;
+}
+
+/**
+ * Global React error prevention
+ * Prevents any object from reaching React rendering
+ */
+export function preventReactError130(obj: any): any {
+  // Nuclear approach: Only primitives allowed
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  
+  if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+    return obj;
+  }
+  
+  // For ANY object or array, return null
   return null;
 }

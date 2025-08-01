@@ -21,7 +21,7 @@ import {
   Loader2
 } from "lucide-react";
 import { whatsTaskClient } from "@/api/whatsTaskClient";
-import { finalNuclearSanitize } from "@/utils";
+import { comprehensiveNuclearSanitize } from "@/utils";
 import { toast } from "sonner";
 
 export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
@@ -60,7 +60,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('User data from WhatsApp login:', response.data.user); // Debug user data
         
         // Nuclear sanitization of login response
-        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
         const userData = sanitizedResponse?.user;
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
@@ -111,7 +111,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('User data from email login:', response.data.user); // Debug user data
         
         // Nuclear sanitization of login response
-        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
         const userData = sanitizedResponse?.user;
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
@@ -185,7 +185,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       
       if (response.success) {
         // Nuclear sanitization of verification response
-        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
         const userData = sanitizedResponse?.user;
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
