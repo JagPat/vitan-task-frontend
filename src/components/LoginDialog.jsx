@@ -68,6 +68,10 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
           setError("Account not found. Please verify your WhatsApp number or create a new account.");
         } else if (response.error && response.error.includes('Invalid')) {
           setError("Invalid credentials. Please check your WhatsApp number.");
+        } else if (response.error && response.error.includes('value too long')) {
+          setError("System configuration issue. Please try again later or contact support.");
+        } else if (response.error && response.error.includes('Database configuration issue')) {
+          setError("System maintenance in progress. Please try again later.");
         } else {
           setError(response.error || "Login failed");
         }
@@ -220,16 +224,18 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
             <TabsContent value="whatsapp" className="space-y-4">
               <form onSubmit={handleWhatsappLogin} className="space-y-4">
                 <div>
-                  <Label htmlFor="whatsapp_number">WhatsApp Number</Label>
+                  <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
                   <Input
-                    id="whatsapp_number"
+                    id="whatsappNumber"
                     type="tel"
+                    placeholder="+918320303515"
                     value={whatsappForm.whatsappNumber}
                     onChange={(e) => handleInputChange('whatsapp', 'whatsappNumber', e.target.value)}
-                    placeholder="+1234567890"
-                    required
                     className="mt-1"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Enter your WhatsApp number with country code (e.g., +91 for India, +1 for US)
+                  </p>
                 </div>
                 
                 {error && (
