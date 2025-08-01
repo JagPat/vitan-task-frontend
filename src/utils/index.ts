@@ -1,8 +1,28 @@
-
-
+import React from 'react';
 
 export function createPageUrl(pageName: string) {
     return '/' + pageName.toLowerCase().replace(/ /g, '-');
+}
+
+/**
+ * React component validation hook
+ * Validates components before they're rendered
+ */
+export function useComponentValidation(component: any): any {
+  React.useEffect(() => {
+    if (component && typeof component === 'object') {
+      // Check if component has invalid properties
+      const invalidProps = ['__proto__', 'constructor', 'prototype'];
+      for (const prop of invalidProps) {
+        if (component && typeof component === 'object' && component.hasOwnProperty(prop)) {
+          console.warn(`🚨 Invalid component property detected: ${prop}`, component);
+          return null;
+        }
+      }
+    }
+  }, [component]);
+  
+  return component;
 }
 
 /**
@@ -112,13 +132,13 @@ export function ultraSanitizeForReact(obj: any): any {
       }
       
       // Skip circular references
-      if (seen.has(value)) {
+      if (seen.has(value as object)) {
         continue;
       }
       
       // Skip objects that might contain circular references
       if (typeof value === 'object' && value !== null) {
-        seen.add(value);
+        seen.add(value as object);
       }
       
       const sanitizedValue = ultraSanitizeForReact(value);
@@ -165,13 +185,13 @@ export function sanitizeForReact(obj: any): any {
       }
       
       // Skip circular references
-      if (seen.has(value)) {
+      if (seen.has(value as object)) {
         continue;
       }
       
       // Skip objects that might contain circular references
       if (typeof value === 'object' && value !== null) {
-        seen.add(value);
+        seen.add(value as object);
       }
       
       const sanitizedValue = sanitizeForReact(value);

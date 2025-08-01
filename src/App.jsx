@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import Pages from "@/pages/index.jsx"
 import { Toaster } from "@/components/ui/toaster"
-import { sanitizeForReact } from "@/utils"
+import { validateReactComponent } from "@/utils"
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -43,16 +43,53 @@ class ErrorBoundary extends React.Component {
         </div>
       );
     }
-
     return this.props.children;
   }
+}
+
+// Nuclear React Component Wrapper
+function NuclearComponentWrapper({ children }) {
+  // Validate the children before rendering
+  const validatedChildren = React.Children.map(children, (child) => {
+    if (child === null || child === undefined) {
+      return null;
+    }
+    
+    // If it's a React element, validate its type
+    if (React.isValidElement(child)) {
+      const validatedType = validateReactComponent(child.type);
+      if (validatedType === null) {
+        console.warn('Invalid React component type detected:', child.type);
+        return null;
+      }
+      return child;
+    }
+    
+    // If it's a primitive, it's safe
+    if (typeof child === 'string' || typeof child === 'number' || typeof child === 'boolean') {
+      return child;
+    }
+    
+    // If it's an array, validate each item
+    if (Array.isArray(child)) {
+      return child.map(item => validateReactComponent(item)).filter(item => item !== null);
+    }
+    
+    // For any other object, return null
+    console.warn('Invalid React child detected:', child);
+    return null;
+  });
+  
+  return validatedChildren;
 }
 
 function App() {
   return (
     <ErrorBoundary>
-      <Pages />
-      <Toaster />
+      <NuclearComponentWrapper>
+        <Pages />
+        <Toaster />
+      </NuclearComponentWrapper>
     </ErrorBoundary>
   )
 }
