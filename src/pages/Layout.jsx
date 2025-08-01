@@ -1,28 +1,28 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
-  LayoutDashboard, 
-  Users, 
+  BarChart3, 
+  Bell, 
   CheckSquare, 
   FolderOpen, 
-  BarChart3, 
-  Settings,
-  MessageCircle,
-  FolderOpen as FolderOpenIcon,
-  Zap,
+  FolderOpen as FolderOpenIcon, 
   History,
-  LogOut,
+  LayoutDashboard,
   LogIn,
+  LogOut,
   Menu,
-  Bell,
+  MessageCircle,
   Plus,
-  User as UserIcon
+  Settings,
+  User as UserIcon,
+  Users,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Task, ActivityLog, Project, TaskTemplate } from "@/api/entities";
+import { ActivityLog, Project, Task, TaskTemplate, User } from "@/api/entities";
 import {
   Sheet,
   SheetContent,
@@ -72,7 +72,7 @@ const navigationItems = [
     title: "Deleted Tasks",
     url: createPageUrl("DeletedTasks"),
     icon: History,
-  }
+  },
 ];
 
 // Move Sidebar component outside of Layout to prevent recreation on every render
