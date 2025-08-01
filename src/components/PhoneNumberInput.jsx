@@ -49,10 +49,17 @@ export default function PhoneNumberInput({
     }
   };
 
-  const filteredCountries = sortedCountryCodes.filter(country =>
-    country.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    country.code.includes(searchQuery)
-  );
+  const filteredCountries = sortedCountryCodes
+    .filter(country => 
+      country.code && 
+      country.code.trim() !== '' && 
+      country.country && 
+      country.country.trim() !== ''
+    )
+    .filter(country =>
+      country.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      country.code.includes(searchQuery)
+    );
 
   return (
     <div className="space-y-2">
@@ -85,17 +92,19 @@ export default function PhoneNumberInput({
               </div>
             </div>
             <div className="max-h-[200px] overflow-y-auto">
-              {filteredCountries.map((country) => (
-                <SelectItem key={country.code} value={country.code}>
-                  <div className="flex items-center gap-2">
-                    <span>{country.flag}</span>
-                    <span className="text-sm">{country.code}</span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {country.country}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
+              {filteredCountries
+                .filter(country => country.code && country.code.trim() !== '')
+                .map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
+                    <div className="flex items-center gap-2">
+                      <span>{country.flag}</span>
+                      <span className="text-sm">{country.code}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {country.country}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
             </div>
           </SelectContent>
         </Select>
