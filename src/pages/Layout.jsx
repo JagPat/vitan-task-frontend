@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { sanitizeForReact } from "@/utils";
+import { deepSanitizeForReact } from "@/utils";
 import { 
   LayoutDashboard, 
   CheckSquare, 
@@ -101,7 +101,7 @@ export default function Layout({ children, currentPageName }) {
         
         if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
           // Sanitize and validate user object structure
-          const sanitizedUser = sanitizeForReact(currentUser);
+          const sanitizedUser = deepSanitizeForReact(currentUser);
           const validUser = {
             id: sanitizedUser?.id || null,
             full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,
@@ -135,7 +135,7 @@ export default function Layout({ children, currentPageName }) {
   const loadUser = async () => {
     try {
       const currentUser = await User.me();
-      const sanitizedUser = sanitizeForReact(currentUser);
+      const sanitizedUser = deepSanitizeForReact(currentUser);
       setUser(sanitizedUser);
     } catch (error) {
       console.error("Error loading user:", error);
@@ -157,7 +157,7 @@ export default function Layout({ children, currentPageName }) {
     
     if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
       // Sanitize and validate user data structure
-      const sanitizedUser = sanitizeForReact(userData);
+      const sanitizedUser = deepSanitizeForReact(userData);
       const validUser = {
         id: sanitizedUser?.id || null,
         full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,

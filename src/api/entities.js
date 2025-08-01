@@ -1,30 +1,30 @@
 import { whatsTaskClient } from './whatsTaskClient';
-import { sanitizeForReact } from '../utils';
+import { deepSanitizeForReact } from '../utils';
 
 // Task entity using WhatsTask API
 export const Task = {
   // Get all tasks
   async getAll(filters = {}) {
     const response = await whatsTaskClient.getTasks(filters);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Get task by ID
   async getById(taskId) {
     const response = await whatsTaskClient.getTaskById(taskId);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Create new task
   async create(taskData) {
     const response = await whatsTaskClient.createTask(taskData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Update task
   async update(taskId, taskData) {
     const response = await whatsTaskClient.updateTask(taskId, taskData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Delete task
@@ -40,19 +40,19 @@ export const Task = {
       filters.status = status;
     }
     const response = await whatsTaskClient.getTasks(filters);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Filter tasks (alias for getAll with filters)
   async filter(filters = {}) {
     const response = await whatsTaskClient.getTasks(filters);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // List tasks (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getTasks({});
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   }
 };
 
@@ -61,7 +61,7 @@ export const User = {
   // Get all users
   async getAll() {
     const response = await whatsTaskClient.getUsers();
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Get current user from authentication
@@ -77,7 +77,7 @@ export const User = {
           try {
             const parsedUser = JSON.parse(sessionUser);
             if (parsedUser && typeof parsedUser === 'object' && !Array.isArray(parsedUser)) {
-              return sanitizeForReact(parsedUser);
+              return deepSanitizeForReact(parsedUser);
             } else {
               console.warn('Invalid session user data:', parsedUser);
               sessionStorage.removeItem('currentUser');
@@ -104,7 +104,7 @@ export const User = {
         const userData = response.data;
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
           // Store user in session storage for fallback
-          const sanitizedUser = sanitizeForReact(userData);
+          const sanitizedUser = deepSanitizeForReact(userData);
           sessionStorage.setItem('currentUser', JSON.stringify(sanitizedUser));
           return sanitizedUser;
         } else {
@@ -123,13 +123,13 @@ export const User = {
   // Create new user
   async create(userData) {
     const response = await whatsTaskClient.createUser(userData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Update user
   async update(userId, userData) {
     const response = await whatsTaskClient.updateUser(userId, userData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Delete user
@@ -141,13 +141,13 @@ export const User = {
   // List users (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getUsers();
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Filter users
   async filter(filters = {}) {
     const response = await whatsTaskClient.getUsers(filters);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   }
 };
 
@@ -156,7 +156,7 @@ export const ActivityLog = {
   // Get activity logs for a task
   async getByTaskId(taskId) {
     const response = await whatsTaskClient.request(`/api/analytics/task/${taskId}/activity`);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Create activity log
@@ -165,13 +165,13 @@ export const ActivityLog = {
       method: 'POST',
       body: JSON.stringify(activityData),
     });
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // List activity logs
   async list(sort = '') {
     const response = await whatsTaskClient.request('/api/analytics/activities');
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Filter activity logs
@@ -180,19 +180,19 @@ export const ActivityLog = {
       method: 'GET',
       params: filters
     });
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Get user activity
   async getUserActivity(whatsappNumber, days = 30) {
     const response = await whatsTaskClient.request(`/api/analytics/user/${whatsappNumber}/activity?days=${days}`);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Get activity timeline
   async getTimeline(startDate, endDate) {
     const response = await whatsTaskClient.request(`/api/analytics/timeline?start_date=${startDate}&end_date=${endDate}`);
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   }
 };
 
@@ -201,25 +201,25 @@ export const Project = {
   // Get all projects
   async getAll() {
     const response = await whatsTaskClient.getProjects();
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Get project by ID
   async getById(projectId) {
     const response = await whatsTaskClient.getProjectById(projectId);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Create new project
   async create(projectData) {
     const response = await whatsTaskClient.createProject(projectData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Update project
   async update(projectId, projectData) {
     const response = await whatsTaskClient.updateProject(projectId, projectData);
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Delete project
@@ -231,7 +231,7 @@ export const Project = {
   // List projects (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getProjects();
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   }
 };
 
@@ -240,13 +240,13 @@ export const TaskTemplate = {
   // Get all templates
   async getAll() {
     const response = await whatsTaskClient.request('/api/templates');
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // List templates (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.request('/api/templates');
-    return sanitizeForReact(response.data || []);
+    return deepSanitizeForReact(response.data || []);
   },
 
   // Create template
@@ -255,7 +255,7 @@ export const TaskTemplate = {
       method: 'POST',
       body: JSON.stringify(templateData),
     });
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Update template
@@ -264,7 +264,7 @@ export const TaskTemplate = {
       method: 'PUT',
       body: JSON.stringify(templateData),
     });
-    return sanitizeForReact(response.data);
+    return deepSanitizeForReact(response.data);
   },
 
   // Delete template
