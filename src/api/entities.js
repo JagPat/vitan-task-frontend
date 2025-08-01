@@ -75,9 +75,8 @@ export const User = {
         if (sessionUser) {
           try {
             const parsedUser = JSON.parse(sessionUser);
-            // Sanitize session user data to prevent React error #130
             if (parsedUser && typeof parsedUser === 'object' && !Array.isArray(parsedUser)) {
-              return this.sanitizeUserData(parsedUser);
+              return parsedUser;
             }
           } catch (error) {
             console.error('Error parsing session user data:', error);
@@ -97,10 +96,9 @@ export const User = {
       });
       
       if (response.success && response.data && typeof response.data === 'object') {
-        // Sanitize user data to prevent React error #130
-        const sanitizedUser = this.sanitizeUserData(response.data);
-        sessionStorage.setItem('currentUser', JSON.stringify(sanitizedUser));
-        return sanitizedUser;
+        // Store user in session storage for fallback
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data));
+        return response.data;
       }
       
       return null;
@@ -108,27 +106,6 @@ export const User = {
       console.error('Error fetching current user:', error);
       return null;
     }
-  },
-
-  // Sanitize user data to prevent React error #130
-  sanitizeUserData(userData) {
-    if (!userData || typeof userData !== 'object' || Array.isArray(userData)) {
-      return null;
-    }
-
-    // Create a clean user object with only primitive values
-    const cleanUser = {
-      id: typeof userData.id === 'number' ? userData.id : null,
-      full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-      email: typeof userData.email === 'string' ? userData.email : null,
-      role: typeof userData.role === 'string' ? userData.role : null,
-      whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-      company: typeof userData.company === 'string' ? userData.company : null,
-      location: typeof userData.location === 'string' ? userData.location : null,
-      verified: typeof userData.verified === 'boolean' ? userData.verified : false
-    };
-
-    return cleanUser;
   },
 
   // Create new user

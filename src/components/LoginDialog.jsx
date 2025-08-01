@@ -23,27 +23,6 @@ import {
 import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { toast } from "sonner";
 
-// Sanitize user data to prevent React error #130
-function sanitizeUserData(userData) {
-  if (!userData || typeof userData !== 'object' || Array.isArray(userData)) {
-    return null;
-  }
-
-  // Create a clean user object with only primitive values
-  const cleanUser = {
-    id: typeof userData.id === 'number' ? userData.id : null,
-    full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-    email: typeof userData.email === 'string' ? userData.email : null,
-    role: typeof userData.role === 'string' ? userData.role : null,
-    whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-    company: typeof userData.company === 'string' ? userData.company : null,
-    location: typeof userData.location === 'string' ? userData.location : null,
-    verified: typeof userData.verified === 'boolean' ? userData.verified : false
-  };
-
-  return cleanUser;
-}
-
 export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("whatsapp");
   const [loading, setLoading] = useState(false);
@@ -79,34 +58,13 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('WhatsApp login response data:', response.data); // Debug login response
         console.log('User data from WhatsApp login:', response.data.user); // Debug user data
         
-        // Nuclear sanitization of login response
-        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
-        const userData = sanitizeUserData(sanitizedResponse?.user);
+        // Store token and clean user data
+        localStorage.setItem('authToken', response.data.token || '');
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
         
-        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-          // Create a clean user object with only primitive values
-          const cleanUser = {
-            id: userData.id || null,
-            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-            email: typeof userData.email === 'string' ? userData.email : null,
-            role: typeof userData.role === 'string' ? userData.role : null,
-            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-            company: typeof userData.company === 'string' ? userData.company : null,
-            location: typeof userData.location === 'string' ? userData.location : null,
-            verified: typeof userData.verified === 'boolean' ? userData.verified : false
-          };
-          
-          // Store token and clean user data
-          localStorage.setItem('authToken', sanitizedResponse.token || '');
-          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
-          
-          toast.success("Login successful!");
-          onLoginSuccess(cleanUser);
-          onOpenChange(false);
-        } else {
-          console.error('Invalid user data in WhatsApp login response:', userData);
-          setError("Login failed: Invalid user data");
-        }
+        toast.success("Login successful!");
+        onLoginSuccess(response.data.user);
+        onOpenChange(false);
       } else {
         setError(response.error || "Login failed");
       }
@@ -130,34 +88,13 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('Email login response data:', response.data); // Debug login response
         console.log('User data from email login:', response.data.user); // Debug user data
         
-        // Nuclear sanitization of login response
-        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
-        const userData = sanitizeUserData(sanitizedResponse?.user);
+        // Store token and clean user data
+        localStorage.setItem('authToken', response.data.token || '');
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
         
-        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-          // Create a clean user object with only primitive values
-          const cleanUser = {
-            id: userData.id || null,
-            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-            email: typeof userData.email === 'string' ? userData.email : null,
-            role: typeof userData.role === 'string' ? userData.role : null,
-            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-            company: typeof userData.company === 'string' ? userData.company : null,
-            location: typeof userData.location === 'string' ? userData.location : null,
-            verified: typeof userData.verified === 'boolean' ? userData.verified : false
-          };
-          
-          // Store token and clean user data
-          localStorage.setItem('authToken', sanitizedResponse.token || '');
-          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
-          
-          toast.success("Login successful!");
-          onLoginSuccess(cleanUser);
-          onOpenChange(false);
-        } else {
-          console.error('Invalid user data in email login response:', userData);
-          setError("Login failed: Invalid user data");
-        }
+        toast.success("Login successful!");
+        onLoginSuccess(response.data.user);
+        onOpenChange(false);
       } else {
         setError(response.error || "Login failed");
       }
@@ -204,37 +141,16 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       );
       
       if (response.success) {
-        // Nuclear sanitization of verification response
-        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
-        const userData = sanitizeUserData(sanitizedResponse?.user);
+        // Store token and clean user data
+        localStorage.setItem('authToken', response.data.token || '');
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
         
-        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-          // Create a clean user object with only primitive values
-          const cleanUser = {
-            id: userData.id || null,
-            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-            email: typeof userData.email === 'string' ? userData.email : null,
-            role: typeof userData.role === 'string' ? userData.role : null,
-            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-            company: typeof userData.company === 'string' ? userData.company : null,
-            location: typeof userData.location === 'string' ? userData.location : null,
-            verified: typeof userData.verified === 'boolean' ? userData.verified : false
-          };
-          
-          // Store token and clean user data
-          localStorage.setItem('authToken', sanitizedResponse.token || '');
-          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
-          
-          toast.success("Account verified successfully!");
-          onLoginSuccess(cleanUser);
-          onOpenChange(false);
-          setShowVerification(false);
-          setVerificationForm({ verificationCode: "" });
-          setPendingWhatsappNumber("");
-        } else {
-          console.error('Invalid user data in verification response:', userData);
-          setError("Verification failed: Invalid user data");
-        }
+        toast.success("Account verified successfully!");
+        onLoginSuccess(response.data.user);
+        onOpenChange(false);
+        setShowVerification(false);
+        setVerificationForm({ verificationCode: "" });
+        setPendingWhatsappNumber("");
       } else {
         setError(response.error || "Verification failed");
       }
