@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { sanitizeForReact } from "@/utils";
 import { 
   LayoutDashboard, 
   CheckSquare, 
@@ -99,16 +100,17 @@ export default function Layout({ children, currentPageName }) {
         console.log('Current user keys:', currentUser ? Object.keys(currentUser) : 'null'); // Debug keys
         
         if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
-          // Validate user object structure
+          // Sanitize and validate user object structure
+          const sanitizedUser = sanitizeForReact(currentUser);
           const validUser = {
-            id: currentUser.id || null,
-            full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : null,
-            email: typeof currentUser.email === 'string' ? currentUser.email : null,
-            role: typeof currentUser.role === 'string' ? currentUser.role : null,
-            whatsapp_number: typeof currentUser.whatsapp_number === 'string' ? currentUser.whatsapp_number : null,
-            company: typeof currentUser.company === 'string' ? currentUser.company : null,
-            location: typeof currentUser.location === 'string' ? currentUser.location : null,
-            verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false
+            id: sanitizedUser?.id || null,
+            full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,
+            email: typeof sanitizedUser?.email === 'string' ? sanitizedUser.email : null,
+            role: typeof sanitizedUser?.role === 'string' ? sanitizedUser.role : null,
+            whatsapp_number: typeof sanitizedUser?.whatsapp_number === 'string' ? sanitizedUser.whatsapp_number : null,
+            company: typeof sanitizedUser?.company === 'string' ? sanitizedUser.company : null,
+            location: typeof sanitizedUser?.location === 'string' ? sanitizedUser.location : null,
+            verified: typeof sanitizedUser?.verified === 'boolean' ? sanitizedUser.verified : false
           };
           
           console.log('Validated user data:', validUser); // Debug validated user
@@ -133,7 +135,8 @@ export default function Layout({ children, currentPageName }) {
   const loadUser = async () => {
     try {
       const currentUser = await User.me();
-      setUser(currentUser);
+      const sanitizedUser = sanitizeForReact(currentUser);
+      setUser(sanitizedUser);
     } catch (error) {
       console.error("Error loading user:", error);
     }
@@ -153,16 +156,17 @@ export default function Layout({ children, currentPageName }) {
     console.log('Login success user type:', typeof userData); // Debug type
     
     if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-      // Validate user data structure
+      // Sanitize and validate user data structure
+      const sanitizedUser = sanitizeForReact(userData);
       const validUser = {
-        id: userData.id || null,
-        full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-        email: typeof userData.email === 'string' ? userData.email : null,
-        role: typeof userData.role === 'string' ? userData.role : null,
-        whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-        company: typeof userData.company === 'string' ? userData.company : null,
-        location: typeof userData.location === 'string' ? userData.location : null,
-        verified: typeof userData.verified === 'boolean' ? userData.verified : false
+        id: sanitizedUser?.id || null,
+        full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,
+        email: typeof sanitizedUser?.email === 'string' ? sanitizedUser.email : null,
+        role: typeof sanitizedUser?.role === 'string' ? sanitizedUser.role : null,
+        whatsapp_number: typeof sanitizedUser?.whatsapp_number === 'string' ? sanitizedUser.whatsapp_number : null,
+        company: typeof sanitizedUser?.company === 'string' ? sanitizedUser.company : null,
+        location: typeof sanitizedUser?.location === 'string' ? sanitizedUser.location : null,
+        verified: typeof sanitizedUser?.verified === 'boolean' ? sanitizedUser.verified : false
       };
       
       console.log('Validated login success user data:', validUser); // Debug validated user
