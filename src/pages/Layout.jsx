@@ -2,28 +2,26 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { comprehensiveNuclearSanitize } from "@/utils";
 import { 
   LayoutDashboard, 
-  CheckSquare, 
   Users, 
+  CheckSquare, 
+  FolderOpen, 
   BarChart3, 
-  Settings, 
-  Bell,
-  Menu,
-  X,
-  Plus,
+  Settings,
   MessageCircle,
-  FolderOpen,
+  FolderOpen as FolderOpenIcon,
   Zap,
   History,
   LogOut,
-  LogIn
+  LogIn,
+  Menu,
+  Bell,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@/api/entities";
-import { Task } from "@/api/entities";
+import { User, Task, ActivityLog, Project, TaskTemplate } from "@/api/entities";
 import {
   Sheet,
   SheetContent,
@@ -100,21 +98,9 @@ export default function Layout({ children, currentPageName }) {
         console.log('Current user keys:', currentUser ? Object.keys(currentUser) : 'null'); // Debug keys
         
         if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
-          // Sanitize and validate user object structure
-          const sanitizedUser = comprehensiveNuclearSanitize(currentUser);
-          const validUser = {
-            id: sanitizedUser?.id || null,
-            full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,
-            email: typeof sanitizedUser?.email === 'string' ? sanitizedUser.email : null,
-            role: typeof sanitizedUser?.role === 'string' ? sanitizedUser.role : null,
-            whatsapp_number: typeof sanitizedUser?.whatsapp_number === 'string' ? sanitizedUser.whatsapp_number : null,
-            company: typeof sanitizedUser?.company === 'string' ? sanitizedUser.company : null,
-            location: typeof sanitizedUser?.location === 'string' ? sanitizedUser.location : null,
-            verified: typeof sanitizedUser?.verified === 'boolean' ? sanitizedUser.verified : false
-          };
-          
-          console.log('Validated user data:', validUser); // Debug validated user
-          setUser(validUser);
+          // User data is already sanitized by User.me()
+          console.log('Validated user data:', currentUser); // Debug validated user
+          setUser(currentUser);
           setIsAuthenticated(true);
         } else {
           console.warn('Invalid user data, clearing auth'); // Debug invalid data
@@ -135,8 +121,8 @@ export default function Layout({ children, currentPageName }) {
   const loadUser = async () => {
     try {
       const currentUser = await User.me();
-      const sanitizedUser = comprehensiveNuclearSanitize(currentUser);
-      setUser(sanitizedUser);
+      // User data is already sanitized by User.me()
+      setUser(currentUser);
     } catch (error) {
       console.error("Error loading user:", error);
     }
@@ -156,21 +142,9 @@ export default function Layout({ children, currentPageName }) {
     console.log('Login success user type:', typeof userData); // Debug type
     
     if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-      // Sanitize and validate user data structure
-      const sanitizedUser = comprehensiveNuclearSanitize(userData);
-      const validUser = {
-        id: sanitizedUser?.id || null,
-        full_name: typeof sanitizedUser?.full_name === 'string' ? sanitizedUser.full_name : null,
-        email: typeof sanitizedUser?.email === 'string' ? sanitizedUser.email : null,
-        role: typeof sanitizedUser?.role === 'string' ? sanitizedUser.role : null,
-        whatsapp_number: typeof sanitizedUser?.whatsapp_number === 'string' ? sanitizedUser.whatsapp_number : null,
-        company: typeof sanitizedUser?.company === 'string' ? sanitizedUser.company : null,
-        location: typeof sanitizedUser?.location === 'string' ? sanitizedUser.location : null,
-        verified: typeof sanitizedUser?.verified === 'boolean' ? sanitizedUser.verified : false
-      };
-      
-      console.log('Validated login success user data:', validUser); // Debug validated user
-      setUser(validUser);
+      // User data is already sanitized by LoginDialog
+      console.log('Validated login success user data:', userData); // Debug validated user
+      setUser(userData);
       setIsAuthenticated(true);
       setShowLoginDialog(false);
       loadPendingTasks(); // Refresh tasks after login

@@ -21,8 +21,28 @@ import {
   Loader2
 } from "lucide-react";
 import { whatsTaskClient } from "@/api/whatsTaskClient";
-import { comprehensiveNuclearSanitize } from "@/utils";
 import { toast } from "sonner";
+
+// Sanitize user data to prevent React error #130
+function sanitizeUserData(userData) {
+  if (!userData || typeof userData !== 'object' || Array.isArray(userData)) {
+    return null;
+  }
+
+  // Create a clean user object with only primitive values
+  const cleanUser = {
+    id: typeof userData.id === 'number' ? userData.id : null,
+    full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
+    email: typeof userData.email === 'string' ? userData.email : null,
+    role: typeof userData.role === 'string' ? userData.role : null,
+    whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
+    company: typeof userData.company === 'string' ? userData.company : null,
+    location: typeof userData.location === 'string' ? userData.location : null,
+    verified: typeof userData.verified === 'boolean' ? userData.verified : false
+  };
+
+  return cleanUser;
+}
 
 export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("whatsapp");
@@ -60,8 +80,8 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('User data from WhatsApp login:', response.data.user); // Debug user data
         
         // Nuclear sanitization of login response
-        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
-        const userData = sanitizedResponse?.user;
+        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
+        const userData = sanitizeUserData(sanitizedResponse?.user);
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
           // Create a clean user object with only primitive values
@@ -111,8 +131,8 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('User data from email login:', response.data.user); // Debug user data
         
         // Nuclear sanitization of login response
-        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
-        const userData = sanitizedResponse?.user;
+        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
+        const userData = sanitizeUserData(sanitizedResponse?.user);
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
           // Create a clean user object with only primitive values
@@ -185,8 +205,8 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       
       if (response.success) {
         // Nuclear sanitization of verification response
-        const sanitizedResponse = comprehensiveNuclearSanitize(response.data);
-        const userData = sanitizedResponse?.user;
+        const sanitizedResponse = response.data; // Assuming comprehensiveNuclearSanitize is removed or replaced
+        const userData = sanitizeUserData(sanitizedResponse?.user);
         
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
           // Create a clean user object with only primitive values
