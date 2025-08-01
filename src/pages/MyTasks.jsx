@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   Calendar
 } from 'lucide-react';
-import TaskCard from '@/components/tasks/TaskCard';
+import UnifiedTaskCard from '@/components/tasks/UnifiedTaskCard';
 import CreateTask from './CreateTask';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -93,6 +93,11 @@ export default function MyTasks() {
       setTasks(prev => [cleanTask, ...prev]);
       calculateStats([cleanTask, ...tasks]);
     }
+  };
+
+  const handleTaskDelete = (taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+    calculateStats(tasks.filter(t => t.id !== taskId));
   };
 
   if (loading) {
@@ -273,7 +278,13 @@ export default function MyTasks() {
         ) : (
           <div className="grid gap-4">
             {filteredTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <UnifiedTaskCard 
+                key={task.id} 
+                task={task} 
+                onDelete={handleTaskDelete}
+                showProjectContext={true}
+                showActions={true}
+              />
             ))}
           </div>
         )}

@@ -39,6 +39,11 @@ const navigationItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "All Tasks",
+    url: createPageUrl("UnifiedTaskView"),
+    icon: CheckSquare,
+  },
+  {
     title: "Projects",
     url: createPageUrl("Projects"),
     icon: FolderOpen,

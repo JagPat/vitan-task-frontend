@@ -28,11 +28,15 @@ import ProjectDetails from "./ProjectDetails";
 
 import DeletedTasks from "./DeletedTasks";
 
+import UnifiedTaskView from "./UnifiedTaskView";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
     
     Dashboard: Dashboard,
+    
+    UnifiedTaskView: UnifiedTaskView,
     
     CreateTask: CreateTask,
     
@@ -88,6 +92,8 @@ function PagesContent() {
                 
                 
                 <Route path="/Dashboard" element={<Dashboard />} />
+                
+                <Route path="/UnifiedTaskView" element={<UnifiedTaskView />} />
                 
                 <Route path="/CreateTask" element={<CreateTask />} />
                 
