@@ -1,6 +1,24 @@
 // WhatsTask API Client for Railway Backend
 const API_BASE_URL = 'https://vitan-task-production.up.railway.app';
 
+// Phone number normalization functions
+const normalizePhoneNumberForAPI = (phoneNumber) => {
+  // Remove all non-digit characters
+  let normalized = phoneNumber.replace(/[^\d]/g, '');
+  
+  // If it starts with country code (91 for India), keep it as is
+  // This matches the database format (no + prefix)
+  return normalized;
+};
+
+const normalizePhoneNumberForDisplay = (phoneNumber) => {
+  // Add + prefix for display
+  if (phoneNumber && !phoneNumber.startsWith('+')) {
+    return `+${phoneNumber}`;
+  }
+  return phoneNumber;
+};
+
 class WhatsTaskClient {
   constructor() {
     this.baseURL = API_BASE_URL;
@@ -12,124 +30,75 @@ class WhatsTaskClient {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...options.headers
       },
-      ...options,
+      ...options
     };
 
     try {
       const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
       const data = await response.json();
       
-      // Validate that we got a proper object/array, not undefined/null
-      if (data === undefined || data === null) {
-        console.warn('API returned undefined/null data:', { endpoint, data });
-        return { success: false, error: 'Invalid response data' };
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}`);
       }
       
       return data;
     } catch (error) {
       console.error('API request failed:', error);
-      return { success: false, error: error.message };
+      throw error;
     }
   }
 
-  // Health check
-  async healthCheck() {
-    return this.request('/health');
-  }
-
-  // Tasks API
-  async getTasks(filters = {}) {
-    const queryParams = new URLSearchParams(filters).toString();
-    const endpoint = `/api/tasks${queryParams ? `?${queryParams}` : ''}`;
-    return this.request(endpoint);
-  }
-
-  async createTask(taskData) {
-    return this.request('/api/tasks', {
-      method: 'POST',
-      body: JSON.stringify(taskData),
-    });
-  }
-
-  async updateTask(taskId, taskData) {
-    return this.request(`/api/tasks/${taskId}`, {
-      method: 'PUT',
-      body: JSON.stringify(taskData),
-    });
-  }
-
-  async deleteTask(taskId, data = {}) {
-    return this.request(`/api/tasks/${taskId}`, {
-      method: 'DELETE',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async getTaskById(taskId) {
-    return this.request(`/api/tasks/${taskId}`);
-  }
-
-  // Users API
-  async getUsers() {
-    return this.request('/api/users');
-  }
-
-  async createUser(userData) {
-    return this.request('/api/users', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async updateUser(userId, userData) {
-    return this.request(`/api/users/${userId}`, {
-      method: 'PUT',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async deleteUser(userId) {
-    return this.request(`/api/users/${userId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Authentication API
-  async loginWithWhatsApp(whatsappNumber) {
+  // Login with WhatsApp number
+  async loginWithWhatsApp(phoneNumber) {
+    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    
     return this.request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({
-        whatsappNumber
-      }),
+        whatsappNumber: normalizedPhone
+      })
     });
   }
 
+  // Login with email and password
   async loginWithEmail(email, password) {
     return this.request('/api/auth/login-email', {
       method: 'POST',
       body: JSON.stringify({
         email,
         password
-      }),
+      })
     });
   }
 
-  async logout(token) {
-    return this.request('/api/auth/logout', {
+  // Send verification code
+  async sendVerificationCode(phoneNumber) {
+    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    
+    return this.request('/api/auth/verify', {
       method: 'POST',
       body: JSON.stringify({
-        token
-      }),
+        whatsappNumber: normalizedPhone
+      })
     });
   }
 
+  // Verify code
+  async verifyCode(phoneNumber, code) {
+    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    
+    return this.request('/api/auth/verify-code', {
+      method: 'POST',
+      body: JSON.stringify({
+        whatsappNumber: normalizedPhone,
+        verificationCode: code
+      })
+    });
+  }
+
+  // Get current user
   async getCurrentUser(token) {
     return this.request('/api/auth/me', {
       headers: {
@@ -138,85 +107,65 @@ class WhatsTaskClient {
     });
   }
 
-  async sendVerificationCode(whatsappNumber) {
-    return this.request('/api/auth/verify', {
-      method: 'POST',
-      body: JSON.stringify({
-        whatsappNumber
-      }),
-    });
-  }
-
-  async confirmVerificationCode(whatsappNumber, verificationCode) {
-    return this.request('/api/auth/confirm', {
-      method: 'POST',
-      body: JSON.stringify({
-        whatsappNumber,
-        verificationCode
-      }),
-    });
-  }
-
-  // WhatsApp Integration
+  // Send WhatsApp message
   async sendWhatsAppMessage(phoneNumber, message) {
-    return this.request('/webhook', {
+    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    
+    return this.request('/api/whatsapp/send', {
       method: 'POST',
       body: JSON.stringify({
-        phone_number: phoneNumber,
-        message: message,
-      }),
+        phoneNumber: normalizedPhone,
+        message
+      })
     });
   }
 
-  // Analytics API
-  async getAnalytics(dateRange = {}) {
-    const queryParams = new URLSearchParams(dateRange).toString();
-    const endpoint = `/api/analytics${queryParams ? `?${queryParams}` : ''}`;
-    return this.request(endpoint);
+  // Get tasks
+  async getTasks(filters = {}) {
+    const queryParams = new URLSearchParams(filters).toString();
+    return this.request(`/api/tasks?${queryParams}`);
   }
 
-  // Task Statistics
-  async getTaskStats() {
-    return this.request('/api/tasks/stats');
+  // Create task
+  async createTask(taskData) {
+    // Normalize phone numbers in task data
+    const normalizedTaskData = {
+      ...taskData,
+      assigned_to_whatsapp: taskData.assigned_to_whatsapp ? 
+        normalizePhoneNumberForAPI(taskData.assigned_to_whatsapp) : null,
+      created_by_whatsapp: taskData.created_by_whatsapp ? 
+        normalizePhoneNumberForAPI(taskData.created_by_whatsapp) : null
+    };
+
+    return this.request('/api/tasks', {
+      method: 'POST',
+      body: JSON.stringify(normalizedTaskData)
+    });
   }
 
-  // User Statistics
-  async getUserStats() {
-    return this.request('/api/users/stats');
+  // Get users
+  async getUsers() {
+    return this.request('/api/users');
   }
 
-  // Projects API
+  // Get projects
   async getProjects() {
     return this.request('/api/projects');
   }
 
-  async getProjectById(projectId) {
-    return this.request(`/api/projects/${projectId}`);
+  // Get templates
+  async getTemplates() {
+    return this.request('/api/templates');
   }
 
-  async createProject(projectData) {
-    return this.request('/api/projects', {
-      method: 'POST',
-      body: JSON.stringify(projectData),
-    });
+  // Health check
+  async healthCheck() {
+    return this.request('/health');
   }
 
-  async updateProject(projectId, projectData) {
-    return this.request(`/api/projects/${projectId}`, {
-      method: 'PUT',
-      body: JSON.stringify(projectData),
-    });
-  }
-
-  async deleteProject(projectId) {
-    return this.request(`/api/projects/${projectId}`, {
-      method: 'DELETE',
-    });
-  }
+  // Static methods for phone number handling
+  static normalizeForAPI = normalizePhoneNumberForAPI;
+  static normalizeForDisplay = normalizePhoneNumberForDisplay;
 }
 
-// Create and export the client instance
-export const whatsTaskClient = new WhatsTaskClient();
-
-// Export the base URL for reference
-export { API_BASE_URL }; 
+export const whatsTaskClient = new WhatsTaskClient(); 

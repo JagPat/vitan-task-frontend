@@ -38,7 +38,7 @@ export default function PhoneNumberInput({
     // Remove any non-digit characters except +
     const cleaned = phoneNumber.replace(/[^\d+]/g, '');
     
-    // If it doesn't start with +, add the selected country code
+    // Always ensure it starts with the selected country code
     if (!cleaned.startsWith('+')) {
       const numberWithoutCountry = cleaned.replace(/^\d+/, '');
       const fullNumber = selectedCountry.code + numberWithoutCountry;

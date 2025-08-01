@@ -54,8 +54,8 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
 
     // Validate phone number format
     const phoneNumber = whatsappForm.whatsappNumber;
-    if (!phoneNumber || !phoneNumber.startsWith('+')) {
-      setError("Please select a country and enter a valid phone number");
+    if (!phoneNumber) {
+      setError("Please enter a valid phone number");
       setLoading(false);
       return;
     }
