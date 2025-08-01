@@ -38,16 +38,15 @@ export default function PhoneNumberInput({
     // Remove any non-digit characters
     const cleaned = phoneNumber.replace(/[^\d]/g, '');
     
-    // If user enters a number without country code, add it automatically
+    // If user enters a local number (≤10 digits), add country code
     if (cleaned.length > 0 && cleaned.length <= 10) {
-      // User entered local number, add country code
       const fullNumber = selectedCountry.code + cleaned;
       onChange(fullNumber);
-    } else if (cleaned.startsWith('91') && cleaned.length > 10) {
-      // User entered full number with country code
+    } else if (cleaned.length > 10) {
+      // User entered a full number, just add + prefix
       onChange('+' + cleaned);
     } else {
-      // Keep as is
+      // Keep as is for other cases
       onChange(phoneNumber);
     }
   };
@@ -131,7 +130,7 @@ export default function PhoneNumberInput({
       )}
       
       <p className="text-xs text-muted-foreground">
-        Enter your phone number without the country code (e.g., 8320303515 for India)
+        Enter your phone number (e.g., 8320303515 for India - system will add +91 automatically)
       </p>
     </div>
   );
