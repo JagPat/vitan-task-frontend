@@ -21,6 +21,7 @@ import {
   Loader2
 } from "lucide-react";
 import { whatsTaskClient } from "@/api/whatsTaskClient";
+import { finalNuclearSanitize } from "@/utils";
 import { toast } from "sonner";
 
 export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
@@ -58,15 +59,29 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('WhatsApp login response data:', response.data); // Debug login response
         console.log('User data from WhatsApp login:', response.data.user); // Debug user data
         
-        // Validate user data before storing
-        const userData = response.data.user;
+        // Nuclear sanitization of login response
+        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const userData = sanitizedResponse?.user;
+        
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-          // Store token and user data
-          localStorage.setItem('authToken', response.data.token);
-          sessionStorage.setItem('currentUser', JSON.stringify(userData));
+          // Create a clean user object with only primitive values
+          const cleanUser = {
+            id: userData.id || null,
+            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
+            email: typeof userData.email === 'string' ? userData.email : null,
+            role: typeof userData.role === 'string' ? userData.role : null,
+            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
+            company: typeof userData.company === 'string' ? userData.company : null,
+            location: typeof userData.location === 'string' ? userData.location : null,
+            verified: typeof userData.verified === 'boolean' ? userData.verified : false
+          };
+          
+          // Store token and clean user data
+          localStorage.setItem('authToken', sanitizedResponse.token || '');
+          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
           
           toast.success("Login successful!");
-          onLoginSuccess(userData);
+          onLoginSuccess(cleanUser);
           onOpenChange(false);
         } else {
           console.error('Invalid user data in WhatsApp login response:', userData);
@@ -95,15 +110,29 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         console.log('Email login response data:', response.data); // Debug login response
         console.log('User data from email login:', response.data.user); // Debug user data
         
-        // Validate user data before storing
-        const userData = response.data.user;
+        // Nuclear sanitization of login response
+        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const userData = sanitizedResponse?.user;
+        
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-          // Store token and user data
-          localStorage.setItem('authToken', response.data.token);
-          sessionStorage.setItem('currentUser', JSON.stringify(userData));
+          // Create a clean user object with only primitive values
+          const cleanUser = {
+            id: userData.id || null,
+            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
+            email: typeof userData.email === 'string' ? userData.email : null,
+            role: typeof userData.role === 'string' ? userData.role : null,
+            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
+            company: typeof userData.company === 'string' ? userData.company : null,
+            location: typeof userData.location === 'string' ? userData.location : null,
+            verified: typeof userData.verified === 'boolean' ? userData.verified : false
+          };
+          
+          // Store token and clean user data
+          localStorage.setItem('authToken', sanitizedResponse.token || '');
+          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
           
           toast.success("Login successful!");
-          onLoginSuccess(userData);
+          onLoginSuccess(cleanUser);
           onOpenChange(false);
         } else {
           console.error('Invalid user data in email login response:', userData);
@@ -155,16 +184,43 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       );
       
       if (response.success) {
-        toast.success("Account verified successfully!");
-        setShowVerification(false);
-        setVerificationForm({ verificationCode: "" });
-        setPendingWhatsappNumber("");
+        // Nuclear sanitization of verification response
+        const sanitizedResponse = finalNuclearSanitize(response.data);
+        const userData = sanitizedResponse?.user;
+        
+        if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
+          // Create a clean user object with only primitive values
+          const cleanUser = {
+            id: userData.id || null,
+            full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
+            email: typeof userData.email === 'string' ? userData.email : null,
+            role: typeof userData.role === 'string' ? userData.role : null,
+            whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
+            company: typeof userData.company === 'string' ? userData.company : null,
+            location: typeof userData.location === 'string' ? userData.location : null,
+            verified: typeof userData.verified === 'boolean' ? userData.verified : false
+          };
+          
+          // Store token and clean user data
+          localStorage.setItem('authToken', sanitizedResponse.token || '');
+          sessionStorage.setItem('currentUser', JSON.stringify(cleanUser));
+          
+          toast.success("Account verified successfully!");
+          onLoginSuccess(cleanUser);
+          onOpenChange(false);
+          setShowVerification(false);
+          setVerificationForm({ verificationCode: "" });
+          setPendingWhatsappNumber("");
+        } else {
+          console.error('Invalid user data in verification response:', userData);
+          setError("Verification failed: Invalid user data");
+        }
       } else {
         setError(response.error || "Verification failed");
       }
     } catch (error) {
-      console.error('Verification confirmation error:', error);
-      setError("Verification failed. Please check your code.");
+      console.error('Verification error:', error);
+      setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
