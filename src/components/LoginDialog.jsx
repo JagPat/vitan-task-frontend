@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { toast } from "sonner";
+import PhoneNumberInput from "./PhoneNumberInput";
 
 export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("whatsapp");
@@ -54,7 +55,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     // Validate phone number format
     const phoneNumber = whatsappForm.whatsappNumber;
     if (!phoneNumber || !phoneNumber.startsWith('+')) {
-      setError("Please enter a valid WhatsApp number with country code (e.g., +918320303515)");
+      setError("Please select a country and enter a valid phone number");
       setLoading(false);
       return;
     }
@@ -138,7 +139,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     // Validate phone number format
     const phoneNumber = whatsappForm.whatsappNumber;
     if (!phoneNumber || !phoneNumber.startsWith('+')) {
-      setError("Please enter a valid WhatsApp number with country code (e.g., +918320303515)");
+      setError("Please select a country and enter a valid phone number");
       setLoading(false);
       return;
     }
@@ -211,12 +212,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
 
   const handleInputChange = (formType, field, value) => {
     if (formType === 'whatsapp') {
-      // Ensure WhatsApp number starts with + if it doesn't already
-      let formattedValue = value;
-      if (field === 'whatsappNumber' && value && !value.startsWith('+')) {
-        formattedValue = '+' + value;
-      }
-      setWhatsappForm(prev => ({ ...prev, [field]: formattedValue }));
+      setWhatsappForm(prev => ({ ...prev, [field]: value }));
     } else if (formType === 'email') {
       setEmailForm(prev => ({ ...prev, [field]: value }));
     } else if (formType === 'verification') {
@@ -244,20 +240,14 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
             
             <TabsContent value="whatsapp" className="space-y-4">
               <form onSubmit={handleWhatsappLogin} className="space-y-4">
-                <div>
-                  <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
-                  <Input
-                    id="whatsappNumber"
-                    type="tel"
-                    placeholder="+918320303515"
-                    value={whatsappForm.whatsappNumber}
-                    onChange={(e) => handleInputChange('whatsapp', 'whatsappNumber', e.target.value)}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Enter your WhatsApp number with country code (e.g., +91 for India, +1 for US)
-                  </p>
-                </div>
+                <PhoneNumberInput
+                  value={whatsappForm.whatsappNumber}
+                  onChange={(value) => handleInputChange('whatsapp', 'whatsappNumber', value)}
+                  placeholder="8320303515"
+                  label="WhatsApp Number"
+                  error={error}
+                  disabled={loading}
+                />
                 
                 {error && (
                   <Alert variant="destructive">
