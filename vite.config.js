@@ -11,15 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3002, // Changed from 3001
-    allowedHosts: true,
-    proxy: {
-      '/api': {
-        target: 'https://vitan-task-production.up.railway.app',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
-      }
-    }
+    port: 3002,
+    allowedHosts: true
   },
 }) 
