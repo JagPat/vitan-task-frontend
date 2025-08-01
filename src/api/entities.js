@@ -6,7 +6,7 @@ export const Task = {
   async getAll(filters = {}) {
     try {
       const response = await whatsTaskClient.getTasks(filters);
-      console.log('Get tasks response:', response);
+      // Get tasks response processed
       return response.data || [];
     } catch (error) {
       console.error('Get tasks failed:', error);
@@ -24,7 +24,7 @@ export const Task = {
   async create(taskData) {
     try {
       const response = await whatsTaskClient.createTask(taskData);
-      console.log('Task creation response:', response);
+      // Task creation response processed
       return response.data;
     } catch (error) {
       console.error('Task creation failed:', error);
@@ -73,7 +73,7 @@ export const User = {
   async getAll() {
     try {
       const response = await whatsTaskClient.getUsers();
-      console.log('Get users response:', response);
+      // Get users response processed
       return response.data || [];
     } catch (error) {
       console.error('Get users failed:', error);

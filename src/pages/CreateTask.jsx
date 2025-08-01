@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { sendWhatsappMessage } from "@/api/functions";
+import { toast } from "sonner";
 import { 
   ArrowLeft, 
   Plus, 
@@ -240,38 +241,35 @@ export default function CreateTask() {
             attachments: createdTask.attachments || [] // Added this line
           });
           
-          // Log successful notification (commented out since endpoint doesn't exist)
-          // Task created and WhatsApp notification sent successfully
-          // await ActivityLog.create({
-          //   task_id: createdTask.id,
-          //   action: "created",
-          //   notes: `Task "${taskData.title}" created and WhatsApp notification sent to ${taskData.assigned_to_name || 'External user'} (${taskData.assigned_to_whatsapp})`,
-          //   performed_by_name: currentUser?.full_name || "User",
-          //   whatsapp_message_sent: true
-          // });
+          // Log successful notification
+          await ActivityLog.create({
+            task_id: createdTask.id,
+            action: "created",
+            notes: `Task "${taskData.title}" created and WhatsApp notification sent to ${taskData.assigned_to_name || 'External user'} (${taskData.assigned_to_whatsapp})`,
+            performed_by_name: currentUser?.full_name || "User",
+            whatsapp_message_sent: true
+          });
         } catch (whatsappError) {
           console.error("Failed to send WhatsApp notification:", whatsappError);
           
-          // Log failed notification (commented out since endpoint doesn't exist)
-          // Task created but WhatsApp notification failed
-          // await ActivityLog.create({
-          //   task_id: createdTask.id,
-          //   action: "created",
-          //   notes: `Task "${taskData.title}" created but WhatsApp notification failed: ${whatsappError.message}`,
-          //   performed_by_name: currentUser?.full_name || "User",
-          //   whatsapp_message_sent: false
-          // });
+          // Log failed notification
+          await ActivityLog.create({
+            task_id: createdTask.id,
+            action: "created",
+            notes: `Task "${taskData.title}" created but WhatsApp notification failed: ${whatsappError.message}`,
+            performed_by_name: currentUser?.full_name || "User",
+            whatsapp_message_sent: false
+          });
         }
       } else {
-        // Log creation without WhatsApp (no phone number) - commented out since endpoint doesn't exist
-        // Task created (no phone number provided)
-        // await ActivityLog.create({
-        //   task_id: createdTask.id,
-        //   action: "created",
-        //   notes: `Task "${taskData.title}" created (no phone number provided)`,
-        //   performed_by_name: currentUser?.full_name || "User",
-        //   whatsapp_message_sent: false
-        // });
+        // Log creation without WhatsApp (no phone number)
+        await ActivityLog.create({
+          task_id: createdTask.id,
+          action: "created",
+          notes: `Task "${taskData.title}" created (no phone number provided)`,
+          performed_by_name: currentUser?.full_name || "User",
+          whatsapp_message_sent: false
+        });
       }
 
       // Handle internal team member assignment: send view link to internal user
@@ -292,28 +290,30 @@ export default function CreateTask() {
             });
 
             // WhatsApp notification with task view link sent to internal user
-            // await ActivityLog.create({
-            //   task_id: createdTask.id,
-            //   action: "notification_sent",
-            //   notes: `WhatsApp notification with task view link sent to internal user ${assignedUser.full_name} (${assignedUser.phone_number})`,
-            //   performed_by_name: currentUser?.full_name || "User"
-            // });
+            await ActivityLog.create({
+              task_id: createdTask.id,
+              action: "notification_sent",
+              notes: `WhatsApp notification with task view link sent to internal user ${assignedUser.full_name} (${assignedUser.phone_number})`,
+              performed_by_name: currentUser?.full_name || "User"
+            });
           } catch (whatsappError) {
             console.error("Failed to send internal WhatsApp notification:", whatsappError);
             // WhatsApp notification to internal user failed
-            // await ActivityLog.create({
-            //   task_id: createdTask.id,
-            //   action: "notification_failed",
-            //   notes: `WhatsApp notification to internal user failed: ${whatsappError.message}`,
-            //   performed_by_name: currentUser?.full_name || "User"
-            // });
+            await ActivityLog.create({
+              task_id: createdTask.id,
+              action: "notification_failed",
+              notes: `WhatsApp notification to internal user failed: ${whatsappError.message}`,
+              performed_by_name: currentUser?.full_name || "User"
+            });
           }
         }
       }
 
+      toast.success("Task created successfully!");
       navigate(createPageUrl("Dashboard"));
     } catch (error) {
       console.error("Error creating task:", error);
+      toast.error("Failed to create task. Please try again.");
     } finally {
       setLoading(false);
     }
