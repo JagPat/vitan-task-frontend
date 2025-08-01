@@ -213,9 +213,11 @@ export default function CreateTask() {
       }
 
       const createdTask = await Task.create(taskToCreate);
+      
+      console.log('Created task response:', createdTask);
 
       // Send WhatsApp notification
-      if (createdTask.assigned_to_phone) {
+      if (createdTask && createdTask.assigned_to_phone) {
         try {
           await sendWhatsappMessage({
             to: createdTask.assigned_to_phone,
@@ -260,7 +262,7 @@ export default function CreateTask() {
       }
 
       // Handle internal team member assignment: send view link to internal user
-      if (!createdTask.is_external_assignment && createdTask.assigned_to) {
+      if (createdTask && !createdTask.is_external_assignment && createdTask.assigned_to) {
         const assignedUser = users.find(u => u.id === createdTask.assigned_to);
         if (assignedUser && assignedUser.phone_number) {
           try {

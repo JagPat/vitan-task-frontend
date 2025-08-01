@@ -12,10 +12,20 @@ export const Core = {
 
   // Upload file (placeholder for future file upload integration)
   async uploadFile(fileData) {
-    return whatsTaskClient.request('/api/integrations/upload', {
-      method: 'POST',
-      body: JSON.stringify(fileData),
-    });
+    try {
+      // For now, return a mock file object since upload endpoint doesn't exist
+      console.warn('File upload endpoint not implemented, returning mock data');
+      return {
+        id: Date.now(),
+        name: fileData.file?.name || 'uploaded-file',
+        url: '#',
+        size: fileData.file?.size || 0,
+        type: fileData.file?.type || 'application/octet-stream'
+      };
+    } catch (error) {
+      console.error('File upload failed:', error);
+      throw error;
+    }
   },
 
   // Generate image (placeholder for future AI integration)

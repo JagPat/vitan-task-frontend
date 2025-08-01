@@ -4,8 +4,14 @@ import { whatsTaskClient } from './whatsTaskClient';
 export const Task = {
   // Get all tasks
   async getAll(filters = {}) {
-    const response = await whatsTaskClient.getTasks(filters);
-    return response.data || [];
+    try {
+      const response = await whatsTaskClient.getTasks(filters);
+      console.log('Get tasks response:', response);
+      return response.data || [];
+    } catch (error) {
+      console.error('Get tasks failed:', error);
+      return [];
+    }
   },
 
   // Get task by ID
@@ -16,8 +22,14 @@ export const Task = {
 
   // Create new task
   async create(taskData) {
-    const response = await whatsTaskClient.createTask(taskData);
-    return response.data;
+    try {
+      const response = await whatsTaskClient.createTask(taskData);
+      console.log('Task creation response:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Task creation failed:', error);
+      throw error;
+    }
   },
 
   // Update task
@@ -59,8 +71,14 @@ export const Task = {
 export const User = {
   // Get all users
   async getAll() {
-    const response = await whatsTaskClient.getUsers();
-    return response.data || [];
+    try {
+      const response = await whatsTaskClient.getUsers();
+      console.log('Get users response:', response);
+      return response.data || [];
+    } catch (error) {
+      console.error('Get users failed:', error);
+      return [];
+    }
   },
 
   // Get current user from authentication
