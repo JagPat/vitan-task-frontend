@@ -10,17 +10,23 @@ export const Core = {
     });
   },
 
-  // Upload file (placeholder for future file upload integration)
+  // Upload file
   async uploadFile(fileData) {
     try {
-      // File upload endpoint not implemented yet
-      return {
-        id: Date.now(),
-        name: fileData.file?.name || 'uploaded-file',
-        url: '#',
-        size: fileData.file?.size || 0,
-        type: fileData.file?.type || 'application/octet-stream'
-      };
+      const formData = new FormData();
+      formData.append('file', fileData.file);
+
+      const response = await fetch(`${whatsTaskClient.baseURL}/api/uploads/file`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       console.error('File upload failed:', error);
       throw error;
