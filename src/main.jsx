@@ -40,11 +40,32 @@ window.addEventListener('unhandledrejection', (event) => {
 const originalCreateElement = React.createElement;
 React.createElement = function(type, props, ...children) {
   try {
+    // Allow valid React components
+    if (type && typeof type === 'function') {
+      return originalCreateElement.apply(this, arguments);
+    }
+    
+    // Allow valid React elements (strings for HTML elements)
+    if (type && typeof type === 'string') {
+      return originalCreateElement.apply(this, arguments);
+    }
+    
+    // Allow React Context components (they have $$typeof property)
+    if (type && typeof type === 'object' && type.$$typeof) {
+      return originalCreateElement.apply(this, arguments);
+    }
+    
+    // Allow React Fragment
+    if (type === React.Fragment) {
+      return originalCreateElement.apply(this, arguments);
+    }
+    
     // Validate the type before creating element
-    if (type && typeof type === 'object' && type !== null) {
+    if (type && typeof type === 'object' && type !== null && !type.$$typeof) {
       console.warn('🚨 Invalid React element type detected:', type);
       return null;
     }
+    
     return originalCreateElement.apply(this, arguments);
   } catch (error) {
     console.warn('🚨 React createElement error caught:', error);

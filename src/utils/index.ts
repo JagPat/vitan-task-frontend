@@ -297,7 +297,7 @@ export function comprehensiveReactValidation(component: any): any {
     if (component.name && component.name.length > 0) {
       return component;
     }
-    return null;
+    return component; // Allow all functions as they might be valid React components
   }
   
   // If it's a React element, validate its type
@@ -305,7 +305,17 @@ export function comprehensiveReactValidation(component: any): any {
     return component;
   }
   
-  // For any other object, return null
+  // Allow React Context components (they have $$typeof property)
+  if (component && typeof component === 'object' && component.$$typeof) {
+    return component;
+  }
+  
+  // Allow React Fragment
+  if (component === React.Fragment) {
+    return component;
+  }
+  
+  // For any other object, return null to prevent rendering
   return null;
 }
 
