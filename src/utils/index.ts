@@ -257,3 +257,54 @@ export function safeGet(obj: any, path: string, fallback: any = null): any {
     return fallback;
   }
 }
+
+/**
+ * Final nuclear approach: Complete object prevention
+ * Prevents ANY object from reaching React rendering
+ */
+export function finalNuclearSanitize(obj: any): any {
+  // Only allow primitives and null
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  
+  if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+    return obj;
+  }
+  
+  // For ANY object or array, return null
+  return null;
+}
+
+/**
+ * React component final validation
+ * Only allows primitive values and valid React components
+ */
+export function finalReactValidation(component: any): any {
+  // If it's null, undefined, return null
+  if (component === null || component === undefined) {
+    return null;
+  }
+  
+  // If it's a primitive, it's safe
+  if (typeof component === 'string' || typeof component === 'number' || typeof component === 'boolean') {
+    return component;
+  }
+  
+  // If it's a function, check if it's a valid React component
+  if (typeof component === 'function') {
+    // Only allow functions that look like React components
+    if (component.name && component.name.length > 0) {
+      return component;
+    }
+    return null;
+  }
+  
+  // If it's a React element, validate its type
+  if (component && typeof component === 'object' && component.type) {
+    return component;
+  }
+  
+  // For any other object, return null
+  return null;
+}
