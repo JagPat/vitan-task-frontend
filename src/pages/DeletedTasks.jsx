@@ -68,7 +68,7 @@ export default function DeletedTasks() {
     setRestoring(taskId);
     try {
       // This functionality would need backend implementation
-      console.log('Restore functionality not yet implemented');
+      // Restore functionality not yet implemented
       alert('Restore functionality is not yet implemented');
     } catch (error) {
       console.error('Error restoring task:', error);

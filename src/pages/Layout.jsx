@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ActivityLog, Project, Task, TaskTemplate, User as UserEntity } from "@/api/entities";
+import { ActivityLog, Project, Task, TaskTemplate } from "@/api/entities";
 import {
   Sheet,
   SheetContent,
@@ -196,18 +196,18 @@ export default function Layout({ children, currentPageName }) {
     try {
       const token = localStorage.getItem('authToken');
       if (token) {
-        const currentUser = await UserEntity.me();
+        const response = await whatsTaskClient.getCurrentUser(token);
         
-        if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
+        if (response && response.success && response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
           // Store only primitive values, never the object itself
           const userPrimitives = {
-            id: typeof currentUser.id === 'number' ? currentUser.id : null,
-            email: typeof currentUser.email === 'string' ? currentUser.email : '',
-            full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : '',
-            role: typeof currentUser.role === 'string' ? currentUser.role : '',
-            verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false,
-            created_at: typeof currentUser.created_at === 'string' ? currentUser.created_at : null,
-            updated_at: typeof currentUser.updated_at === 'string' ? currentUser.updated_at : null,
+            id: typeof response.data.id === 'number' ? response.data.id : null,
+            email: typeof response.data.email === 'string' ? response.data.email : '',
+            full_name: typeof response.data.full_name === 'string' ? response.data.full_name : '',
+            role: typeof response.data.role === 'string' ? response.data.role : '',
+            verified: typeof response.data.verified === 'boolean' ? response.data.verified : false,
+            created_at: typeof response.data.created_at === 'string' ? response.data.created_at : null,
+            updated_at: typeof response.data.updated_at === 'string' ? response.data.updated_at : null,
           };
           setUser(userPrimitives);
           setIsAuthenticated(true);
@@ -228,19 +228,22 @@ export default function Layout({ children, currentPageName }) {
 
   const loadUser = async () => {
     try {
-      const currentUser = await UserEntity.me();
-      if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
-        const userPrimitives = {
-          id: typeof currentUser.id === 'number' ? currentUser.id : null,
-          email: typeof currentUser.email === 'string' ? currentUser.email : '',
-          full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : '',
-          role: typeof currentUser.role === 'string' ? currentUser.role : '',
-          verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false,
-          created_at: typeof currentUser.created_at === 'string' ? currentUser.created_at : null,
-          updated_at: typeof currentUser.updated_at === 'string' ? currentUser.updated_at : null,
-        };
-        setUser(userPrimitives);
-        setIsAuthenticated(true);
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const response = await whatsTaskClient.getCurrentUser(token);
+        if (response && response.success && response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+          const userPrimitives = {
+            id: typeof response.data.id === 'number' ? response.data.id : null,
+            email: typeof response.data.email === 'string' ? response.data.email : '',
+            full_name: typeof response.data.full_name === 'string' ? response.data.full_name : '',
+            role: typeof response.data.role === 'string' ? response.data.role : '',
+            verified: typeof response.data.verified === 'boolean' ? response.data.verified : false,
+            created_at: typeof response.data.created_at === 'string' ? response.data.created_at : null,
+            updated_at: typeof response.data.updated_at === 'string' ? response.data.updated_at : null,
+          };
+          setUser(userPrimitives);
+          setIsAuthenticated(true);
+        }
       }
     } catch (error) {
       console.error('Failed to load user:', error);

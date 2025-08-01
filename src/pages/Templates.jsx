@@ -8,7 +8,7 @@ import TaskTemplateManager from "@/components/tasks/TaskTemplateManager";
 export default function Templates() {
   const handleTemplateSelect = (template) => {
     // This will be used when integrating with task creation
-    console.log('Template selected:', template);
+    // Template selected
   };
 
   return (

@@ -86,7 +86,7 @@ export default function Projects() {
 
   const handleEditProject = (project) => {
     // TODO: Implement edit functionality
-    console.log('Edit project:', project);
+    // Edit project functionality to be implemented
   };
 
   const handleDeleteProject = async (project) => {
@@ -118,7 +118,7 @@ export default function Projects() {
 
   const handleViewProject = (project) => {
     // TODO: Navigate to project details page
-    console.log('View project:', project);
+    // View project functionality to be implemented
   };
 
   const filteredProjects = projects.filter(project => {

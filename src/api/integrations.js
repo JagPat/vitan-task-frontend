@@ -13,8 +13,7 @@ export const Core = {
   // Upload file (placeholder for future file upload integration)
   async uploadFile(fileData) {
     try {
-      // For now, return a mock file object since upload endpoint doesn't exist
-      console.warn('File upload endpoint not implemented, returning mock data');
+      // File upload endpoint not implemented yet
       return {
         id: Date.now(),
         name: fileData.file?.name || 'uploaded-file',

@@ -110,8 +110,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       const response = await whatsTaskClient.loginWithEmail(emailForm.email, emailForm.password);
       
       if (response.success) {
-        console.log('Email login response data:', response.data); // Debug login response
-        console.log('User data from email login:', response.data.user); // Debug user data
+              // Email login successful
         
         // Store token and clean user data
         localStorage.setItem('authToken', response.data.token || '');

@@ -86,9 +86,7 @@ export default function TeamTaskView() {
         return [];
       });
       
-      console.log("All tasks:", allTasks);
-      console.log("User data:", userData);
-      console.log("Looking for user ID:", userId);
+          // Processing tasks and user data
 
       if (userData) {
         // Step 3: Filter tasks manually first to debug
@@ -96,8 +94,7 @@ export default function TeamTaskView() {
         const userTasksByPhone = userData.phone_number ? 
           allTasks.filter(task => task.assigned_to_phone === userData.phone_number) : [];
         
-        console.log("Tasks by ID:", userTasksById);
-        console.log("Tasks by phone:", userTasksByPhone);
+        // Processing user tasks
         
         // Combine and deduplicate
         const allUserTasks = [...userTasksById, ...userTasksByPhone];
@@ -105,7 +102,7 @@ export default function TeamTaskView() {
           index === self.findIndex(t => t.id === task.id)
         );
         
-        console.log("Final user tasks:", uniqueTasks);
+        // Final user tasks processed
         
         setTasks(uniqueTasks);
         setDebugInfo({
@@ -117,7 +114,7 @@ export default function TeamTaskView() {
           finalTasks: uniqueTasks.length
         });
       } else {
-        console.log("No user found for ID:", userId);
+        // No user found for ID
         setTasks([]);
         setDebugInfo({ error: "User not found" });
       }

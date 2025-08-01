@@ -49,7 +49,7 @@ export default function Team() {
   const loadTeamData = async () => {
     setLoading(true);
     try {
-      console.log('Loading team data...');
+      // Loading team data
       
       const [usersData, tasksData, userData] = await Promise.all([
         User.list("-created_date"),
@@ -57,9 +57,7 @@ export default function Team() {
         User.me().catch(() => null)
       ]);
       
-      console.log('Users data:', usersData);
-      console.log('Tasks data:', tasksData);
-      console.log('Current user data:', userData);
+              // Team data loaded successfully
       
       setUsers(usersData);
       setTasks(tasksData);

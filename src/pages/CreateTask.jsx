@@ -224,7 +224,7 @@ export default function CreateTask() {
 
       const createdTask = await Task.create(taskToCreate);
       
-      console.log('Created task response:', createdTask);
+      // Task created successfully
 
       // Send WhatsApp notification
       if (createdTask && createdTask.assigned_to_whatsapp) {
@@ -241,7 +241,7 @@ export default function CreateTask() {
           });
           
           // Log successful notification (commented out since endpoint doesn't exist)
-          console.log('Task created and WhatsApp notification sent successfully');
+          // Task created and WhatsApp notification sent successfully
           // await ActivityLog.create({
           //   task_id: createdTask.id,
           //   action: "created",
@@ -253,7 +253,7 @@ export default function CreateTask() {
           console.error("Failed to send WhatsApp notification:", whatsappError);
           
           // Log failed notification (commented out since endpoint doesn't exist)
-          console.log('Task created but WhatsApp notification failed:', whatsappError.message);
+          // Task created but WhatsApp notification failed
           // await ActivityLog.create({
           //   task_id: createdTask.id,
           //   action: "created",
@@ -264,7 +264,7 @@ export default function CreateTask() {
         }
       } else {
         // Log creation without WhatsApp (no phone number) - commented out since endpoint doesn't exist
-        console.log('Task created (no phone number provided)');
+        // Task created (no phone number provided)
         // await ActivityLog.create({
         //   task_id: createdTask.id,
         //   action: "created",
@@ -291,7 +291,7 @@ export default function CreateTask() {
               task_view_url: createPageUrl("ViewTask", { id: createdTask.id }) // Pass task view URL
             });
 
-            console.log('WhatsApp notification with task view link sent to internal user');
+            // WhatsApp notification with task view link sent to internal user
             // await ActivityLog.create({
             //   task_id: createdTask.id,
             //   action: "notification_sent",
@@ -300,7 +300,7 @@ export default function CreateTask() {
             // });
           } catch (whatsappError) {
             console.error("Failed to send internal WhatsApp notification:", whatsappError);
-            console.log('WhatsApp notification to internal user failed:', whatsappError.message);
+            // WhatsApp notification to internal user failed
             // await ActivityLog.create({
             //   task_id: createdTask.id,
             //   action: "notification_failed",
