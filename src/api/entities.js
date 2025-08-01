@@ -1,30 +1,30 @@
 import { whatsTaskClient } from './whatsTaskClient';
-import { ultraSanitizeForReact } from '../utils';
+import { nuclearSanitizeForReact } from '../utils';
 
 // Task entity using WhatsTask API
 export const Task = {
   // Get all tasks
   async getAll(filters = {}) {
     const response = await whatsTaskClient.getTasks(filters);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Get task by ID
   async getById(taskId) {
     const response = await whatsTaskClient.getTaskById(taskId);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Create new task
   async create(taskData) {
     const response = await whatsTaskClient.createTask(taskData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Update task
   async update(taskId, taskData) {
     const response = await whatsTaskClient.updateTask(taskId, taskData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Delete task
@@ -40,19 +40,19 @@ export const Task = {
       filters.status = status;
     }
     const response = await whatsTaskClient.getTasks(filters);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Filter tasks (alias for getAll with filters)
   async filter(filters = {}) {
     const response = await whatsTaskClient.getTasks(filters);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // List tasks (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getTasks({});
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   }
 };
 
@@ -61,7 +61,7 @@ export const User = {
   // Get all users
   async getAll() {
     const response = await whatsTaskClient.getUsers();
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Get current user from authentication
@@ -77,7 +77,7 @@ export const User = {
           try {
             const parsedUser = JSON.parse(sessionUser);
             if (parsedUser && typeof parsedUser === 'object' && !Array.isArray(parsedUser)) {
-              return ultraSanitizeForReact(parsedUser);
+              return nuclearSanitizeForReact(parsedUser);
             } else {
               console.warn('Invalid session user data:', parsedUser);
               sessionStorage.removeItem('currentUser');
@@ -104,7 +104,7 @@ export const User = {
         const userData = response.data;
         if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
           // Store user in session storage for fallback
-          const sanitizedUser = ultraSanitizeForReact(userData);
+          const sanitizedUser = nuclearSanitizeForReact(userData);
           sessionStorage.setItem('currentUser', JSON.stringify(sanitizedUser));
           return sanitizedUser;
         } else {
@@ -123,13 +123,13 @@ export const User = {
   // Create new user
   async create(userData) {
     const response = await whatsTaskClient.createUser(userData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Update user
   async update(userId, userData) {
     const response = await whatsTaskClient.updateUser(userId, userData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Delete user
@@ -141,13 +141,13 @@ export const User = {
   // List users (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getUsers();
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Filter users
   async filter(filters = {}) {
     const response = await whatsTaskClient.getUsers(filters);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   }
 };
 
@@ -156,7 +156,7 @@ export const ActivityLog = {
   // Get activity logs for a task
   async getByTaskId(taskId) {
     const response = await whatsTaskClient.request(`/api/analytics/task/${taskId}/activity`);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Create activity log
@@ -165,13 +165,13 @@ export const ActivityLog = {
       method: 'POST',
       body: JSON.stringify(activityData),
     });
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // List activity logs
   async list(sort = '') {
     const response = await whatsTaskClient.request('/api/analytics/activities');
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Filter activity logs
@@ -180,19 +180,19 @@ export const ActivityLog = {
       method: 'GET',
       params: filters
     });
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Get user activity
   async getUserActivity(whatsappNumber, days = 30) {
     const response = await whatsTaskClient.request(`/api/analytics/user/${whatsappNumber}/activity?days=${days}`);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Get activity timeline
   async getTimeline(startDate, endDate) {
     const response = await whatsTaskClient.request(`/api/analytics/timeline?start_date=${startDate}&end_date=${endDate}`);
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   }
 };
 
@@ -201,25 +201,25 @@ export const Project = {
   // Get all projects
   async getAll() {
     const response = await whatsTaskClient.getProjects();
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Get project by ID
   async getById(projectId) {
     const response = await whatsTaskClient.getProjectById(projectId);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Create new project
   async create(projectData) {
     const response = await whatsTaskClient.createProject(projectData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Update project
   async update(projectId, projectData) {
     const response = await whatsTaskClient.updateProject(projectId, projectData);
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Delete project
@@ -231,7 +231,7 @@ export const Project = {
   // List projects (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.getProjects();
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   }
 };
 
@@ -240,13 +240,13 @@ export const TaskTemplate = {
   // Get all templates
   async getAll() {
     const response = await whatsTaskClient.request('/api/templates');
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // List templates (alias for getAll)
   async list(sort = '') {
     const response = await whatsTaskClient.request('/api/templates');
-    return ultraSanitizeForReact(response.data || []);
+    return nuclearSanitizeForReact(response.data || []);
   },
 
   // Create template
@@ -255,7 +255,7 @@ export const TaskTemplate = {
       method: 'POST',
       body: JSON.stringify(templateData),
     });
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Update template
@@ -264,7 +264,7 @@ export const TaskTemplate = {
       method: 'PUT',
       body: JSON.stringify(templateData),
     });
-    return ultraSanitizeForReact(response.data);
+    return nuclearSanitizeForReact(response.data);
   },
 
   // Delete template

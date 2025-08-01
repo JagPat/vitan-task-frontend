@@ -6,6 +6,71 @@ export function createPageUrl(pageName: string) {
 }
 
 /**
+ * Nuclear approach: React component validation wrapper
+ * Prevents any non-React components from being rendered
+ */
+export function validateReactComponent(component: any): any {
+  // If it's null, undefined, or not an object, return null
+  if (component === null || component === undefined || typeof component !== 'object') {
+    return null;
+  }
+  
+  // If it's a valid React component (function or class), return as is
+  if (typeof component === 'function') {
+    return component;
+  }
+  
+  // If it's a React element (has type property), return as is
+  if (component && typeof component === 'object' && component.type) {
+    return component;
+  }
+  
+  // If it's a plain object, string, number, or boolean, it's safe
+  if (typeof component === 'string' || typeof component === 'number' || typeof component === 'boolean') {
+    return component;
+  }
+  
+  // If it's an array, validate each item
+  if (Array.isArray(component)) {
+    return component.map(item => validateReactComponent(item)).filter(item => item !== null);
+  }
+  
+  // For any other object, return null to prevent rendering
+  return null;
+}
+
+/**
+ * Nuclear sanitize object for React rendering to prevent error #130
+ * Completely eliminates any object that could cause serialization issues
+ */
+export function nuclearSanitizeForReact(obj: any): any {
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  
+  if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+    return obj;
+  }
+  
+  // Nuclear approach: If it's any kind of object, only keep primitive properties
+  if (typeof obj === 'object') {
+    const sanitized: any = {};
+    
+    for (const [key, value] of Object.entries(obj)) {
+      // Only keep primitive values
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
+        sanitized[key] = value;
+      }
+      // Skip everything else (functions, objects, arrays, etc.)
+    }
+    
+    return sanitized;
+  }
+  
+  return null;
+}
+
+/**
  * Ultra-aggressive sanitize object for React rendering to prevent error #130
  * Specifically handles Object and Function prototypes that cause serialization issues
  */
@@ -128,10 +193,10 @@ export function deepSanitizeForReact(obj: any): any {
     // First, try to JSON stringify/parse to remove any non-serializable content
     const jsonString = JSON.stringify(obj);
     const parsed = JSON.parse(jsonString);
-    return ultraSanitizeForReact(parsed);
+    return nuclearSanitizeForReact(parsed);
   } catch (error) {
-    console.warn('Error in deep sanitization, falling back to ultra sanitization:', error);
-    return ultraSanitizeForReact(obj);
+    console.warn('Error in deep sanitization, falling back to nuclear sanitization:', error);
+    return nuclearSanitizeForReact(obj);
   }
 }
 
