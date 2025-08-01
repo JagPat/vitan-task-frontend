@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ActivityLog, Project, Task, TaskTemplate, User } from "@/api/entities";
+import { ActivityLog, Project, Task, TaskTemplate, User as UserEntity } from "@/api/entities";
 import {
   Sheet,
   SheetContent,
@@ -191,7 +191,7 @@ export default function Layout({ children, currentPageName }) {
     try {
       const token = localStorage.getItem('authToken');
       if (token) {
-        const currentUser = await User.me();
+        const currentUser = await UserEntity.me();
         
         if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
           // Store only primitive values, never the object itself
@@ -223,7 +223,7 @@ export default function Layout({ children, currentPageName }) {
 
   const loadUser = async () => {
     try {
-      const currentUser = await User.me();
+      const currentUser = await UserEntity.me();
       if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
         const userPrimitives = {
           id: typeof currentUser.id === 'number' ? currentUser.id : null,
