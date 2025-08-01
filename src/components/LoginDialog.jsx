@@ -74,7 +74,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       } else {
         // Handle specific login errors
         if (response.error && response.error.includes('User not found')) {
-          setError("Account not found. Please verify your WhatsApp number or create a new account.");
+          setError("Account not found. Please check your WhatsApp number format. For India (+91), enter: 8320303515 (without country code).");
         } else if (response.error && response.error.includes('Invalid')) {
           setError("Invalid credentials. Please check your WhatsApp number.");
         } else if (response.error && response.error.includes('value too long')) {
@@ -239,6 +239,10 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
             
             <TabsContent value="whatsapp" className="space-y-4">
               <form onSubmit={handleWhatsappLogin} className="space-y-4">
+                <div className="text-sm text-gray-600 mb-2">
+                  <p>Enter your WhatsApp number with country code:</p>
+                  <p className="text-xs mt-1">Example: +918320303515 (for India)</p>
+                </div>
                 <PhoneNumberInput
                   value={whatsappForm.whatsappNumber}
                   onChange={(value) => handleInputChange('whatsapp', 'whatsappNumber', value)}

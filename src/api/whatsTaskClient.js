@@ -54,6 +54,11 @@ class WhatsTaskClient {
   async loginWithWhatsApp(phoneNumber) {
     const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
     
+    console.log('Login attempt:', {
+      original: phoneNumber,
+      normalized: normalizedPhone
+    });
+    
     return this.request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({
