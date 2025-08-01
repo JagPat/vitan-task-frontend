@@ -138,14 +138,6 @@ class WhatsTaskClient {
     });
   }
 
-  async getAuthStatus(token) {
-    return this.request('/api/auth/status', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-  }
-
   async sendVerificationCode(whatsappNumber) {
     return this.request('/api/auth/verify', {
       method: 'POST',
