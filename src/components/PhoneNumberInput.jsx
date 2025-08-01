@@ -22,32 +22,48 @@ export default function PhoneNumberInput({
 }) {
   const [selectedCountry, setSelectedCountry] = useState(getDefaultCountryCode());
   const [searchQuery, setSearchQuery] = useState("");
+  const [localInputValue, setLocalInputValue] = useState("");
+
+  // Extract local number from full value for display
+  const getLocalNumber = (fullNumber) => {
+    if (!fullNumber) return "";
+    const countryCodeDigits = selectedCountry.code.replace('+', '');
+    if (fullNumber.startsWith('+')) {
+      return fullNumber.substring(1).replace(countryCodeDigits, '');
+    }
+    return fullNumber.replace(countryCodeDigits, '');
+  };
+
+  // Update local input when value changes externally
+  React.useEffect(() => {
+    setLocalInputValue(getLocalNumber(value));
+  }, [value, selectedCountry.code]);
 
   const handleCountryChange = (countryCode) => {
     const country = sortedCountryCodes.find(c => c.code === countryCode);
     if (country) {
       setSelectedCountry(country);
-      // Update the full phone number with new country code
-      const phoneNumber = value.replace(/^\+\d+/, '');
-      const newFullNumber = country.code + phoneNumber;
-      onChange(newFullNumber);
+      // Reformat the current number with new country code
+      if (localInputValue) {
+        const fullNumber = country.code + localInputValue;
+        onChange(fullNumber);
+      }
     }
   };
 
-  const handlePhoneNumberChange = (phoneNumber) => {
+  const handlePhoneNumberChange = (inputValue) => {
     // Remove any non-digit characters
-    const cleaned = phoneNumber.replace(/[^\d]/g, '');
+    const cleaned = inputValue.replace(/[^\d]/g, '');
     
-    // If user enters a local number (≤10 digits), add country code
-    if (cleaned.length > 0 && cleaned.length <= 10) {
+    // Update local input value
+    setLocalInputValue(cleaned);
+    
+    // If user enters a local number, add country code
+    if (cleaned.length > 0) {
       const fullNumber = selectedCountry.code + cleaned;
       onChange(fullNumber);
-    } else if (cleaned.length > 10) {
-      // User entered a full number, just add + prefix
-      onChange('+' + cleaned);
     } else {
-      // Keep as is for other cases
-      onChange(phoneNumber);
+      onChange('');
     }
   };
 
@@ -117,7 +133,7 @@ export default function PhoneNumberInput({
             id="phone-number"
             type="tel"
             placeholder={placeholder}
-            value={value}
+            value={localInputValue}
             onChange={(e) => handlePhoneNumberChange(e.target.value)}
             disabled={disabled}
             className={error ? "border-red-500" : ""}
