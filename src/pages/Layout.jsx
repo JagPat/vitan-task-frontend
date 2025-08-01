@@ -18,7 +18,7 @@ import {
   Menu,
   Bell,
   Plus,
-  User
+  User as UserIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -156,7 +156,7 @@ const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout
         <div className="space-y-3">
           <div className="text-center p-4">
             <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
-              <User className="w-6 h-6 text-white" />
+              <UserIcon className="w-6 h-6 text-white" />
             </div>
             <p className="text-sm text-slate-600 mb-3">Please login to continue</p>
             <Button 
