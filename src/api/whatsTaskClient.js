@@ -11,6 +11,17 @@ const normalizePhoneNumberForAPI = (phoneNumber) => {
   return normalized;
 };
 
+const normalizePhoneNumberForVerification = (phoneNumber) => {
+  // For verification, we need the + prefix
+  let normalized = phoneNumber.replace(/[^\d]/g, '');
+  
+  // Add + prefix for verification endpoint
+  if (normalized && !normalized.startsWith('+')) {
+    return '+' + normalized;
+  }
+  return normalized;
+};
+
 const normalizePhoneNumberForDisplay = (phoneNumber) => {
   // Add + prefix for display
   if (phoneNumber && !phoneNumber.startsWith('+')) {
@@ -80,7 +91,7 @@ class WhatsTaskClient {
 
   // Send verification code
   async sendVerificationCode(phoneNumber) {
-    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    const normalizedPhone = normalizePhoneNumberForVerification(phoneNumber);
     
     console.log('Verification attempt:', {
       original: phoneNumber,
@@ -97,7 +108,7 @@ class WhatsTaskClient {
 
   // Verify code
   async verifyCode(phoneNumber, code) {
-    const normalizedPhone = normalizePhoneNumberForAPI(phoneNumber);
+    const normalizedPhone = normalizePhoneNumberForVerification(phoneNumber);
     
     return this.request('/api/auth/verify-code', {
       method: 'POST',
@@ -176,6 +187,7 @@ class WhatsTaskClient {
   // Static methods for phone number handling
   static normalizeForAPI = normalizePhoneNumberForAPI;
   static normalizeForDisplay = normalizePhoneNumberForDisplay;
+  static normalizeForVerification = normalizePhoneNumberForVerification;
 }
 
 export const whatsTaskClient = new WhatsTaskClient(); 
