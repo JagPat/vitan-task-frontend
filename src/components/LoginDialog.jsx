@@ -51,8 +51,16 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     setLoading(true);
     setError("");
 
+    // Validate phone number format
+    const phoneNumber = whatsappForm.whatsappNumber;
+    if (!phoneNumber || !phoneNumber.startsWith('+')) {
+      setError("Please enter a valid WhatsApp number with country code (e.g., +918320303515)");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await whatsTaskClient.loginWithWhatsApp(whatsappForm.whatsappNumber);
+      const response = await whatsTaskClient.loginWithWhatsApp(phoneNumber);
       
       if (response.success) {
         // Store token and clean user data
@@ -127,8 +135,16 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     setLoading(true);
     setError("");
 
+    // Validate phone number format
+    const phoneNumber = whatsappForm.whatsappNumber;
+    if (!phoneNumber || !phoneNumber.startsWith('+')) {
+      setError("Please enter a valid WhatsApp number with country code (e.g., +918320303515)");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await whatsTaskClient.sendVerificationCode(whatsappForm.whatsappNumber);
+      const response = await whatsTaskClient.sendVerificationCode(phoneNumber);
       
       if (response.success) {
         setPendingWhatsappNumber(whatsappForm.whatsappNumber);
@@ -195,7 +211,12 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
 
   const handleInputChange = (formType, field, value) => {
     if (formType === 'whatsapp') {
-      setWhatsappForm(prev => ({ ...prev, [field]: value }));
+      // Ensure WhatsApp number starts with + if it doesn't already
+      let formattedValue = value;
+      if (field === 'whatsappNumber' && value && !value.startsWith('+')) {
+        formattedValue = '+' + value;
+      }
+      setWhatsappForm(prev => ({ ...prev, [field]: formattedValue }));
     } else if (formType === 'email') {
       setEmailForm(prev => ({ ...prev, [field]: value }));
     } else if (formType === 'verification') {
