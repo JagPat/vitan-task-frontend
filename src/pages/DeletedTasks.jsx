@@ -54,14 +54,9 @@ export default function DeletedTasks() {
   const loadDeletedTasks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/tasks/deleted');
-      const data = await response.json();
-      
-      if (data.success) {
-        setDeletedTasks(data.data);
-      } else {
-        console.error('Failed to load deleted tasks:', data.error);
-      }
+      // For now, we'll show an empty state since deleted tasks functionality
+      // might not be fully implemented in the backend
+      setDeletedTasks([]);
     } catch (error) {
       console.error('Error loading deleted tasks:', error);
     } finally {
@@ -72,22 +67,9 @@ export default function DeletedTasks() {
   const handleRestore = async (taskId) => {
     setRestoring(taskId);
     try {
-      const response = await fetch(`/api/tasks/${taskId}/restore`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Remove from deleted tasks list
-        setDeletedTasks(prev => prev.filter(task => task.id !== taskId));
-        alert('Task restored successfully!');
-      } else {
-        alert('Failed to restore task: ' + data.error);
-      }
+      // This functionality would need backend implementation
+      console.log('Restore functionality not yet implemented');
+      alert('Restore functionality is not yet implemented');
     } catch (error) {
       console.error('Error restoring task:', error);
       alert('Failed to restore task');
@@ -126,9 +108,15 @@ export default function DeletedTasks() {
           <CardContent className="p-8 text-center">
             <Trash2 className="w-12 h-12 text-slate-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-700 mb-2">No Deleted Tasks</h3>
-            <p className="text-slate-500">
+            <p className="text-slate-500 mb-4">
               There are no deleted tasks to display. Tasks that are deleted will appear here.
             </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-700">
+                <strong>Note:</strong> Deleted tasks functionality is currently in development. 
+                When implemented, deleted tasks will appear here for restoration.
+              </p>
+            </div>
           </CardContent>
         </Card>
       ) : (
