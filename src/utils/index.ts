@@ -66,7 +66,7 @@ export function extractTaskPrimitives(task: any): any {
     created_by: typeof task.created_by === 'string' ? task.created_by : null,
     tags: Array.isArray(task.tags) ? task.tags.filter(tag => typeof tag === 'string') : [],
     estimated_hours: typeof task.estimated_hours === 'number' ? task.estimated_hours : null,
-    actual_hours: typeof task.actual_hours === 'number' ? task.actual_hours : null
+    actual_hours: typeof task.actual_hours === 'number' ? task.actual_hours : null,
   };
 }
 
@@ -88,7 +88,7 @@ export function extractUserPrimitives(user: any): any {
     location: typeof user.location === 'string' ? user.location : null,
     verified: typeof user.verified === 'boolean' ? user.verified : false,
     created_at: typeof user.created_at === 'string' ? user.created_at : null,
-    updated_at: typeof user.updated_at === 'string' ? user.updated_at : null
+    updated_at: typeof user.updated_at === 'string' ? user.updated_at : null,
   };
 }
 
@@ -108,7 +108,7 @@ export function extractProjectPrimitives(project: any): any {
     created_at: typeof project.created_at === 'string' ? project.created_at : null,
     updated_at: typeof project.updated_at === 'string' ? project.updated_at : null,
     created_by: typeof project.created_by === 'string' ? project.created_by : null,
-    category: typeof project.category === 'string' ? project.category : null
+    category: typeof project.category === 'string' ? project.category : null,
   };
 }
 
@@ -127,7 +127,7 @@ export function extractActivityPrimitives(activity: any): any {
     created_at: typeof activity.created_at === 'string' ? activity.created_at : null,
     user_id: typeof activity.user_id === 'number' ? activity.user_id : null,
     task_id: typeof activity.task_id === 'number' ? activity.task_id : null,
-    project_id: typeof activity.project_id === 'number' ? activity.project_id : null
+    project_id: typeof activity.project_id === 'number' ? activity.project_id : null,
   };
 }
 
@@ -141,7 +141,7 @@ export function useComponentValidation(component: any): any {
       // Check if component has invalid properties
       const invalidProps = ['__proto__', 'constructor', 'prototype'];
       for (const prop of invalidProps) {
-        if (component && typeof component === 'object' && component.hasOwnProperty(prop)) {
+        if (component && typeof component === 'object' && Object.prototype.hasOwnProperty.call(component, prop)) {
           console.warn(`🚨 Invalid component property detected: ${prop}`, component);
           return null;
         }
@@ -195,9 +195,9 @@ export function validateReactComponentAdvanced(component: any): any {
   // Check for specific problematic patterns
   if (typeof component === 'object' && component !== null) {
     // Check for prototype pollution
-    if (component.hasOwnProperty('__proto__') || 
-        component.hasOwnProperty('constructor') || 
-        component.hasOwnProperty('prototype')) {
+    if (Object.prototype.hasOwnProperty.call(component, '__proto__') || 
+        Object.prototype.hasOwnProperty.call(component, 'constructor') || 
+        Object.prototype.hasOwnProperty.call(component, 'prototype')) {
       console.warn('Component with prototype pollution detected:', component);
       return null;
     }
