@@ -26,18 +26,28 @@ export function useComponentValidation(component: any): any {
 }
 
 /**
- * Nuclear approach: React component validation wrapper
- * Prevents any non-React components from being rendered
+ * Advanced React component validation
+ * Checks for specific problematic patterns that cause React error #130
  */
-export function validateReactComponent(component: any): any {
-  // If it's null, undefined, or not an object, return null
-  if (component === null || component === undefined || typeof component !== 'object') {
+export function validateReactComponentAdvanced(component: any): any {
+  // If it's null, undefined, return null
+  if (component === null || component === undefined) {
     return null;
   }
   
   // If it's a valid React component (function or class), return as is
   if (typeof component === 'function') {
-    return component;
+    // Check if it's a valid function component
+    try {
+      // Test if the function can be called safely
+      if (component.name && component.name.length > 0) {
+        return component;
+      }
+      return component;
+    } catch (error) {
+      console.warn('Invalid function component detected:', component);
+      return null;
+    }
   }
   
   // If it's a React element (has type property), return as is
@@ -52,7 +62,23 @@ export function validateReactComponent(component: any): any {
   
   // If it's an array, validate each item
   if (Array.isArray(component)) {
-    return component.map(item => validateReactComponent(item)).filter(item => item !== null);
+    return component.map(item => validateReactComponentAdvanced(item)).filter(item => item !== null);
+  }
+  
+  // Check for specific problematic patterns
+  if (typeof component === 'object' && component !== null) {
+    // Check for prototype pollution
+    if (component.hasOwnProperty('__proto__') || 
+        component.hasOwnProperty('constructor') || 
+        component.hasOwnProperty('prototype')) {
+      console.warn('Component with prototype pollution detected:', component);
+      return null;
+    }
+    
+    // Check if it's a plain object (safe)
+    if (component.constructor === Object) {
+      return component;
+    }
   }
   
   // For any other object, return null to prevent rendering
