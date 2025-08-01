@@ -55,9 +55,6 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       const response = await whatsTaskClient.loginWithWhatsApp(whatsappForm.whatsappNumber);
       
       if (response.success) {
-        console.log('WhatsApp login response data:', response.data); // Debug login response
-        console.log('User data from WhatsApp login:', response.data.user); // Debug user data
-        
         // Store token and clean user data
         localStorage.setItem('authToken', response.data.token || '');
         sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
@@ -66,11 +63,26 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         onLoginSuccess(response.data.user);
         onOpenChange(false);
       } else {
-        setError(response.error || "Login failed");
+        // Handle specific login errors
+        if (response.error && response.error.includes('User not found')) {
+          setError("Account not found. Please verify your WhatsApp number or create a new account.");
+        } else if (response.error && response.error.includes('Invalid')) {
+          setError("Invalid credentials. Please check your WhatsApp number.");
+        } else {
+          setError(response.error || "Login failed");
+        }
       }
     } catch (error) {
-      console.error('WhatsApp login error:', error);
-      setError("Login failed. Please check your WhatsApp number.");
+      console.error('Login error:', error);
+      
+      // Handle network or service errors
+      if (error.message && error.message.includes('401')) {
+        setError("Invalid credentials. Please check your WhatsApp number.");
+      } else if (error.message && error.message.includes('Failed to fetch')) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -119,11 +131,26 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         setShowVerification(true);
         toast.success("Verification code sent to your WhatsApp!");
       } else {
-        setError(response.error || "Failed to send verification code");
+        // Handle specific backend errors
+        if (response.error && response.error.includes('Database migration required')) {
+          setError("System maintenance in progress. Please try again later.");
+        } else if (response.error && response.error.includes('Database connection error')) {
+          setError("Service temporarily unavailable. Please try again later.");
+        } else {
+          setError(response.error || "Failed to send verification code");
+        }
       }
     } catch (error) {
       console.error('Verification error:', error);
-      setError("Failed to send verification code. Please try again.");
+      
+      // Handle network or service errors
+      if (error.message && error.message.includes('500')) {
+        setError("Service temporarily unavailable. Please try again later.");
+      } else if (error.message && error.message.includes('Failed to fetch')) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("Failed to send verification code. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
