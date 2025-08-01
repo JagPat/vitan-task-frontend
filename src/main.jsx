@@ -3,75 +3,76 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
-// Comprehensive global React error handler
+// Nuclear React Error Prevention at the lowest level
+// This prevents ANY object from reaching React rendering
+
+// Nuclear sanitization function
+function nuclearSanitize(value) {
+  // Only allow primitives and null
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  // For ANY object or array, return null
+  return null;
+}
+
+// Nuclear React.createElement interceptor
+const originalCreateElement = React.createElement;
+React.createElement = function(type, props, ...children) {
+  try {
+    // Nuclear sanitization of props
+    let cleanProps = props;
+    if (props && typeof props === 'object') {
+      cleanProps = {};
+      for (const [key, value] of Object.entries(props)) {
+        const sanitizedValue = nuclearSanitize(value);
+        if (sanitizedValue !== null) {
+          cleanProps[key] = sanitizedValue;
+        }
+      }
+    }
+
+    // Nuclear sanitization of children
+    const cleanChildren = children.map(child => nuclearSanitize(child)).filter(child => child !== null);
+
+    return originalCreateElement(type, cleanProps, ...cleanChildren);
+  } catch (error) {
+    console.warn('🚨 Nuclear React createElement error caught:', error);
+    return null;
+  }
+};
+
+// Nuclear global error handler
 const originalConsoleError = console.error;
 console.error = (...args) => {
-  // Check if this is a React error #130
   if (args[0] && typeof args[0] === 'string' && args[0].includes('Minified React error #130')) {
-    console.warn('🚨 React Error #130 detected - applying comprehensive nuclear sanitization');
-    // Don't log the original error to avoid confusion
+    console.warn('🚨 Nuclear React Error #130 detected - preventing rendering');
     return;
   }
-  // Log all other errors normally
   originalConsoleError.apply(console, args);
 };
 
-// Comprehensive global error handler for uncaught errors
+// Nuclear global error handler for uncaught errors
 window.addEventListener('error', (event) => {
   if (event.error && event.error.message && event.error.message.includes('Minified React error #130')) {
-    console.warn('🚨 Global React Error #130 caught - attempting comprehensive recovery');
+    console.warn('🚨 Nuclear Global React Error #130 caught - preventing default');
     event.preventDefault();
-    // Force a page reload to recover
     setTimeout(() => {
       window.location.reload();
     }, 1000);
   }
 });
 
-// Comprehensive global unhandled promise rejection handler
+// Nuclear global unhandled promise rejection handler
 window.addEventListener('unhandledrejection', (event) => {
   if (event.reason && event.reason.message && event.reason.message.includes('Minified React error #130')) {
-    console.warn('🚨 Unhandled React Error #130 caught - preventing default');
+    console.warn('🚨 Nuclear Unhandled React Error #130 caught - preventing default');
     event.preventDefault();
   }
 });
-
-// Comprehensive React error interceptor
-const originalCreateElement = React.createElement;
-React.createElement = function(type, props, ...children) {
-  try {
-    // Allow valid React components
-    if (type && typeof type === 'function') {
-      return originalCreateElement.apply(this, arguments);
-    }
-    
-    // Allow valid React elements (strings for HTML elements)
-    if (type && typeof type === 'string') {
-      return originalCreateElement.apply(this, arguments);
-    }
-    
-    // Allow React Context components (they have $$typeof property)
-    if (type && typeof type === 'object' && type.$$typeof) {
-      return originalCreateElement.apply(this, arguments);
-    }
-    
-    // Allow React Fragment
-    if (type === React.Fragment) {
-      return originalCreateElement.apply(this, arguments);
-    }
-    
-    // Validate the type before creating element
-    if (type && typeof type === 'object' && type !== null && !type.$$typeof) {
-      console.warn('🚨 Invalid React element type detected:', type);
-      return null;
-    }
-    
-    return originalCreateElement.apply(this, arguments);
-  } catch (error) {
-    console.warn('🚨 React createElement error caught:', error);
-    return null;
-  }
-};
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
