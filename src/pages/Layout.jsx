@@ -17,7 +17,8 @@ import {
   LogIn,
   Menu,
   Bell,
-  Plus
+  Plus,
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +75,104 @@ const navigationItems = [
   }
 ];
 
+// Move Sidebar component outside of Layout to prevent recreation on every render
+const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout, onLoginClick, onMobileMenuClose }) => (
+  <div className={`flex flex-col h-full ${mobile ? 'px-4' : ''}`}>
+    <div className="p-6 border-b border-slate-200">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+          <MessageCircle className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-800">WhatsTask</h2>
+          <p className="text-xs text-slate-500 font-medium">Smart Task Management</p>
+        </div>
+      </div>
+    </div>
+    
+    <nav className="flex-1 p-4 space-y-2">
+      {navigationItems.map((item) => {
+        const isActive = window.location.pathname === item.url;
+        return (
+          <Link
+            key={item.title}
+            to={item.url}
+            onClick={() => mobile && onMobileMenuClose()}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+              isActive 
+                ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100' 
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+            }`}
+          >
+            <item.icon className={`w-5 h-5 transition-transform duration-200 ${
+              isActive ? 'scale-110' : 'group-hover:scale-105'
+            }`} />
+            <span className="font-medium">{item.title}</span>
+            {item.title === "My Tasks" && pendingTasks > 0 && (
+              <Badge variant="secondary" className="ml-auto bg-red-100 text-red-700 text-xs">
+                {pendingTasks}
+              </Badge>
+            )}
+          </Link>
+        );
+      })}
+    </nav>
+
+    <div className="p-4 border-t border-slate-200">
+      {isAuthenticated ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+            <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">
+                {typeof user?.full_name === 'string' && user.full_name.length > 0 ? user.full_name.charAt(0) : 'U'}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800 text-sm truncate">
+                {typeof user?.full_name === 'string' ? user.full_name : 'User'}
+              </p>
+              <p className="text-xs text-slate-500 truncate">
+                {typeof user?.email === 'string' ? user.email : 'user@example.com'}
+              </p>
+              <div className="flex items-center gap-1 mt-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-xs text-slate-500">
+                  {typeof user?.role === 'string' ? user.role : 'Member'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onLogout}
+            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="text-center p-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+              <User className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Please login to continue</p>
+            <Button 
+              onClick={onLoginClick}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Login
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -98,29 +197,27 @@ export default function Layout({ children, currentPageName }) {
           // Store only primitive values, never the object itself
           const userPrimitives = {
             id: typeof currentUser.id === 'number' ? currentUser.id : null,
-            full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : null,
-            email: typeof currentUser.email === 'string' ? currentUser.email : null,
-            role: typeof currentUser.role === 'string' ? currentUser.role : null,
-            whatsapp_number: typeof currentUser.whatsapp_number === 'string' ? currentUser.whatsapp_number : null,
-            company: typeof currentUser.company === 'string' ? currentUser.company : null,
-            location: typeof currentUser.location === 'string' ? currentUser.location : null,
-            verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false
+            email: typeof currentUser.email === 'string' ? currentUser.email : '',
+            full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : '',
+            role: typeof currentUser.role === 'string' ? currentUser.role : '',
+            verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false,
+            created_at: typeof currentUser.created_at === 'string' ? currentUser.created_at : null,
+            updated_at: typeof currentUser.updated_at === 'string' ? currentUser.updated_at : null,
           };
-          
           setUser(userPrimitives);
           setIsAuthenticated(true);
         } else {
-          // Token is invalid, clear it
-          localStorage.removeItem('authToken');
-          sessionStorage.removeItem('currentUser');
           setIsAuthenticated(false);
+          setUser(null);
         }
       } else {
         setIsAuthenticated(false);
+        setUser(null);
       }
     } catch (error) {
-      console.error("Error checking authentication:", error);
+      console.error('Authentication check failed:', error);
       setIsAuthenticated(false);
+      setUser(null);
     }
   };
 
@@ -128,180 +225,81 @@ export default function Layout({ children, currentPageName }) {
     try {
       const currentUser = await User.me();
       if (currentUser && typeof currentUser === 'object' && !Array.isArray(currentUser)) {
-        // Store only primitive values, never the object itself
         const userPrimitives = {
           id: typeof currentUser.id === 'number' ? currentUser.id : null,
-          full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : null,
-          email: typeof currentUser.email === 'string' ? currentUser.email : null,
-          role: typeof currentUser.role === 'string' ? currentUser.role : null,
-          whatsapp_number: typeof currentUser.whatsapp_number === 'string' ? currentUser.whatsapp_number : null,
-          company: typeof currentUser.company === 'string' ? currentUser.company : null,
-          location: typeof currentUser.location === 'string' ? currentUser.location : null,
-          verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false
+          email: typeof currentUser.email === 'string' ? currentUser.email : '',
+          full_name: typeof currentUser.full_name === 'string' ? currentUser.full_name : '',
+          role: typeof currentUser.role === 'string' ? currentUser.role : '',
+          verified: typeof currentUser.verified === 'boolean' ? currentUser.verified : false,
+          created_at: typeof currentUser.created_at === 'string' ? currentUser.created_at : null,
+          updated_at: typeof currentUser.updated_at === 'string' ? currentUser.updated_at : null,
         };
-        
         setUser(userPrimitives);
+        setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error("Error loading user:", error);
+      console.error('Failed to load user:', error);
     }
   };
 
   const loadPendingTasks = async () => {
     try {
-      const tasks = await Task.filter({ status: "pending" });
-      setPendingTasks(tasks.length);
+      const tasks = await Task.getAll();
+      const pendingCount = tasks.filter(task => task.status === 'pending').length;
+      setPendingTasks(pendingCount);
     } catch (error) {
-      console.error("Error loading pending tasks:", error);
+      console.error('Failed to load pending tasks:', error);
     }
   };
 
   const handleLoginSuccess = (userData) => {
     if (userData && typeof userData === 'object' && !Array.isArray(userData)) {
-      // Store only primitive values, never the object itself
       const userPrimitives = {
         id: typeof userData.id === 'number' ? userData.id : null,
-        full_name: typeof userData.full_name === 'string' ? userData.full_name : null,
-        email: typeof userData.email === 'string' ? userData.email : null,
-        role: typeof userData.role === 'string' ? userData.role : null,
-        whatsapp_number: typeof userData.whatsapp_number === 'string' ? userData.whatsapp_number : null,
-        company: typeof userData.company === 'string' ? userData.company : null,
-        location: typeof userData.location === 'string' ? userData.location : null,
-        verified: typeof userData.verified === 'boolean' ? userData.verified : false
+        email: typeof userData.email === 'string' ? userData.email : '',
+        full_name: typeof userData.full_name === 'string' ? userData.full_name : '',
+        role: typeof userData.role === 'string' ? userData.role : '',
+        verified: typeof userData.verified === 'boolean' ? userData.verified : false,
+        created_at: typeof userData.created_at === 'string' ? userData.created_at : null,
+        updated_at: typeof userData.updated_at === 'string' ? userData.updated_at : null,
       };
-      
       setUser(userPrimitives);
       setIsAuthenticated(true);
       setShowLoginDialog(false);
-      loadPendingTasks(); // Refresh tasks after login
-    } else {
-      console.error('Invalid user data in login success:', userData);
-      setError("Login failed: Invalid user data");
+      toast({
+        title: "Welcome back!",
+        description: `Hello, ${userPrimitives.full_name || userPrimitives.email}!`,
+      });
     }
   };
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        await whatsTaskClient.logout(token);
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clear all auth data
       localStorage.removeItem('authToken');
-      sessionStorage.removeItem('currentUser');
       setUser(null);
       setIsAuthenticated(false);
-      setPendingTasks(0);
-      toast.success('Logged out successfully');
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out.",
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
     }
   };
-
-  const Sidebar = ({ mobile = false }) => (
-    <div className={`flex flex-col h-full ${mobile ? 'px-4' : ''}`}>
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-            <MessageCircle className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-800">WhatsTask</h2>
-            <p className="text-xs text-slate-500 font-medium">Smart Task Management</p>
-          </div>
-        </div>
-      </div>
-      
-      <nav className="flex-1 p-4 space-y-2">
-        {navigationItems.map((item) => {
-          const isActive = location.pathname === item.url;
-          return (
-            <Link
-              key={item.title}
-              to={item.url}
-              onClick={() => mobile && setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                isActive 
-                  ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-              }`}
-            >
-              <item.icon className={`w-5 h-5 transition-transform duration-200 ${
-                isActive ? 'scale-110' : 'group-hover:scale-105'
-              }`} />
-              <span className="font-medium">{item.title}</span>
-              {item.title === "My Tasks" && pendingTasks > 0 && (
-                <Badge variant="secondary" className="ml-auto bg-red-100 text-red-700 text-xs">
-                  {pendingTasks}
-                </Badge>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="p-4 border-t border-slate-200">
-        {isAuthenticated ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-              <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">
-                  {typeof user?.full_name === 'string' && user.full_name.length > 0 ? user.full_name.charAt(0) : 'U'}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-800 text-sm truncate">
-                  {typeof user?.full_name === 'string' ? user.full_name : 'User'}
-                </p>
-                <p className="text-xs text-slate-500 truncate">
-                  {typeof user?.email === 'string' ? user.email : 'user@example.com'}
-                </p>
-                <div className="flex items-center gap-1 mt-1">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-xs text-slate-500">
-                    {typeof user?.role === 'string' ? user.role : 'Member'}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleLogout}
-              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="text-center p-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                <User className="w-6 h-6 text-white" />
-              </div>
-              <p className="text-sm text-slate-600 mb-3">Please login to continue</p>
-              <Button 
-                onClick={() => setShowLoginDialog(true)}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Login
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       {/* Desktop Sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:block">
         <div className="flex flex-col h-full bg-white border-r border-slate-200 shadow-xl">
-          <Sidebar />
+          <Sidebar 
+            user={user}
+            isAuthenticated={isAuthenticated}
+            pendingTasks={pendingTasks}
+            onLogout={handleLogout}
+            onLoginClick={() => setShowLoginDialog(true)}
+            onMobileMenuClose={() => setMobileMenuOpen(false)}
+          />
         </div>
       </div>
 
@@ -316,7 +314,15 @@ export default function Layout({ children, currentPageName }) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-72">
-                <Sidebar mobile />
+                <Sidebar 
+                  mobile 
+                  user={user}
+                  isAuthenticated={isAuthenticated}
+                  pendingTasks={pendingTasks}
+                  onLogout={handleLogout}
+                  onLoginClick={() => setShowLoginDialog(true)}
+                  onMobileMenuClose={() => setMobileMenuOpen(false)}
+                />
               </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2">
