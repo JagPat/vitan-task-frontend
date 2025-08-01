@@ -182,7 +182,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     setError("");
 
     try {
-      const response = await whatsTaskClient.confirmVerificationCode(
+      const response = await whatsTaskClient.verifyCode(
         pendingWhatsappNumber, 
         verificationForm.verificationCode
       );

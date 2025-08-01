@@ -110,7 +110,7 @@ class WhatsTaskClient {
   async verifyCode(phoneNumber, code) {
     const normalizedPhone = normalizePhoneNumberForVerification(phoneNumber);
     
-    return this.request('/api/auth/verify-code', {
+    return this.request('/api/auth/confirm', {
       method: 'POST',
       body: JSON.stringify({
         whatsappNumber: normalizedPhone,
