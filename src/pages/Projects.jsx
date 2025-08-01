@@ -75,8 +75,12 @@ export default function Projects() {
     // Extract primitive values from new project
     const cleanProject = extractProjectPrimitives(newProject);
     if (cleanProject) {
-      setProjects(prev => [cleanProject, ...prev]);
-      calculateStats([cleanProject, ...projects]);
+      setProjects(prev => {
+        const updatedProjects = [cleanProject, ...prev];
+        // Calculate stats with the updated projects list
+        calculateStats(updatedProjects);
+        return updatedProjects;
+      });
     }
   };
 
@@ -90,12 +94,12 @@ export default function Projects() {
       try {
         await Project.delete(project.id);
         
-        // Remove the project from the local state
-        setProjects(prev => prev.filter(p => p.id !== project.id));
-        
-        // Recalculate stats
-        const updatedProjects = projects.filter(p => p.id !== project.id);
-        calculateStats(updatedProjects);
+        // Remove the project from the local state and recalculate stats
+        setProjects(prev => {
+          const updatedProjects = prev.filter(p => p.id !== project.id);
+          calculateStats(updatedProjects);
+          return updatedProjects;
+        });
         
         toast({
           title: "Success",

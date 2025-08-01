@@ -8,7 +8,7 @@ export function createPageUrl(pageName: string) {
  * Extract primitive values from API responses to prevent React error #130
  * This function ensures only primitive values are stored in React state
  */
-export function extractPrimitives(data: any): any {
+export function extractPrimitives(data: any, seen = new WeakSet()): any {
   if (data === null || data === undefined) {
     return null;
   }
@@ -17,14 +17,22 @@ export function extractPrimitives(data: any): any {
     return data;
   }
   
+  // Prevent circular references
+  if (typeof data === 'object') {
+    if (seen.has(data)) {
+      return null; // Return null for circular references
+    }
+    seen.add(data);
+  }
+  
   if (Array.isArray(data)) {
-    return data.map(item => extractPrimitives(item)).filter(item => item !== null);
+    return data.map(item => extractPrimitives(item, seen)).filter(item => item !== null);
   }
   
   if (typeof data === 'object') {
     const cleanObject: any = {};
     for (const [key, value] of Object.entries(data)) {
-      const primitiveValue = extractPrimitives(value);
+      const primitiveValue = extractPrimitives(value, seen);
       if (primitiveValue !== null) {
         cleanObject[key] = primitiveValue;
       }
