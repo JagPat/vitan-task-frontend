@@ -1,7 +1,126 @@
 import React from 'react';
 
 export function createPageUrl(pageName: string) {
-    return '/' + pageName.toLowerCase().replace(/ /g, '-');
+  return `/${pageName.toLowerCase().replace(/\s+/g, '')}`;
+}
+
+/**
+ * Extract primitive values from API responses to prevent React error #130
+ * This function ensures only primitive values are stored in React state
+ */
+export function extractPrimitives(data: any): any {
+  if (data === null || data === undefined) {
+    return null;
+  }
+  
+  if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+    return data;
+  }
+  
+  if (Array.isArray(data)) {
+    return data.map(item => extractPrimitives(item)).filter(item => item !== null);
+  }
+  
+  if (typeof data === 'object') {
+    const cleanObject: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      const primitiveValue = extractPrimitives(value);
+      if (primitiveValue !== null) {
+        cleanObject[key] = primitiveValue;
+      }
+    }
+    return cleanObject;
+  }
+  
+  return null;
+}
+
+/**
+ * Extract primitive values from task objects
+ */
+export function extractTaskPrimitives(task: any): any {
+  if (!task || typeof task !== 'object') {
+    return null;
+  }
+  
+  return {
+    id: typeof task.id === 'number' ? task.id : null,
+    title: typeof task.title === 'string' ? task.title : null,
+    description: typeof task.description === 'string' ? task.description : null,
+    status: typeof task.status === 'string' ? task.status : null,
+    priority: typeof task.priority === 'string' ? task.priority : null,
+    due_date: typeof task.due_date === 'string' ? task.due_date : null,
+    created_at: typeof task.created_at === 'string' ? task.created_at : null,
+    updated_at: typeof task.updated_at === 'string' ? task.updated_at : null,
+    assigned_to: typeof task.assigned_to === 'string' ? task.assigned_to : null,
+    assigned_to_whatsapp: typeof task.assigned_to_whatsapp === 'string' ? task.assigned_to_whatsapp : null,
+    project_id: typeof task.project_id === 'number' ? task.project_id : null,
+    created_by: typeof task.created_by === 'string' ? task.created_by : null,
+    tags: Array.isArray(task.tags) ? task.tags.filter(tag => typeof tag === 'string') : [],
+    estimated_hours: typeof task.estimated_hours === 'number' ? task.estimated_hours : null,
+    actual_hours: typeof task.actual_hours === 'number' ? task.actual_hours : null
+  };
+}
+
+/**
+ * Extract primitive values from user objects
+ */
+export function extractUserPrimitives(user: any): any {
+  if (!user || typeof user !== 'object') {
+    return null;
+  }
+  
+  return {
+    id: typeof user.id === 'number' ? user.id : null,
+    full_name: typeof user.full_name === 'string' ? user.full_name : null,
+    email: typeof user.email === 'string' ? user.email : null,
+    role: typeof user.role === 'string' ? user.role : null,
+    whatsapp_number: typeof user.whatsapp_number === 'string' ? user.whatsapp_number : null,
+    company: typeof user.company === 'string' ? user.company : null,
+    location: typeof user.location === 'string' ? user.location : null,
+    verified: typeof user.verified === 'boolean' ? user.verified : false,
+    created_at: typeof user.created_at === 'string' ? user.created_at : null,
+    updated_at: typeof user.updated_at === 'string' ? user.updated_at : null
+  };
+}
+
+/**
+ * Extract primitive values from project objects
+ */
+export function extractProjectPrimitives(project: any): any {
+  if (!project || typeof project !== 'object') {
+    return null;
+  }
+  
+  return {
+    id: typeof project.id === 'number' ? project.id : null,
+    name: typeof project.name === 'string' ? project.name : null,
+    description: typeof project.description === 'string' ? project.description : null,
+    status: typeof project.status === 'string' ? project.status : null,
+    created_at: typeof project.created_at === 'string' ? project.created_at : null,
+    updated_at: typeof project.updated_at === 'string' ? project.updated_at : null,
+    created_by: typeof project.created_by === 'string' ? project.created_by : null,
+    category: typeof project.category === 'string' ? project.category : null
+  };
+}
+
+/**
+ * Extract primitive values from activity log objects
+ */
+export function extractActivityPrimitives(activity: any): any {
+  if (!activity || typeof activity !== 'object') {
+    return null;
+  }
+  
+  return {
+    id: typeof activity.id === 'number' ? activity.id : null,
+    action: typeof activity.action === 'string' ? activity.action : null,
+    description: typeof activity.description === 'string' ? activity.description : null,
+    created_at: typeof activity.created_at === 'string' ? activity.created_at : null,
+    user_id: typeof activity.user_id === 'number' ? activity.user_id : null,
+    task_id: typeof activity.task_id === 'number' ? activity.task_id : null,
+    project_id: typeof activity.project_id === 'number' ? activity.project_id : null
+  };
 }
 
 /**

@@ -1,147 +1,79 @@
 
-import React, { useState, useEffect } from "react";
-import { Task } from "@/api/entities";
-import { User } from "@/api/entities";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { Plus, LayoutGrid, List } from "lucide-react";
-import TaskToolbar from "../components/tasks/TaskToolbar";
-import TaskListView from "../components/tasks/TaskListView";
-import KanbanBoardView from "../components/tasks/KanbanBoardView";
+import React, { useState, useEffect } from 'react';
+import { Task } from '@/api/entities';
+import { extractTaskPrimitives } from '@/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  CheckSquare, 
+  Clock, 
+  AlertTriangle,
+  Calendar
+} from 'lucide-react';
+import TaskCard from '@/components/tasks/TaskCard';
+import CreateTask from './CreateTask';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function MyTasks() {
   const [tasks, setTasks] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("list"); // 'list' or 'board'
-  const [filters, setFilters] = useState({
-    search: "",
-    status: "all",
-    priority: "all",
+  const [showCreateTask, setShowCreateTask] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    in_progress: 0,
+    completed: 0,
+    overdue: 0
   });
+  const { toast } = useToast();
 
   useEffect(() => {
-    loadUserAndTasks();
+    loadTasks();
   }, []);
 
-  const loadUserAndTasks = async () => {
-    setLoading(true);
+  const loadTasks = async () => {
     try {
-      const user = await User.me();
-      setCurrentUser(user);
-      if (user) {
-        // Build a query to find tasks assigned to the user's ID OR their phone number
-        const query = {
-          $or: [
-            { assigned_to: user.id },
-          ]
-        };
-
-        if (user.phone_number) {
-          query.$or.push({ assigned_to_phone: user.phone_number });
-        }
-        
-        const userTasks = await Task.filter(query, "-due_date");
-        setTasks(userTasks);
-      }
+      setLoading(true);
+      const tasksData = await Task.getAll();
+      
+      // Extract primitive values to prevent React error #130
+      const cleanTasks = Array.isArray(tasksData) ? tasksData.map(task => extractTaskPrimitives(task)).filter(task => task !== null) : [];
+      
+      setTasks(cleanTasks);
+      calculateStats(cleanTasks);
     } catch (error) {
-      console.error("Error loading user and tasks:", error);
-      // It's possible the user is not logged in, so we can clear tasks.
-      setTasks([]);
+      console.error('Error loading tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load tasks. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTaskUpdate = async (taskId, updatedData) => {
-    try {
-      await Task.update(taskId, updatedData);
-      // Optimistically update the local state
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === taskId ? { ...task, ...updatedData } : task
-        )
-      );
-    } catch (error) {
-      console.error("Failed to update task:", error);
-      // Optionally, revert the state on failure
-      loadUserAndTasks(); 
-    }
+  const calculateStats = (taskList) => {
+    const stats = {
+      total: taskList.length,
+      pending: taskList.filter(t => t.status === 'pending').length,
+      in_progress: taskList.filter(t => t.status === 'in_progress').length,
+      completed: taskList.filter(t => ['completed', 'closed'].includes(t.status)).length,
+      overdue: taskList.filter(t => {
+        if (!t.due_date) return false;
+        const dueDate = new Date(t.due_date);
+        const today = new Date();
+        return dueDate < today && !['completed', 'closed'].includes(t.status);
+      }).length
+    };
+    setStats(stats);
   };
-
-  const handleTaskDelete = async (taskId) => {
-    try {
-      // Remove the task from the local state immediately
-      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-    } catch (error) {
-      console.error("Failed to delete task:", error);
-      // Reload tasks if deletion failed
-      loadUserAndTasks();
-    }
-  };
-
-  const filteredTasks = tasks.filter((task) => {
-    const searchMatch = task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                        task.description?.toLowerCase().includes(filters.search.toLowerCase());
-    const statusMatch = filters.status === "all" || task.status === filters.status;
-    const priorityMatch = filters.priority === "all" || task.priority === filters.priority;
-    return searchMatch && statusMatch && priorityMatch;
-  });
-
-  return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-slate-800">My Tasks</h1>
-          <p className="text-slate-600 mt-1">
-            Here are all the tasks assigned to you.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-           <Button
-            variant={view === 'list' ? 'secondary' : 'ghost'}
-            size="icon"
-            onClick={() => setView('list')}
-            className="hidden md:flex"
-          >
-            <List className="w-5 h-5" />
-          </Button>
-          <Button
-            variant={view === 'board' ? 'secondary' : 'ghost'}
-            size="icon"
-            onClick={() => setView('board')}
-             className="hidden md:flex"
-          >
-            <LayoutGrid className="w-5 h-5" />
-          </Button>
-          <Link to={createPageUrl("CreateTask")}>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md">
-              <Plus className="w-4 h-4 mr-2" />
-              New Task
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Toolbar */}
-      <TaskToolbar filters={filters} onFilterChange={setFilters} />
-
-      {/* Content */}
-      {loading ? (
-        <div className="text-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-slate-500">Loading your tasks...</p>
-        </div>
-      ) : (
-        <>
-          {view === 'list' && <TaskListView tasks={filteredTasks} onDelete={handleTaskDelete} />}
-          {view === 'board' && (
-            <KanbanBoardView tasks={filteredTasks} onTaskUpdate={handleTaskUpdate} onDelete={handleTaskDelete} />
-          )}
-        </>
-      )}
-    </div>
-  );
-}

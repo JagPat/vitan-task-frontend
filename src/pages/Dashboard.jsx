@@ -3,7 +3,7 @@ import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
 import { ActivityLog } from "@/api/entities";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { createPageUrl, extractTaskPrimitives, extractUserPrimitives, extractActivityPrimitives } from "@/utils";
 import { 
   CheckSquare, 
   Clock, 
@@ -41,10 +41,14 @@ export default function Dashboard() {
         User.getAll()
       ]);
       
-      setTasks(tasksData);
-      setUsers(usersData);
+      // Extract primitive values to prevent React error #130
+      const cleanTasks = Array.isArray(tasksData) ? tasksData.map(task => extractTaskPrimitives(task)).filter(task => task !== null) : [];
+      const cleanUsers = Array.isArray(usersData) ? usersData.map(user => extractUserPrimitives(user)).filter(user => user !== null) : [];
+      
+      setTasks(cleanTasks);
+      setUsers(cleanUsers);
       setActivities([]); // Activity logs will be implemented later
-      setCurrentUser(usersData[0]); // Use first user as current user for now
+      setCurrentUser(cleanUsers[0]); // Use first user as current user for now
     } catch (error) {
       console.error("Error loading dashboard data:", error);
     } finally {

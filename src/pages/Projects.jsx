@@ -17,6 +17,7 @@ import {
 import ProjectCard from '@/components/projects/ProjectCard';
 import CreateProjectDialog from '@/components/projects/CreateProjectDialog';
 import { Project } from '@/api/entities';
+import { extractProjectPrimitives } from '@/utils';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function Projects() {
@@ -42,8 +43,12 @@ export default function Projects() {
     try {
       setLoading(true);
       const projectsData = await Project.getAll();
-      setProjects(projectsData);
-      calculateStats(projectsData);
+      
+      // Extract primitive values to prevent React error #130
+      const cleanProjects = Array.isArray(projectsData) ? projectsData.map(project => extractProjectPrimitives(project)).filter(project => project !== null) : [];
+      
+      setProjects(cleanProjects);
+      calculateStats(cleanProjects);
     } catch (error) {
       console.error('Error loading projects:', error);
       toast({
@@ -67,8 +72,12 @@ export default function Projects() {
   };
 
   const handleProjectCreated = (newProject) => {
-    setProjects(prev => [newProject, ...prev]);
-    calculateStats([newProject, ...projects]);
+    // Extract primitive values from new project
+    const cleanProject = extractProjectPrimitives(newProject);
+    if (cleanProject) {
+      setProjects(prev => [cleanProject, ...prev]);
+      calculateStats([cleanProject, ...projects]);
+    }
   };
 
   const handleEditProject = (project) => {
