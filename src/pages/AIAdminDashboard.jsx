@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -8,26 +8,18 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { 
-  Settings, 
-  DollarSign, 
   Activity, 
-  Users, 
-  Shield, 
   AlertTriangle,
+  BarChart3,
   CheckCircle,
-  XCircle,
-  TrendingUp,
-  TrendingDown,
-  Zap,
+  DollarSign, 
   Eye,
   EyeOff,
-  Save,
-  RefreshCw,
-  BarChart3,
-  CreditCard,
   Key,
-  Lock,
-  Unlock
+  RefreshCw,
+  Save,
+  Users, 
+  Zap,
 } from 'lucide-react';
 import { useToast } from '../components/ui/use-toast';
 
@@ -38,7 +30,7 @@ export default function AIAdminDashboard() {
     dailyLimit: 1000,
     monthlyBudget: 50,
     perUserDailyLimit: 100,
-    emergencyThreshold: 100
+    emergencyThreshold: 100,
   });
   const [aiEnabled, setAiEnabled] = useState(true);
   const [usageStats, setUsageStats] = useState({
@@ -46,40 +38,52 @@ export default function AIAdminDashboard() {
     totalCost: 0,
     dailyRequests: 0,
     monthlyCost: 0,
-    userCount: 0
+    userCount: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [systemStatus, setSystemStatus] = useState({
     aiService: 'operational',
     costManagement: 'active',
-    emergencyMode: false
+    emergencyMode: false,
   });
   const { toast } = useToast();
 
   useEffect(() => {
     loadAdminData();
-  }, []);
+  }, [loadAdminData]);
 
-  const loadAdminData = async () => {
+  const loadAdminData = useCallback(async () => {
     setIsLoading(true);
     try {
       // Load API key status
-      const keyResponse = await fetch('https://vitan-task-production.up.railway.app/admin/api-key-status');
+      const keyResponse = await fetch('https://vitan-task-production.up.railway.app/admin/api-key-status', { credentials: 'include' });
+      if (!keyResponse.ok) {
+        throw new Error('Failed to load API key status');
+      }
       const keyData = await keyResponse.json();
       setApiKey(keyData.hasKey ? '••••••••••••••••' : '');
       
       // Load cost limits
-      const limitsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/cost-limits');
+      const limitsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/cost-limits', { credentials: 'include' });
+      if (!limitsResponse.ok) {
+        throw new Error('Failed to load cost limits');
+      }
       const limitsData = await limitsResponse.json();
       setCostLimits(limitsData);
       
       // Load usage stats
-      const statsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/usage-stats');
+      const statsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/usage-stats', { credentials: 'include' });
+      if (!statsResponse.ok) {
+        throw new Error('Failed to load usage stats');
+      }
       const statsData = await statsResponse.json();
       setUsageStats(statsData.global);
       
       // Load system status
-      const statusResponse = await fetch('https://vitan-task-production.up.railway.app/admin/system-status');
+      const statusResponse = await fetch('https://vitan-task-production.up.railway.app/admin/system-status', { credentials: 'include' });
+      if (!statusResponse.ok) {
+        throw new Error('Failed to load system status');
+      }
       const statusData = await statusResponse.json();
       setSystemStatus(statusData);
       
@@ -88,19 +92,19 @@ export default function AIAdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to load admin data",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   const updateApiKey = async () => {
-    if (!apiKey.trim()) {
+    if (!apiKey.trim() || apiKey === '••••••••••••••••') {
       toast({
         title: "Error",
         description: "Please enter a valid API key",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -108,9 +112,10 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/admin/update-api-key', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey })
+        body: JSON.stringify({ apiKey: apiKey.trim() }),
       });
 
       if (response.ok) {
@@ -123,11 +128,11 @@ export default function AIAdminDashboard() {
       } else {
         throw new Error('Failed to update API key');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update API key",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -138,9 +143,10 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/admin/update-cost-limits', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(costLimits)
+        body: JSON.stringify(costLimits),
       });
 
       if (response.ok) {
@@ -151,11 +157,11 @@ export default function AIAdminDashboard() {
       } else {
         throw new Error('Failed to update cost limits');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update cost limits",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -166,9 +172,10 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/admin/toggle-ai-service', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled: !aiEnabled })
+        body: JSON.stringify({ enabled: !aiEnabled }),
       });
 
       if (response.ok) {
@@ -180,11 +187,11 @@ export default function AIAdminDashboard() {
       } else {
         throw new Error('Failed to toggle AI service');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to toggle AI service",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -195,25 +202,26 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/admin/emergency-stop', {
+        credentials: 'include',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.ok) {
         toast({
           title: "Emergency Stop Activated",
           description: "AI service has been temporarily disabled due to cost limits",
-          variant: "destructive"
+          variant: "destructive",
         });
         setSystemStatus(prev => ({ ...prev, emergencyMode: true }));
       } else {
         throw new Error('Failed to activate emergency stop');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to activate emergency stop",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -224,8 +232,9 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/admin/reset-daily-counters', {
+        credentials: 'include',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.ok) {
@@ -237,11 +246,11 @@ export default function AIAdminDashboard() {
       } else {
         throw new Error('Failed to reset daily counters');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to reset daily counters",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -383,7 +392,7 @@ export default function AIAdminDashboard() {
                 id="daily-limit"
                 type="number"
                 value={costLimits.dailyLimit}
-                onChange={(e) => setCostLimits(prev => ({ ...prev, dailyLimit: parseInt(e.target.value) }))}
+                onChange={(e) => setCostLimits(prev => ({ ...prev, dailyLimit: parseInt(e.target.value, 10) }))}
               />
             </div>
             <div>
@@ -392,7 +401,7 @@ export default function AIAdminDashboard() {
                 id="monthly-budget"
                 type="number"
                 value={costLimits.monthlyBudget}
-                onChange={(e) => setCostLimits(prev => ({ ...prev, monthlyBudget: parseInt(e.target.value) }))}
+                onChange={(e) => setCostLimits(prev => ({ ...prev, monthlyBudget: parseInt(e.target.value, 10) }))}
               />
             </div>
             <div>
@@ -401,7 +410,7 @@ export default function AIAdminDashboard() {
                 id="per-user-limit"
                 type="number"
                 value={costLimits.perUserDailyLimit}
-                onChange={(e) => setCostLimits(prev => ({ ...prev, perUserDailyLimit: parseInt(e.target.value) }))}
+                onChange={(e) => setCostLimits(prev => ({ ...prev, perUserDailyLimit: parseInt(e.target.value, 10) }))}
               />
             </div>
             <div>
@@ -410,7 +419,7 @@ export default function AIAdminDashboard() {
                 id="emergency-threshold"
                 type="number"
                 value={costLimits.emergencyThreshold}
-                onChange={(e) => setCostLimits(prev => ({ ...prev, emergencyThreshold: parseInt(e.target.value) }))}
+                onChange={(e) => setCostLimits(prev => ({ ...prev, emergencyThreshold: parseInt(e.target.value, 10) }))}
               />
             </div>
           </div>

@@ -112,8 +112,8 @@ export default function PhoneNumberInput({
             <div className="max-h-[200px] overflow-y-auto">
               {filteredCountries
                 .filter(country => country.code && country.code.trim() !== '')
-                .map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
+                .map((country, index) => (
+                  <SelectItem key={`country-${country.code}-${index}`} value={country.code}>
                     <div className="flex items-center gap-2">
                       <span>{country.flag}</span>
                       <span className="text-sm">{country.code}</span>
