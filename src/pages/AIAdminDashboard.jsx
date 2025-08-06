@@ -50,7 +50,7 @@ export default function AIAdminDashboard() {
 
   useEffect(() => {
     loadAdminData();
-  }, [loadAdminData]);
+  }, []);
 
   const loadAdminData = useCallback(async () => {
     setIsLoading(true);
