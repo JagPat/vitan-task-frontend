@@ -60,7 +60,9 @@ import {
   Clock,
   AlertTriangle,
   Users,
-  FolderOpen
+  FolderOpen,
+  List,
+  Grid3X3
 } from 'lucide-react';
 import UnifiedTaskCard from '@/components/tasks/UnifiedTaskCard';
 import AdvancedTaskFilters from '@/components/tasks/AdvancedTaskFilters';
