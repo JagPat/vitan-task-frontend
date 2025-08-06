@@ -113,7 +113,7 @@ export default function PhoneNumberInput({
               {filteredCountries
                 .filter(country => country.code && country.code.trim() !== '')
                 .map((country, index) => (
-                  <SelectItem key={`${country.code}-${country.country}-${index}`} value={country.code}>
+                  <SelectItem key={`country-${country.code}-${country.country}-${index}`} value={country.code}>
                     <div className="flex items-center gap-2">
                       <span>{country.flag}</span>
                       <span className="text-sm">{country.code}</span>

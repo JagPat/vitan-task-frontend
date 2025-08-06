@@ -82,12 +82,15 @@ export default function EditUserDialog({ open, onOpenChange, user, onUpdateSucce
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="edit-user-description">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <UserCog className="w-5 h-5" />
-            Edit Team Member
-          </DialogTitle>
+                      <DialogTitle className="flex items-center gap-2">
+              <UserCog className="w-5 h-5" />
+              Edit Team Member
+            </DialogTitle>
+            <div id="edit-user-description" className="sr-only">
+              Dialog for editing team member information including name, email, phone, and role
+            </div>
           <DialogDescription>
             Update details for {user.full_name}.
           </DialogDescription>

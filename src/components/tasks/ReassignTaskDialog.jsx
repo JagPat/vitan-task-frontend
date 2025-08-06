@@ -54,12 +54,15 @@ export default function ReassignTaskDialog({ open, onOpenChange, task, users, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="reassign-task-description">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <UserCheck className="w-5 h-5" />
-            Reassign Task
-          </DialogTitle>
+                      <DialogTitle className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5" />
+              Reassign Task
+            </DialogTitle>
+            <div id="reassign-task-description" className="sr-only">
+              Dialog for reassigning task to a different team member
+            </div>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -141,12 +141,15 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="invite-user-description">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5" />
-            Invite Team Member
-          </DialogTitle>
+                      <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Invite Team Member
+            </DialogTitle>
+            <div id="invite-user-description" className="sr-only">
+              Dialog for inviting new team members via email or phone number
+            </div>
         </DialogHeader>
         
         <Alert className="bg-blue-50 border-blue-200">

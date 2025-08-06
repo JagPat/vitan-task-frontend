@@ -45,26 +45,25 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click on 'Show API Test' button to open API testing interface for simulating transient and permanent errors.
+        # Locate and open language settings to change UI language to a non-default supported language.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[6]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Simulate API transient error (e.g., network timeout) during a task fetch by clicking 'Get Tasks' button.
+        # Try to locate user profile or settings menu to access language settings.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Try to simulate a permanent API error by clicking 'Create Test Task' to check error message handling, or report issue if no error simulation possible.
+        # Attempt to change UI language to a non-default supported language from login modal or page settings.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button[3]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        assert False, 'Test failed: Expected validation error messages in the selected language, but the test plan execution failed.'
         await asyncio.sleep(5)
     
     finally:

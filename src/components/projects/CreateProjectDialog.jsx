@@ -20,12 +20,15 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
     category: '',
     priority: 'medium',
     start_date: null,
-    due_date: null
+    due_date: null,
+    template_id: null
   });
+  const [templates, setTemplates] = useState([]);
 
   useEffect(() => {
     if (open) {
       loadCategories();
+      loadTemplates();
     }
   }, [open]);
 
@@ -38,6 +41,18 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
       }
     } catch (error) {
       console.error('Error loading categories:', error);
+    }
+  };
+
+  const loadTemplates = async () => {
+    try {
+      const response = await fetch('https://vitan-task-production.up.railway.app/api/templates', { credentials: 'include' });
+      const data = await response.json();
+      if (data.success) {
+        setTemplates(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
     }
   };
 
@@ -70,7 +85,8 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
           category: '',
           priority: 'medium',
           start_date: null,
-          due_date: null
+          due_date: null,
+          template_id: null
         });
       } else {
         alert('Error creating project: ' + data.error);
@@ -212,6 +228,30 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
               </Popover>
             </div>
           </div>
+
+          {templates.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="template">Template (Optional)</Label>
+              <Select value={formData.template_id || ''} onValueChange={(value) => handleInputChange('template_id', value || null)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a template (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No template</SelectItem>
+                  {templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formData.template_id && (
+                <p className="text-xs text-muted-foreground">
+                  Using template will initialize the project with predefined tasks and settings.
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -1,525 +1,416 @@
 [
   {
     "id": "TC001",
-    "title": "User Registration and Login via WhatsApp OTP",
-    "description": "Verify that users can successfully register and log in using WhatsApp-based OTP authentication flow with correct phone input and OTP validation.",
+    "title": "Email OTP Authentication Success",
+    "description": "Verify that a user can successfully log in using email-based OTP authentication and obtains a valid JWT session token.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the login page"
+        "description": "Navigate to the login page."
       },
       {
         "type": "action",
-        "description": "Input a valid WhatsApp phone number"
+        "description": "Select email authentication option."
       },
       {
         "type": "action",
-        "description": "Request OTP and receive it via WhatsApp"
+        "description": "Enter a valid email address."
       },
       {
         "type": "action",
-        "description": "Enter the received OTP in the application"
+        "description": "Trigger sending OTP to the email."
       },
       {
         "type": "action",
-        "description": "Submit the OTP for verification"
+        "description": "Enter the correct OTP received via email."
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP to authenticate."
       },
       {
         "type": "assertion",
-        "description": "Verify that login is successful and user is redirected to dashboard"
+        "description": "Verify user is successfully logged in and a valid JWT token is stored in session."
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "User Login via Email OTP",
-    "description": "Verify that users can successfully log in using Email OTP authentication with correct email input and OTP validation.",
-    "category": "functional",
+    "title": "WhatsApp OTP Authentication Failure with Incorrect OTP",
+    "description": "Verify that when an incorrect OTP is entered for WhatsApp-based login, the authentication fails and an appropriate error message is shown.",
+    "category": "error handling",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the login page"
+        "description": "Navigate to the login page."
       },
       {
         "type": "action",
-        "description": "Input a valid email address"
+        "description": "Select WhatsApp authentication option."
       },
       {
         "type": "action",
-        "description": "Request OTP and receive it via email"
+        "description": "Enter a valid phone number linked to WhatsApp."
       },
       {
         "type": "action",
-        "description": "Enter the received OTP in the application"
+        "description": "Trigger sending OTP via WhatsApp."
       },
       {
         "type": "action",
-        "description": "Submit the OTP for verification"
+        "description": "Enter an incorrect OTP code."
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP."
       },
       {
         "type": "assertion",
-        "description": "Verify that login is successful and user is redirected to dashboard"
+        "description": "Verify authentication is rejected and a meaningful error message is displayed."
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Login Failure with Invalid OTP",
-    "description": "Verify that login fails when an invalid or expired OTP is submitted.",
-    "category": "error handling",
+    "title": "Task Creation with Valid Input",
+    "description": "Verify a user can create a new task successfully with all required fields using multi-language inputs and the new task appears in the task list.",
+    "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the login page"
+        "description": "Navigate to the dashboard and open 'Create Task' form."
       },
       {
         "type": "action",
-        "description": "Input a valid phone number or email"
+        "description": "Fill in required fields: task title, description (with multi-language characters), due date, and assign to a user."
       },
       {
         "type": "action",
-        "description": "Request OTP"
-      },
-      {
-        "type": "action",
-        "description": "Enter an invalid or expired OTP"
-      },
-      {
-        "type": "action",
-        "description": "Submit the OTP"
+        "description": "Submit the task creation form."
       },
       {
         "type": "assertion",
-        "description": "Verify that login fails and appropriate error message is shown"
+        "description": "Verify task is created successfully and visible in the task list with correct data."
       }
     ]
   },
   {
     "id": "TC004",
-    "title": "Task CRUD Operations with Valid Inputs",
-    "description": "Verify that tasks can be created, read, updated, and deleted with valid multi-language inputs, and that status and comments functions work correctly.",
-    "category": "functional",
+    "title": "Task Creation Form Validation",
+    "description": "Verify that client-side validation prevents submission of task creation form when required fields are missing or invalid and error messages display in selected language.",
+    "category": "error handling",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login and navigate to the Task management page"
+        "description": "Open 'Create Task' form."
       },
       {
         "type": "action",
-        "description": "Create a new task with valid multi-language title and description"
+        "description": "Attempt to submit form without filling required fields like title and assign user."
       },
       {
         "type": "assertion",
-        "description": "Verify task is listed with correct details"
+        "description": "Verify form shows real-time validation errors in the user's selected language."
       },
       {
         "type": "action",
-        "description": "Edit the task to update fields including status and assignment"
+        "description": "Input invalid data in fields (e.g., past due date)."
       },
       {
         "type": "assertion",
-        "description": "Verify the updates are reflected correctly"
-      },
-      {
-        "type": "action",
-        "description": "Add comments to the task"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the comments display correctly with timestamps"
-      },
-      {
-        "type": "action",
-        "description": "Delete the task"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify task is removed from the list"
+        "description": "Verify validation error is shown for invalid due date."
       }
     ]
   },
   {
     "id": "TC005",
-    "title": "Task Creation Form Validation with Multi-language Input",
-    "description": "Verify client-side form validation handles missing fields, invalid characters and supports multi-language inputs with real-time feedback.",
-    "category": "error handling",
+    "title": "Task Status Update and Comment Addition",
+    "description": "Verify user can change a task's status and add comments, and these updates are persisted and displayed correctly.",
+    "category": "functional",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the Task creation page"
+        "description": "Navigate to an existing task detail page."
       },
       {
         "type": "action",
-        "description": "Attempt to create a task without entering required fields"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify validation errors are shown for required fields"
+        "description": "Change the task status (e.g., from 'To Do' to 'In Progress')."
       },
       {
         "type": "action",
-        "description": "Enter invalid characters or unsupported language scripts"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify appropriate validation messages are displayed"
+        "description": "Add a new comment to the task."
       },
       {
         "type": "action",
-        "description": "Enter valid multi-language input (e.g., Arabic, Chinese)"
+        "description": "Save the changes."
       },
       {
         "type": "assertion",
-        "description": "Verify no validation errors and input is accepted"
+        "description": "Confirm that task status updates and new comment appear in the task details."
       }
     ]
   },
   {
     "id": "TC006",
-    "title": "Project Creation and Team Assignment",
-    "description": "Verify users can create new projects, assign team members with roles, and collaborate within project management interface.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login and navigate to Project management page"
-      },
-      {
-        "type": "action",
-        "description": "Create a new project with valid details"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify project appears in the project list with correct information"
-      },
-      {
-        "type": "action",
-        "description": "Assign team members with specific roles (e.g., admin, editor, viewer)"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify team members are correctly assigned with designated roles"
-      },
-      {
-        "type": "action",
-        "description": "Perform updates to the project details and save"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify project updates are persisted"
-      },
-      {
-        "type": "action",
-        "description": "Delete the project"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify project is removed from list and team members no longer have access"
-      }
-    ]
-  },
-  {
-    "id": "TC007",
-    "title": "Team Management with Role Assignment",
-    "description": "Verify team page allows adding/removing users, assigning roles, and managing contacts with correct permission enforcement.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to team management page"
-      },
-      {
-        "type": "action",
-        "description": "Add new team members with valid contact info"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify new members appear with correct details"
-      },
-      {
-        "type": "action",
-        "description": "Assign roles to team members"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify roles reflect in UI and restrict/allow appropriate access"
-      },
-      {
-        "type": "action",
-        "description": "Remove a team member"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the member is removed and no longer listed"
-      }
-    ]
-  },
-  {
-    "id": "TC008",
-    "title": "WhatsApp Messaging and Notifications Integration",
-    "description": "Verify that WhatsApp messages and notifications are sent correctly through the admin interface with webhook integration for incoming communication.",
-    "category": "integration",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login to the WhatsApp admin dashboard"
-      },
-      {
-        "type": "action",
-        "description": "Send a test WhatsApp message to a valid number"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify message is delivered and status is confirmed"
-      },
-      {
-        "type": "action",
-        "description": "Trigger a notification from a task or project event"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify notification is sent via WhatsApp to designated users"
-      },
-      {
-        "type": "action",
-        "description": "Simulate an incoming WhatsApp webhook message"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify system processes the webhook and updates UI accordingly"
-      }
-    ]
-  },
-  {
-    "id": "TC009",
-    "title": "Template Creation and Usage for Tasks and Projects",
-    "description": "Verify that users can create, save, edit, and apply task and project templates effectively for quick setup.",
+    "title": "Project Creation with Template Utilization",
+    "description": "Verify that user can create a new project using a predefined template and the project is properly initialized with template tasks and settings.",
     "category": "functional",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the Template management page"
+        "description": "Navigate to the project creation page."
       },
       {
         "type": "action",
-        "description": "Create a new task template with required fields"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the template is saved and listed correctly"
+        "description": "Select a project template from the available list."
       },
       {
         "type": "action",
-        "description": "Create a new project template with predefined parameters"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the project template is saved correctly"
+        "description": "Fill in additional required project details."
       },
       {
         "type": "action",
-        "description": "Apply a task template to create a new task"
+        "description": "Submit the project creation form."
       },
       {
         "type": "assertion",
-        "description": "Verify task is created with template data prefilled"
+        "description": "Verify the new project is created with tasks and settings from the selected template."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Team Role Assignment and Permission Enforcement",
+    "description": "Verify that team members can be assigned roles and that these roles restrict or authorize actions appropriately across the system.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to team management page and select a team member."
+      },
+      {
+        "type": "action",
+        "description": "Change the member's role to a role with restricted permissions."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm role change is saved and reflected in member's permissions."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to perform an action not allowed by the assigned role (e.g., deleting a project)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the action is blocked and an appropriate access denied message is shown."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "WhatsApp Notification Delivery and Rate Limit Handling",
+    "description": "Verify that WhatsApp notifications are sent correctly for task updates and system respects rate limits by queuing or retrying as needed.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger an event that sends a WhatsApp notification (e.g., task assigned)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the notification is delivered to the recipient's WhatsApp."
+      },
+      {
+        "type": "action",
+        "description": "Simulate exceeding WhatsApp API rate limits."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the system handles the rate limit by retrying or queueing notifications without message loss."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Analytics Dashboard Data Accuracy and Visualization Rendering",
+    "description": "Verify that the analytics dashboard displays accurate real-time metrics for tasks, projects, and team performance with all charts rendering correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to the analytics dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all expected data metrics (task counts, project statuses, team activity) are present and match backend data."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm all charts and visualizations render properly with no errors or distortions."
       }
     ]
   },
   {
     "id": "TC010",
-    "title": "Analytics Dashboard Data Visualization Accuracy",
-    "description": "Verify that the analytics dashboard renders accurate and timely charts, graphs and metrics reflecting tasks, projects, and team performance.",
+    "title": "Routing and Protected Routes Enforcement",
+    "description": "Verify that navigation handles protected routes and deep linking correctly restricting unauthorized users and maintaining smooth navigation.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Log in and navigate to the analytics dashboard"
-      },
-      {
-        "type": "action",
-        "description": "Review displayed charts and data visualizations"
+        "description": "Attempt to navigate directly to a protected route URL as an unauthenticated user."
       },
       {
         "type": "assertion",
-        "description": "Verify data accuracy by comparing with backend data"
+        "description": "Verify the user is redirected to login page before accessing the protected route."
       },
       {
         "type": "action",
-        "description": "Filter analytics by project, date range, team member"
+        "description": "Login and navigate through various pages to test correct routing and protected route access."
       },
       {
         "type": "assertion",
-        "description": "Verify filters update the visualizations correctly and efficiently"
+        "description": "Confirm navigation is smooth, URLs update correctly, and protected routes are accessible only after authentication."
       }
     ]
   },
   {
     "id": "TC011",
-    "title": "Routing and Navigation with Protected Routes",
-    "description": "Verify that application navigation via React Router works correctly with protected routes preventing unauthorized access.",
+    "title": "Client-Side Form Multi-Language Validation and Error Feedback",
+    "description": "Verify that all forms provide instant validation and error feedback in multiple supported languages.",
     "category": "functional",
-    "priority": "High",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Attempt to access protected page without login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify redirect to login page occurs"
+        "description": "Set user interface language to a non-default supported language."
       },
       {
         "type": "action",
-        "description": "Login successfully"
+        "description": "Open any input form (e.g., task creation)."
       },
       {
         "type": "action",
-        "description": "Navigate to various protected routes"
+        "description": "Leave required fields empty or enter invalid data and attempt to submit."
       },
       {
         "type": "assertion",
-        "description": "Verify pages load properly without errors or warnings"
+        "description": "Validate that error messages appear dynamically and are displayed in the selected language."
       }
     ]
   },
   {
     "id": "TC012",
-    "title": "Accessibility Compliance Verification",
-    "description": "Verify all UI components comply with accessibility standards including ARIA roles, keyboard navigability, and screen reader support.",
+    "title": "Reusable UI Components Accessibility Compliance",
+    "description": "Verify that UI components built with Radix UI and Tailwind CSS meet accessibility standards including ARIA roles, keyboard navigation, and screen reader support.",
     "category": "ui",
-    "priority": "High",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate app pages using keyboard only"
+        "description": "Navigate through UI components using keyboard only."
       },
       {
         "type": "assertion",
-        "description": "Verify full keyboard navigation and focus states are present and logical"
-      },
-      {
-        "type": "action",
-        "description": "Use screen reader on common UI components like forms, modals, and buttons"
+        "description": "Confirm focus indicators are visible, tab order is logical, and all interactive components are reachable."
       },
       {
         "type": "assertion",
-        "description": "Verify ARIA labels and roles announce correct information"
+        "description": "Use a screen reader to verify correct ARIA labels and descriptions are announced."
       }
     ]
   },
   {
     "id": "TC013",
     "title": "API Error Handling and Retry Logic",
-    "description": "Verify that the backend API client correctly handles errors and retries calls according to defined logic without crashing the app.",
+    "description": "Verify that API client retries on transient errors and properly surfaces consistent error messages on permanent failures.",
     "category": "error handling",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Simulate API failures such as timeouts and server errors when performing entity CRUD operations"
+        "description": "Simulate API transient error (e.g., network timeout) during a task fetch."
       },
       {
         "type": "assertion",
-        "description": "Verify the client retries the request according to retry policy"
+        "description": "Verify the API client retries the request according to configured logic."
+      },
+      {
+        "type": "action",
+        "description": "Simulate a permanent API error (e.g., 400 Bad Request) when creating a project."
       },
       {
         "type": "assertion",
-        "description": "Verify user-friendly error messages appear when retries fail"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the application remains responsive and stable without crashes"
+        "description": "Check the system displays a clear and consistent error message to the user."
       }
     ]
   },
   {
     "id": "TC014",
-    "title": "Responsive Design Verification on Multiple Devices",
-    "description": "Verify application UI renders correctly and remains usable across various device screen sizes including mobile, tablet, and desktop.",
+    "title": "Responsive UI Layout Adaptation Across Devices",
+    "description": "Verify that the application UI adapts correctly to desktop, tablet, and mobile screen sizes ensuring usability and no visual regressions.",
     "category": "ui",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Open app on devices or simulators of different screen sizes (320px to 1920px width)"
+        "description": "Open the application in desktop browser and verify layout and UI components."
       },
       {
         "type": "assertion",
-        "description": "Verify layout adjusts properly with no broken elements or overflow"
+        "description": "Confirm UI elements render properly and are fully accessible."
+      },
+      {
+        "type": "action",
+        "description": "Resize viewport to tablet dimensions and verify responsive UI adjustments."
       },
       {
         "type": "assertion",
-        "description": "Verify navigation and interactive elements remain accessible"
+        "description": "Confirm navigation, forms, and components adapt correctly."
+      },
+      {
+        "type": "action",
+        "description": "Resize viewport to mobile dimensions or use a mobile device to access the app."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that UI remains usable, components stack appropriately, and navigation remains functional."
       }
     ]
   },
   {
     "id": "TC015",
-    "title": "Real-time Notifications and Toast Messages",
-    "description": "Verify that notification system displays real-time toast messages for task and project updates, errors, and system alerts.",
+    "title": "Real-time Notification and Toast Message Display",
+    "description": "Verify that system-triggered real-time toast notifications appear correctly for success, warnings, and error states during task and project operations.",
     "category": "functional",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Trigger events such as task creation, status update, failure in API calls"
+        "description": "Perform an action such as task creation or project update."
       },
       {
         "type": "assertion",
-        "description": "Verify toast notifications appear promptly with proper messages"
+        "description": "Verify a success toast notification appears promptly and disappears after a reasonable timeout."
       },
       {
         "type": "action",
-        "description": "Verify notifications can be dismissed and do not block UI controls"
-      }
-    ]
-  },
-  {
-    "id": "TC016",
-    "title": "JWT Authentication and Session Management Security",
-    "description": "Verify that JWT tokens are issued, refreshed, and revoked appropriately and sessions are managed securely to prevent unauthorized access.",
-    "category": "security",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login and verify JWT token is received"
-      },
-      {
-        "type": "action",
-        "description": "Navigate various protected routes with token"
+        "description": "Trigger an error condition (e.g., invalid input)."
       },
       {
         "type": "assertion",
-        "description": "Verify access is granted while token is valid"
-      },
-      {
-        "type": "action",
-        "description": "Simulate token expiration"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify user is logged out or prompted to re-authenticate"
-      },
-      {
-        "type": "action",
-        "description": "Attempt token reuse after logout"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify access is denied and user redirected to login"
+        "description": "Confirm an error toast message is displayed with accurate information."
       }
     ]
   }

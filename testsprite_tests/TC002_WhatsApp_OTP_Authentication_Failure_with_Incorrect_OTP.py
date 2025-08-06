@@ -45,26 +45,41 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click on 'Show API Test' button to open API testing interface for simulating transient and permanent errors.
+        # Click the Login button to navigate to the login page.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Simulate API transient error (e.g., network timeout) during a task fetch by clicking 'Get Tasks' button.
+        # Enter a valid phone number linked to WhatsApp in the input field at index 18.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Enter an incorrect OTP code in the OTP input field and submit it.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('000000')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Try to simulate a permanent API error by clicking 'Create Test Task' to check error message handling, or report issue if no error simulation possible.
+        # Close the login modal to reset the state and complete the test.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button[3]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        # Assert that an error message is displayed indicating authentication failure due to incorrect OTP.
+        error_message_locator = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[contains(@class, "error-message")]')
+        await page.wait_for_timeout(1000)  # wait briefly for error message to appear
+        assert await error_message_locator.is_visible(), "Error message for incorrect OTP is not visible"
+        error_text = await error_message_locator.text_content()
+        assert error_text and ('incorrect' in error_text.lower() or 'invalid' in error_text.lower() or 'error' in error_text.lower()), f'Unexpected error message text: {error_text}'
         await asyncio.sleep(5)
     
     finally:

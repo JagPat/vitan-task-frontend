@@ -3,16 +3,16 @@
   "type": "frontend",
   "scope": "codebase",
   "localEndpoint": "http://localhost:3003",
-  "loginUser": "test@quantumleap.com",
+  "loginUser": "test",
   "loginPassword": "password",
   "executionArgs": {
     "projectName": "vitan-task-frontend",
     "projectPath": "/Users/jagrutpatel/Vitan Task/vitan-task-frontend",
     "testIds": [],
-    "additionalInstruction": "Focus on deep UI/UX testing with these specific requirements:\n\n1. **Authentication Testing:**\n   - Test login with credentials: username \"Test\", password \"password\"\n   - Test WhatsApp OTP verification flow\n   - Test form validation and error handling\n   - Test accessibility (ARIA labels, keyboard navigation)\n\n2. **Task Management Deep Testing:**\n   - Test every button, form field, and interaction in CreateTask.jsx\n   - Test task creation with all field types (text, date, select, priority)\n   - Test form validation for required fields\n   - Test task editing, deletion, and status updates\n   - Test task filtering and search functionality\n   - Test responsive design on different screen sizes\n\n3. **Project Management Testing:**\n   - Test project creation with all form fields\n   - Test project editing and deletion\n   - Test team member assignment\n   - Test project task creation and management\n\n4. **Team Management Testing:**\n   - Test user invitation flow\n   - Test team member role management\n   - Test contact management features\n   - Test user profile editing\n\n5. **Analytics Dashboard Testing:**\n   - Test all chart components and data visualization\n   - Test filter and date range selection\n   - Test responsive chart behavior\n\n6. **AI Admin Dashboard Testing:**\n   - Test all admin controls and settings\n   - Test cost management features\n   - Test system status monitoring\n   - Test API key management\n\n7. **WhatsApp Integration Testing:**\n   - Test WhatsApp admin interface\n   - Test message sending functionality\n   - Test contact management\n\n8. **Frontend-Backend Integration Testing:**\n   - Verify all API calls work correctly\n   - Test error handling for failed API requests\n   - Test loading states and user feedback\n   - Test data synchronization between frontend and backend\n\n9. **Accessibility Testing:**\n   - Test keyboard navigation for all components\n   - Verify ARIA labels and screen reader compatibility\n   - Test focus management and tab order\n   - Test color contrast and visual accessibility\n\n10. **Performance Testing:**\n    - Test page load times\n    - Test component rendering performance\n    - Test form submission responsiveness\n\n11. **Error Handling Testing:**\n    - Test network error scenarios\n    - Test validation error display\n    - Test user-friendly error messages\n\n12. **Cross-browser Compatibility:**\n    - Test on different browsers\n    - Test responsive design on mobile devices\n\nReport any mismatches between frontend features and backend endpoints, and provide detailed recommendations for improvements.",
+    "additionalInstruction": "Focus on testing the fixed authentication system, modal state management, and accessibility improvements. Use test credentials: username \"Test\", password \"password\" for any login tests.",
     "envs": {
       "API_KEY": "sk-user-k2ZCJgN9A2rN3Qwpw3HWmK3idoE71yBRpjQwvBOL3trXS5FbpIhcNZYpznQgxTd1f6BOb5LUrKxOZlE75A1-NsJKKS-K_w45oE3mX9nx8sIBuglAOk29DX0pggVNc0Bpm7k"
     }
   },
-  "proxy": "http://2eae895a-878e-4b52-b1a4-6a369dc9ad3a:rZeuAYYH4npU8eH5IxLbD7qIvJC0xWXg@tun.testsprite.com:8080"
+  "proxy": "http://ea433936-5da8-41af-9982-0494fe886893:LzzvifAckfuUzQByWnJQ3lL0ekHnYTsL@tun.testsprite.com:8080"
 }

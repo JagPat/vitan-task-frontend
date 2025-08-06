@@ -45,26 +45,49 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click on 'Show API Test' button to open API testing interface for simulating transient and permanent errors.
+        # Click the Login button to authenticate with test credentials.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Simulate API transient error (e.g., network timeout) during a task fetch by clicking 'Get Tasks' button.
+        # Input test phone number and attempt login.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Click Verify Account button to proceed with login verification.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Try to simulate a permanent API error by clicking 'Create Test Task' to check error message handling, or report issue if no error simulation possible.
+        # Input the 6-digit verification code to complete login and access the task detail page.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button[3]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('123456')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        # Click on the 'View' link of the first task in the task overview to open its detail page.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[4]/div/div/div[2]/div/div[2]/div/div/div[2]/a').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Change the task status from 'PENDING' to 'IN PROGRESS'.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Generic failing assertion since expected result is unknown
+        assert False, 'Test plan execution failed: generic failure assertion.'
         await asyncio.sleep(5)
     
     finally:

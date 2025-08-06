@@ -78,9 +78,12 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl" aria-describedby="edit-task-description">
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
+          <div id="edit-task-description" className="sr-only">
+            Dialog for editing task details including title, description, priority, due date, and assignment
+          </div>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

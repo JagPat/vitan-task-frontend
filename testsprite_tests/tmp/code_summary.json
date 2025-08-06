@@ -20,7 +20,8 @@
       "files": [
         "src/components/LoginDialog.jsx",
         "src/components/PhoneNumberInput.jsx",
-        "src/services/otpService.js"
+        "src/services/otpService.js",
+        "src/api/whatsTaskClient.js"
       ]
     },
     {

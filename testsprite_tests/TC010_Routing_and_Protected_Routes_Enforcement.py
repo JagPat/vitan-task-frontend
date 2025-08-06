@@ -45,26 +45,40 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click on 'Show API Test' button to open API testing interface for simulating transient and permanent errors.
+        # Attempt to navigate directly to a protected route URL as an unauthenticated user to verify redirection to login.
+        await page.goto('http://localhost:3003/dashboard', timeout=10000)
+        
+
+        # Check if user is logged in by looking for logout or user profile elements, or try to logout to test route protection again.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Simulate API transient error (e.g., network timeout) during a task fetch by clicking 'Get Tasks' button.
+        # Perform login using test credentials (username: test, password: password) via the login modal to verify access to protected routes after authentication.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Click the 'Verify Account' button to proceed with login verification.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Try to simulate a permanent API error by clicking 'Create Test Task' to check error message handling, or report issue if no error simulation possible.
+        # Enter the 6-digit verification code to complete login and verify access to protected routes.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button[3]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('123456')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        assert False, 'Test plan execution failed: generic failure assertion as expected result is unknown.'
         await asyncio.sleep(5)
     
     finally:

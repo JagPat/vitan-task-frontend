@@ -87,16 +87,24 @@ export default function TaskDetails() {
 
   const handleTaskUpdate = async (updatedData) => {
     try {
-      await Task.update(taskId, updatedData);
+      console.log('Updating task with data:', updatedData);
+      
+      const updateResponse = await Task.update(taskId, updatedData);
+      console.log('Task update response:', updateResponse);
       
       // Log the update
-      await ActivityLog.create({
-        task_id: taskId,
-        action: "updated",
-        notes: `Task updated by ${currentUser.full_name}`,
-        performed_by_name: currentUser.full_name,
-        whatsapp_message_sent: false
-      });
+      try {
+        await ActivityLog.create({
+          task_id: taskId,
+          action: "updated",
+          notes: `Task updated by ${currentUser.full_name}`,
+          performed_by_name: currentUser.full_name,
+          whatsapp_message_sent: false
+        });
+        console.log('Activity log created successfully');
+      } catch (logError) {
+        console.error("Error creating activity log:", logError);
+      }
 
       // Send WhatsApp notification about the update
       if (task.assigned_to_phone) {
@@ -110,15 +118,22 @@ export default function TaskDetails() {
             is_external: task.is_external_assignment,
             update_type: "modified"
           });
+          console.log('WhatsApp notification sent successfully');
         } catch (error) {
           console.error("Failed to send WhatsApp notification:", error);
         }
       }
 
       setShowEditDialog(false);
-      loadTaskDetails();
+      
+      // Reload task details to show updated data
+      console.log('Reloading task details...');
+      await loadTaskDetails();
+      console.log('Task details reloaded successfully');
+      
     } catch (error) {
       console.error("Error updating task:", error);
+      // Don't close dialog on error, let user try again
     }
   };
 
