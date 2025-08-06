@@ -1,16 +1,9 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChevronDown, Search } from "lucide-react";
-import { sortedCountryCodes, getDefaultCountryCode } from "@/utils/countryCodes";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search } from "lucide-react";
+import { countryCodes } from "@/utils/countryCodes";
 
 export default function PhoneNumberInput({ 
   value, 
@@ -20,32 +13,52 @@ export default function PhoneNumberInput({
   error,
   disabled = false 
 }) {
-  const [selectedCountry, setSelectedCountry] = useState(getDefaultCountryCode());
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(countryCodes[0]);
   const [localInputValue, setLocalInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Extract local number from full value for display
+  // Sort country codes for better UX
+  const sortedCountryCodes = [...countryCodes].sort((a, b) => {
+    // Put India first, then other countries alphabetically
+    if (a.code === "+91") return -1;
+    if (b.code === "+91") return 1;
+    return a.country.localeCompare(b.country);
+  });
+
+  // Get local number from full number
   const getLocalNumber = (fullNumber) => {
     if (!fullNumber) return "";
-    const countryCodeDigits = selectedCountry.code.replace('+', '');
-    if (fullNumber.startsWith('+')) {
-      return fullNumber.substring(1).replace(countryCodeDigits, '');
+    
+    // Find the country code that matches the start of the number
+    const matchingCountry = sortedCountryCodes.find(country => 
+      fullNumber.startsWith(country.code)
+    );
+    
+    if (matchingCountry) {
+      setSelectedCountry(matchingCountry);
+      return fullNumber.substring(matchingCountry.code.length);
     }
-    return fullNumber.replace(countryCodeDigits, '');
+    
+    return fullNumber;
   };
 
-  // Update local input when value changes externally
-  React.useEffect(() => {
-    setLocalInputValue(getLocalNumber(value));
-  }, [value, selectedCountry.code]);
+  // Initialize local input value when value prop changes
+  useEffect(() => {
+    if (value) {
+      setLocalInputValue(getLocalNumber(value));
+    } else {
+      setLocalInputValue("");
+    }
+  }, [value]);
 
   const handleCountryChange = (countryCode) => {
-    const country = sortedCountryCodes.find(c => c.code === countryCode);
-    if (country) {
-      setSelectedCountry(country);
-      // Reformat the current number with new country code
+    const newCountry = sortedCountryCodes.find(c => c.code === countryCode);
+    if (newCountry) {
+      setSelectedCountry(newCountry);
+      
+      // Update the full number with new country code
       if (localInputValue) {
-        const fullNumber = country.code + localInputValue;
+        const fullNumber = countryCode + localInputValue;
         onChange(fullNumber);
       }
     }
@@ -113,7 +126,10 @@ export default function PhoneNumberInput({
               {filteredCountries
                 .filter(country => country.code && country.code.trim() !== '')
                 .map((country, index) => (
-                  <SelectItem key={`country-${country.code}-${country.country}-${index}`} value={country.code}>
+                  <SelectItem 
+                    key={`country-${country.code}-${country.country}-${index}-${Date.now()}`} 
+                    value={country.code}
+                  >
                     <div className="flex items-center gap-2">
                       <span>{country.flag}</span>
                       <span className="text-sm">{country.code}</span>

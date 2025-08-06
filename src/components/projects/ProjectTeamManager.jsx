@@ -241,12 +241,15 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
                 Add Member
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent aria-describedby="add-member-description">
               <DialogHeader>
                 <DialogTitle>Add Team Member</DialogTitle>
                 <DialogDescription>
                   Add a new member to the project team.
                 </DialogDescription>
+                <div id="add-member-description" className="sr-only">
+                  Form to add a new team member to the project by selecting a user and assigning a role.
+                </div>
               </DialogHeader>
               
               <div className="space-y-4">
@@ -411,13 +414,16 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
                         <UserMinus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent aria-describedby="remove-member-description">
                       <DialogHeader>
                         <DialogTitle>Remove Team Member</DialogTitle>
                         <DialogDescription>
                           Are you sure you want to remove {member.full_name} from this project? 
                           This action cannot be undone.
                         </DialogDescription>
+                        <div id="remove-member-description" className="sr-only">
+                          Confirmation dialog to remove a team member from the project. This action is irreversible.
+                        </div>
                       </DialogHeader>
                       <DialogFooter>
                         <Button variant="outline" onClick={() => setShowRemoveDialog(false)}>

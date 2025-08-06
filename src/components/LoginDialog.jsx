@@ -18,7 +18,8 @@ import {
   Lock, 
   AlertCircle,
   CheckCircle,
-  Loader2
+  Loader2,
+  RefreshCw
 } from "lucide-react";
 import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { toast } from "sonner";
@@ -28,6 +29,9 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState("whatsapp");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
   
   // WhatsApp login form
   const [whatsappForm, setWhatsappForm] = useState({
@@ -47,6 +51,32 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [pendingWhatsappNumber, setPendingWhatsappNumber] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
+
+  // Reset form when dialog opens/closes
+  React.useEffect(() => {
+    if (!open) {
+      setShowVerification(false);
+      setShowEmailVerification(false);
+      setError("");
+      setVerificationForm({ verificationCode: "" });
+      setPendingWhatsappNumber("");
+      setPendingEmail("");
+      setResendDisabled(false);
+      setResendCountdown(0);
+    }
+  }, [open]);
+
+  // Handle resend countdown
+  React.useEffect(() => {
+    if (resendCountdown > 0) {
+      const timer = setTimeout(() => {
+        setResendCountdown(resendCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setResendDisabled(false);
+    }
+  }, [resendCountdown]);
 
   const handleWhatsappLogin = async (e) => {
     e.preventDefault();
@@ -154,6 +184,8 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       if (response.success) {
         setPendingWhatsappNumber(whatsappForm.whatsappNumber);
         setShowVerification(true);
+        setResendDisabled(true);
+        setResendCountdown(60); // 60 second cooldown
         toast.success("Verification code sent to your WhatsApp!");
       } else {
         // Handle specific backend errors
@@ -181,6 +213,28 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setError("");
+
+    try {
+      const response = await whatsTaskClient.sendVerificationCode(pendingWhatsappNumber);
+      
+      if (response.success) {
+        setResendDisabled(true);
+        setResendCountdown(60); // 60 second cooldown
+        toast.success("Verification code resent to your WhatsApp!");
+      } else {
+        setError(response.error || "Failed to resend verification code");
+      }
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      setError("Failed to resend verification code. Please try again.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const handleConfirmVerification = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -203,12 +257,14 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         setShowVerification(false);
         setVerificationForm({ verificationCode: "" });
         setPendingWhatsappNumber("");
+        setResendDisabled(false);
+        setResendCountdown(0);
       } else {
-        setError(response.error || "Verification failed");
+        setError(response.error || "Verification failed. Please check your code and try again.");
       }
     } catch (error) {
       console.error('Verification error:', error);
-      setError("Verification failed. Please try again.");
+      setError("Verification failed. Please check your code and try again.");
     } finally {
       setLoading(false);
     }
@@ -262,12 +318,12 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-              <DialogContent 
-          className="sm:max-w-md" 
-          aria-describedby="login-dialog-description" 
-          onPointerDownOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-        >
+      <DialogContent 
+        className="sm:max-w-md" 
+        aria-describedby="login-dialog-description" 
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -400,6 +456,15 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
                   disabled={loading}
                 >
                   Back
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleResendVerification}
+                  disabled={resendDisabled || resendLoading || loading}
+                >
+                  {resendLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                  {resendCountdown > 0 ? `Resend (${resendCountdown}s)` : 'Resend'}
                 </Button>
                 <Button type="submit" disabled={loading || !verificationForm.verificationCode}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}

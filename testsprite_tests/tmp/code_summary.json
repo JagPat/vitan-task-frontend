@@ -20,90 +20,72 @@
       "files": [
         "src/components/LoginDialog.jsx",
         "src/components/PhoneNumberInput.jsx",
-        "src/services/otpService.js",
         "src/api/whatsTaskClient.js"
       ]
     },
     {
       "name": "Task Management System",
-      "description": "Complete task CRUD operations with status tracking, comments, and assignments",
+      "description": "Complete task CRUD operations with status updates, comments, and assignments",
       "files": [
         "src/pages/CreateTask.jsx",
-        "src/pages/MyTasks.jsx",
         "src/pages/TaskDetails.jsx",
-        "src/pages/UnifiedTaskView.jsx",
-        "src/pages/DeletedTasks.jsx",
-        "src/components/tasks/",
+        "src/components/tasks/EditTaskDialog.jsx",
+        "src/components/tasks/ReassignTaskDialog.jsx",
+        "src/components/tasks/TaskCard.jsx",
+        "src/components/tasks/UnifiedTaskCard.jsx",
         "src/api/entities.js"
       ]
     },
     {
       "name": "Project Management",
-      "description": "Project creation, management, and team collaboration features",
+      "description": "Project creation, management, and team assignment with template support",
       "files": [
-        "src/pages/Projects.jsx",
-        "src/pages/ProjectDetails.jsx",
-        "src/components/projects/",
-        "src/api/entities.js"
+        "src/components/projects/CreateProjectDialog.jsx",
+        "src/components/projects/CreateProjectTaskDialog.jsx",
+        "src/components/projects/ProjectTeamManager.jsx",
+        "src/pages/Projects.jsx"
       ]
     },
     {
       "name": "Team Management",
-      "description": "User management, team member roles, and collaboration features",
+      "description": "User management, team member invitations, and role assignments",
       "files": [
-        "src/pages/Team.jsx",
-        "src/pages/TeamTaskView.jsx",
-        "src/components/team/",
-        "src/components/ContactManager.jsx"
+        "src/components/team/EditUserDialog.jsx",
+        "src/components/team/InviteUserDialog.jsx",
+        "src/components/team/TeamMemberCard.jsx",
+        "src/pages/Team.jsx"
       ]
     },
     {
       "name": "Analytics Dashboard",
-      "description": "Data visualization and analytics for tasks, projects, and team performance",
+      "description": "Data visualization and analytics with charts and metrics",
       "files": [
         "src/pages/Analytics.jsx",
-        "src/pages/Dashboard.jsx",
-        "src/components/analytics/",
-        "src/components/dashboard/"
-      ]
-    },
-    {
-      "name": "AI Admin Dashboard",
-      "description": "AI service management, cost tracking, and system monitoring",
-      "files": [
-        "src/pages/AIAdminDashboard.jsx"
+        "src/components/analytics/AnalyticsHeader.jsx",
+        "src/components/analytics/KeyMetrics.jsx",
+        "src/components/analytics/PriorityBreakdown.jsx"
       ]
     },
     {
       "name": "WhatsApp Integration",
-      "description": "WhatsApp messaging, notifications, and admin interface",
+      "description": "WhatsApp messaging and notification system",
       "files": [
-        "src/pages/WhatsAppAdmin.jsx",
-        "src/pages/WhatsAppTest.jsx",
-        "src/api/integrations.js"
+        "src/api/functions.js",
+        "src/api/whatsTaskClient.js"
       ]
     },
     {
       "name": "Template System",
       "description": "Task and project templates for quick creation",
       "files": [
-        "src/pages/Templates.jsx",
-        "src/components/templates/"
-      ]
-    },
-    {
-      "name": "API Integration",
-      "description": "Backend API client with retry logic and error handling",
-      "files": [
-        "src/api/whatsTaskClient.js",
-        "src/api/entities.js",
-        "src/api/functions.js",
-        "src/api/mockApiService.js"
+        "src/components/templates/TemplateCard.jsx",
+        "src/components/templates/TemplateFormDialog.jsx",
+        "src/components/tasks/TaskTemplateManager.jsx"
       ]
     },
     {
       "name": "UI Component Library",
-      "description": "Reusable UI components built with Radix UI and Tailwind CSS",
+      "description": "Reusable UI components built with shadcn/ui",
       "files": [
         "src/components/ui/",
         "src/lib/utils.js"
@@ -111,37 +93,45 @@
     },
     {
       "name": "Form Validation",
-      "description": "Client-side validation for all forms with error handling",
+      "description": "Client-side validation with multi-language support",
       "files": [
-        "src/pages/CreateTask.jsx",
-        "src/components/LoginDialog.jsx",
-        "src/components/PhoneNumberInput.jsx"
+        "src/utils/dateUtils.js",
+        "src/utils/countryCodes.js",
+        "src/utils/designSystem.js"
       ]
     },
     {
-      "name": "State Management",
-      "description": "React hooks and state management for application data",
+      "name": "API Integration",
+      "description": "RESTful API client with error handling and retry logic",
       "files": [
-        "src/hooks/",
-        "src/utils/"
+        "src/api/whatsTaskClient.js",
+        "src/api/entities.js",
+        "src/api/integrations.js"
       ]
     },
     {
       "name": "Routing System",
-      "description": "React Router setup with protected routes and navigation",
+      "description": "React Router based navigation with protected routes",
       "files": [
-        "src/pages/Layout.jsx",
-        "src/pages/index.jsx",
-        "src/App.jsx"
+        "src/App.jsx",
+        "src/pages/",
+        "src/hooks/use-mobile.jsx"
       ]
     },
     {
-      "name": "Error Handling",
-      "description": "Comprehensive error handling and user feedback system",
+      "name": "State Management",
+      "description": "React hooks and context for state management",
       "files": [
-        "src/api/whatsTaskClient.js",
+        "src/hooks/",
+        "src/components/"
+      ]
+    },
+    {
+      "name": "Accessibility Features",
+      "description": "ARIA attributes and screen reader support",
+      "files": [
         "src/components/ui/",
-        "src/utils/"
+        "src/components/dialog components"
       ]
     },
     {
@@ -149,33 +139,17 @@
       "description": "Mobile-first responsive design with Tailwind CSS",
       "files": [
         "src/index.css",
-        "src/components/ui/",
-        "src/hooks/use-mobile.jsx"
+        "src/App.css",
+        "tailwind.config.js"
       ]
     },
     {
-      "name": "Data Visualization",
-      "description": "Charts and graphs for analytics using Recharts",
+      "name": "Error Handling",
+      "description": "Comprehensive error handling and user feedback",
       "files": [
-        "src/pages/Analytics.jsx",
-        "src/components/analytics/"
-      ]
-    },
-    {
-      "name": "Notification System",
-      "description": "Toast notifications and real-time updates",
-      "files": [
-        "src/components/ui/",
-        "src/pages/CreateTask.jsx"
-      ]
-    },
-    {
-      "name": "Accessibility",
-      "description": "ARIA labels, keyboard navigation, and screen reader support",
-      "files": [
-        "src/components/ui/",
-        "src/components/LoginDialog.jsx",
-        "src/components/projects/CreateProjectDialog.jsx"
+        "src/api/whatsTaskClient.js",
+        "src/components/ui/alert.jsx",
+        "src/components/ui/toast.jsx"
       ]
     }
   ]

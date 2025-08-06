@@ -216,7 +216,7 @@ export default function TaskTemplateManager({
               Create Template
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby="template-manager-description">
             <DialogHeader>
               <DialogTitle>
                 {editingTemplate ? 'Edit Template' : 'Create New Template'}
@@ -224,6 +224,9 @@ export default function TaskTemplateManager({
               <DialogDescription>
                 Define a reusable task template with checklist items and metadata.
               </DialogDescription>
+              <div id="template-manager-description" className="sr-only">
+                Form to create or edit task templates with name, priority, description, estimated hours, project assignment, checklist items, and tags.
+              </div>
             </DialogHeader>
             
             <div className="space-y-4">

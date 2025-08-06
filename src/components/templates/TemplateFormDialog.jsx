@@ -75,12 +75,15 @@ export default function TemplateFormDialog({ open, onOpenChange, template, onSav
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl" aria-describedby="template-form-description">
         <DialogHeader>
           <DialogTitle>{template ? 'Edit Template' : 'Create New Template'}</DialogTitle>
           <DialogDescription>
             Templates help you create tasks quickly. Use placeholders like `{'{{Location}}'}` in titles.
           </DialogDescription>
+          <div id="template-form-description" className="sr-only">
+            Form to create or edit task templates with name, title template, description, priority, category, estimated hours, default tags, and checklist items.
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

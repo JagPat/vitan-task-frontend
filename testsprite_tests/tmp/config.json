@@ -2,17 +2,17 @@
   "status": "commited",
   "type": "frontend",
   "scope": "codebase",
-  "localEndpoint": "http://localhost:3003",
+  "localEndpoint": "http://localhost:3004",
   "loginUser": "test",
   "loginPassword": "password",
   "executionArgs": {
     "projectName": "vitan-task-frontend",
     "projectPath": "/Users/jagrutpatel/Vitan Task/vitan-task-frontend",
     "testIds": [],
-    "additionalInstruction": "Focus on testing the fixed authentication system, modal state management, and accessibility improvements. Use test credentials: username \"Test\", password \"password\" for any login tests.",
+    "additionalInstruction": "Focus on testing the fixed authentication system, task persistence, template functionality, and accessibility improvements. Use test credentials: username \"Test\", password \"password\" for any login tests.",
     "envs": {
       "API_KEY": "sk-user-k2ZCJgN9A2rN3Qwpw3HWmK3idoE71yBRpjQwvBOL3trXS5FbpIhcNZYpznQgxTd1f6BOb5LUrKxOZlE75A1-NsJKKS-K_w45oE3mX9nx8sIBuglAOk29DX0pggVNc0Bpm7k"
     }
   },
-  "proxy": "http://ea433936-5da8-41af-9982-0494fe886893:LzzvifAckfuUzQByWnJQ3lL0ekHnYTsL@tun.testsprite.com:8080"
+  "proxy": "http://2d1c6bdd-aeac-4997-a037-79a68a41db1f:P9SvHWo7dI4SygmPKvUV9PYMMpAUiRrj@tun.testsprite.com:8080"
 }

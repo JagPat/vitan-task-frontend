@@ -370,12 +370,15 @@ const handleConfirmDelete = async () => {
 
       {/* Edit User Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="edit-user-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Edit className="w-5 h-5" />
               Edit User
             </DialogTitle>
+            <div id="edit-user-description" className="sr-only">
+              Form to edit user details including name, email, role, department, position, phone number, and external collaborator status.
+            </div>
           </DialogHeader>
           
           <form onSubmit={handleEditSubmit} className="space-y-4">
@@ -479,12 +482,15 @@ const handleConfirmDelete = async () => {
 
       {/* User Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby="user-details-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
               User Details - {user?.full_name}
             </DialogTitle>
+            <div id="user-details-description" className="sr-only">
+              Detailed view of user information including statistics, projects, recent tasks, and activity summary.
+            </div>
           </DialogHeader>
           
           <div className="space-y-6">

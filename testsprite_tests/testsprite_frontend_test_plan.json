@@ -1,8 +1,8 @@
 [
   {
     "id": "TC001",
-    "title": "Email OTP Authentication Success",
-    "description": "Verify that a user can successfully log in using email-based OTP authentication and obtains a valid JWT session token.",
+    "title": "Successful Authentication via Email OTP",
+    "description": "Verify that users can log in successfully using their email address with correct OTP input.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -12,34 +12,30 @@
       },
       {
         "type": "action",
-        "description": "Select email authentication option."
+        "description": "Enter a valid registered email address."
       },
       {
         "type": "action",
-        "description": "Enter a valid email address."
+        "description": "Request OTP and receive it via email."
       },
       {
         "type": "action",
-        "description": "Trigger sending OTP to the email."
+        "description": "Input the correct OTP."
       },
       {
         "type": "action",
-        "description": "Enter the correct OTP received via email."
-      },
-      {
-        "type": "action",
-        "description": "Submit the OTP to authenticate."
+        "description": "Submit the OTP for verification."
       },
       {
         "type": "assertion",
-        "description": "Verify user is successfully logged in and a valid JWT token is stored in session."
+        "description": "Verify that the user is logged in successfully and redirected to the dashboard."
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "WhatsApp OTP Authentication Failure with Incorrect OTP",
-    "description": "Verify that when an incorrect OTP is entered for WhatsApp-based login, the authentication fails and an appropriate error message is shown.",
+    "title": "Authentication Failure with Incorrect OTP",
+    "description": "Verify that authentication fails and proper error messages are shown when an incorrect OTP is submitted.",
     "category": "error handling",
     "priority": "High",
     "steps": [
@@ -49,19 +45,15 @@
       },
       {
         "type": "action",
-        "description": "Select WhatsApp authentication option."
+        "description": "Enter a valid registered email or WhatsApp number."
       },
       {
         "type": "action",
-        "description": "Enter a valid phone number linked to WhatsApp."
+        "description": "Request OTP."
       },
       {
         "type": "action",
-        "description": "Trigger sending OTP via WhatsApp."
-      },
-      {
-        "type": "action",
-        "description": "Enter an incorrect OTP code."
+        "description": "Enter an incorrect OTP."
       },
       {
         "type": "action",
@@ -69,24 +61,61 @@
       },
       {
         "type": "assertion",
-        "description": "Verify authentication is rejected and a meaningful error message is displayed."
+        "description": "Verify the login attempt is rejected with an appropriate error message about invalid OTP."
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Task Creation with Valid Input",
-    "description": "Verify a user can create a new task successfully with all required fields using multi-language inputs and the new task appears in the task list.",
+    "title": "Successful Authentication via WhatsApp OTP",
+    "description": "Verify users can log in using their WhatsApp number and correctly entered OTP.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the dashboard and open 'Create Task' form."
+        "description": "Navigate to the login page."
       },
       {
         "type": "action",
-        "description": "Fill in required fields: task title, description (with multi-language characters), due date, and assign to a user."
+        "description": "Enter a valid registered WhatsApp phone number."
+      },
+      {
+        "type": "action",
+        "description": "Request OTP and receive it via WhatsApp message."
+      },
+      {
+        "type": "action",
+        "description": "Input the correct OTP."
+      },
+      {
+        "type": "action",
+        "description": "Submit for verification."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user logs in successfully and accesses the main application."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Task Creation with Valid Inputs",
+    "description": "Verify that a user can create a task with all mandatory fields correctly filled and optional fields as well.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the task creation page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid task title, description, assign to one or more users, and set status."
+      },
+      {
+        "type": "action",
+        "description": "Optionally add comments and set due date."
       },
       {
         "type": "action",
@@ -94,53 +123,53 @@
       },
       {
         "type": "assertion",
-        "description": "Verify task is created successfully and visible in the task list with correct data."
-      }
-    ]
-  },
-  {
-    "id": "TC004",
-    "title": "Task Creation Form Validation",
-    "description": "Verify that client-side validation prevents submission of task creation form when required fields are missing or invalid and error messages display in selected language.",
-    "category": "error handling",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Open 'Create Task' form."
-      },
-      {
-        "type": "action",
-        "description": "Attempt to submit form without filling required fields like title and assign user."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify form shows real-time validation errors in the user's selected language."
-      },
-      {
-        "type": "action",
-        "description": "Input invalid data in fields (e.g., past due date)."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify validation error is shown for invalid due date."
+        "description": "Confirm the task is successfully created, appears in the task list, and all input values are saved."
       }
     ]
   },
   {
     "id": "TC005",
-    "title": "Task Status Update and Comment Addition",
-    "description": "Verify user can change a task's status and add comments, and these updates are persisted and displayed correctly.",
-    "category": "functional",
-    "priority": "Medium",
+    "title": "Task Creation Validation Errors for Missing Required Fields",
+    "description": "Verify form validation prevents task creation when mandatory fields are missing, displaying real-time feedback.",
+    "category": "error handling",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to an existing task detail page."
+        "description": "Navigate to the task creation page."
       },
       {
         "type": "action",
-        "description": "Change the task status (e.g., from 'To Do' to 'In Progress')."
+        "description": "Leave required fields such as task title or assignee empty."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm validation errors are displayed in real-time near input fields."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to submit the form."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that submission is blocked and user is notified about missing required information."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Task Update: Status Change and Comment Addition",
+    "description": "Verify that a user can update a task's status and add comments with changes reflecting in the UI.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open an existing task detail page."
+      },
+      {
+        "type": "action",
+        "description": "Change the status of the task to a valid new status."
       },
       {
         "type": "action",
@@ -148,32 +177,65 @@
       },
       {
         "type": "action",
-        "description": "Save the changes."
+        "description": "Save the updates."
       },
       {
         "type": "assertion",
-        "description": "Confirm that task status updates and new comment appear in the task details."
+        "description": "Verify the status is updated and comment is visible in task details."
       }
     ]
   },
   {
-    "id": "TC006",
-    "title": "Project Creation with Template Utilization",
-    "description": "Verify that user can create a new project using a predefined template and the project is properly initialized with template tasks and settings.",
+    "id": "TC007",
+    "title": "Task Deletion with Confirmation and UI Update",
+    "description": "Verify that a user can delete a task after confirmation and that the task is removed from task lists.",
     "category": "functional",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the project creation page."
+        "description": "Navigate to a task card or details page."
       },
       {
         "type": "action",
-        "description": "Select a project template from the available list."
+        "description": "Click on the delete option for the task."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that a confirmation dialog appears."
       },
       {
         "type": "action",
-        "description": "Fill in additional required project details."
+        "description": "Confirm deletion."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the task is removed from UI and the backend."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Project Creation with Template Selection",
+    "description": "Verify users can create a project, optionally select a template for task prepopulation, and assign team members.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to project creation dialog or page."
+      },
+      {
+        "type": "action",
+        "description": "Input valid project name and details."
+      },
+      {
+        "type": "action",
+        "description": "Select a template from available project templates."
+      },
+      {
+        "type": "action",
+        "description": "Assign team members with roles."
       },
       {
         "type": "action",
@@ -181,236 +243,407 @@
       },
       {
         "type": "assertion",
-        "description": "Verify the new project is created with tasks and settings from the selected template."
-      }
-    ]
-  },
-  {
-    "id": "TC007",
-    "title": "Team Role Assignment and Permission Enforcement",
-    "description": "Verify that team members can be assigned roles and that these roles restrict or authorize actions appropriately across the system.",
-    "category": "security",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to team management page and select a team member."
-      },
-      {
-        "type": "action",
-        "description": "Change the member's role to a role with restricted permissions."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm role change is saved and reflected in member's permissions."
-      },
-      {
-        "type": "action",
-        "description": "Attempt to perform an action not allowed by the assigned role (e.g., deleting a project)."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the action is blocked and an appropriate access denied message is shown."
-      }
-    ]
-  },
-  {
-    "id": "TC008",
-    "title": "WhatsApp Notification Delivery and Rate Limit Handling",
-    "description": "Verify that WhatsApp notifications are sent correctly for task updates and system respects rate limits by queuing or retrying as needed.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Trigger an event that sends a WhatsApp notification (e.g., task assigned)."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the notification is delivered to the recipient's WhatsApp."
-      },
-      {
-        "type": "action",
-        "description": "Simulate exceeding WhatsApp API rate limits."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the system handles the rate limit by retrying or queueing notifications without message loss."
+        "description": "Verify the project is created with tasks from the template and team assignments applied."
       }
     ]
   },
   {
     "id": "TC009",
-    "title": "Analytics Dashboard Data Accuracy and Visualization Rendering",
-    "description": "Verify that the analytics dashboard displays accurate real-time metrics for tasks, projects, and team performance with all charts rendering correctly.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login and navigate to the analytics dashboard."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify all expected data metrics (task counts, project statuses, team activity) are present and match backend data."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm all charts and visualizations render properly with no errors or distortions."
-      }
-    ]
-  },
-  {
-    "id": "TC010",
-    "title": "Routing and Protected Routes Enforcement",
-    "description": "Verify that navigation handles protected routes and deep linking correctly restricting unauthorized users and maintaining smooth navigation.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Attempt to navigate directly to a protected route URL as an unauthenticated user."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the user is redirected to login page before accessing the protected route."
-      },
-      {
-        "type": "action",
-        "description": "Login and navigate through various pages to test correct routing and protected route access."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm navigation is smooth, URLs update correctly, and protected routes are accessible only after authentication."
-      }
-    ]
-  },
-  {
-    "id": "TC011",
-    "title": "Client-Side Form Multi-Language Validation and Error Feedback",
-    "description": "Verify that all forms provide instant validation and error feedback in multiple supported languages.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Set user interface language to a non-default supported language."
-      },
-      {
-        "type": "action",
-        "description": "Open any input form (e.g., task creation)."
-      },
-      {
-        "type": "action",
-        "description": "Leave required fields empty or enter invalid data and attempt to submit."
-      },
-      {
-        "type": "assertion",
-        "description": "Validate that error messages appear dynamically and are displayed in the selected language."
-      }
-    ]
-  },
-  {
-    "id": "TC012",
-    "title": "Reusable UI Components Accessibility Compliance",
-    "description": "Verify that UI components built with Radix UI and Tailwind CSS meet accessibility standards including ARIA roles, keyboard navigation, and screen reader support.",
-    "category": "ui",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate through UI components using keyboard only."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm focus indicators are visible, tab order is logical, and all interactive components are reachable."
-      },
-      {
-        "type": "assertion",
-        "description": "Use a screen reader to verify correct ARIA labels and descriptions are announced."
-      }
-    ]
-  },
-  {
-    "id": "TC013",
-    "title": "API Error Handling and Retry Logic",
-    "description": "Verify that API client retries on transient errors and properly surfaces consistent error messages on permanent failures.",
+    "title": "Project Creation Validation Errors",
+    "description": "Verify that mandatory fields in project creation show validation errors and prevent submission when invalid or missing.",
     "category": "error handling",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Simulate API transient error (e.g., network timeout) during a task fetch."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the API client retries the request according to configured logic."
+        "description": "Open project creation form."
       },
       {
         "type": "action",
-        "description": "Simulate a permanent API error (e.g., 400 Bad Request) when creating a project."
+        "description": "Leave required fields blank or enter invalid data."
       },
       {
         "type": "assertion",
-        "description": "Check the system displays a clear and consistent error message to the user."
+        "description": "Confirm real-time validation errors appear and submission is blocked."
       }
     ]
   },
   {
-    "id": "TC014",
-    "title": "Responsive UI Layout Adaptation Across Devices",
-    "description": "Verify that the application UI adapts correctly to desktop, tablet, and mobile screen sizes ensuring usability and no visual regressions.",
-    "category": "ui",
-    "priority": "Medium",
+    "id": "TC010",
+    "title": "Team Member Invitation with Email Validation",
+    "description": "Verify that an admin can invite users with valid email addresses and that invalid emails prompt errors.",
+    "category": "functional",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Open the application in desktop browser and verify layout and UI components."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm UI elements render properly and are fully accessible."
+        "description": "Open team management page and invite user dialog."
       },
       {
         "type": "action",
-        "description": "Resize viewport to tablet dimensions and verify responsive UI adjustments."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm navigation, forms, and components adapt correctly."
+        "description": "Enter a valid email address of the user to invite."
       },
       {
         "type": "action",
-        "description": "Resize viewport to mobile dimensions or use a mobile device to access the app."
+        "description": "Submit the invitation."
       },
       {
         "type": "assertion",
-        "description": "Verify that UI remains usable, components stack appropriately, and navigation remains functional."
+        "description": "Verify the invitation is sent, and user appears as pending invite."
+      },
+      {
+        "type": "action",
+        "description": "Attempt inviting a user with an invalid email format."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that a validation error message prevents submission."
       }
     ]
   },
   {
-    "id": "TC015",
-    "title": "Real-time Notification and Toast Message Display",
-    "description": "Verify that system-triggered real-time toast notifications appear correctly for success, warnings, and error states during task and project operations.",
+    "id": "TC011",
+    "title": "Role Assignment and Modification for Team Members",
+    "description": "Verify team leads can assign and update roles for team members with changes properly reflected.",
     "category": "functional",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Perform an action such as task creation or project update."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify a success toast notification appears promptly and disappears after a reasonable timeout."
+        "description": "Navigate to team members list."
       },
       {
         "type": "action",
-        "description": "Trigger an error condition (e.g., invalid input)."
+        "description": "Select a team member and open role edit dialog."
+      },
+      {
+        "type": "action",
+        "description": "Change the member's role to another valid role."
+      },
+      {
+        "type": "action",
+        "description": "Save the changes."
       },
       {
         "type": "assertion",
-        "description": "Confirm an error toast message is displayed with accurate information."
+        "description": "Confirm the role is updated and reflected in the team list."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "WhatsApp Message Sending and Delivery Confirmation",
+    "description": "Verify that a user can send messages via WhatsApp integration and receive delivery confirmations.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open chat or messaging interface with WhatsApp integration."
+      },
+      {
+        "type": "action",
+        "description": "Compose and send a valid message."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the message is sent and a delivery confirmation or read receipt is received and shown."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "WhatsApp Incoming Message and Notification Handling",
+    "description": "Verify that incoming WhatsApp messages trigger correct notification displays and webhook processing.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate an incoming WhatsApp message via webhook."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the message is received in the app and a user notification/toast is displayed."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the message content updates UI components correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Template Creation and Application for Tasks",
+    "description": "Verify that users can create reusable task templates and apply them to new tasks efficiently.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the template management section."
+      },
+      {
+        "type": "action",
+        "description": "Create a new task template with valid fields."
+      },
+      {
+        "type": "action",
+        "description": "Save the template."
+      },
+      {
+        "type": "action",
+        "description": "Use the template when creating a new task."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that task fields are prepopulated according to the selected template."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Multi-Language Client-Side Form Validation",
+    "description": "Verify form fields validate correctly in different languages and show appropriate real-time validation messages.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Set the user interface language to a supported language (e.g., Spanish, French)."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to any form (e.g., task creation) requiring validation."
+      },
+      {
+        "type": "action",
+        "description": "Input invalid data or leave required fields empty."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that validation errors appear in the selected language with real-time feedback."
+      },
+      {
+        "type": "action",
+        "description": "Correct the input errors."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation messages disappear and form can be submitted."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Routing and Navigation: Protected Route Access",
+    "description": "Verify that protected routes require authentication and unauthenticated users are redirected to login.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to navigate to a protected page (e.g., Project Management) without authentication."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Login successfully."
+      },
+      {
+        "type": "action",
+        "description": "Navigate back to the protected page."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the page is accessible and loads with proper content."
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Deep Linking with React Router",
+    "description": "Verify deep linking to nested routes (e.g., task details inside a project) loads correct content and state.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Copy a deep link URL pointing to a specific task or analytics view."
+      },
+      {
+        "type": "action",
+        "description": "Open the URL in a new browser window or tab."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the app loads the intended nested route and displays correct data."
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Analytics Dashboard Data Accuracy and Visualization",
+    "description": "Verify the analytics dashboard displays accurate metrics and charts for projects, tasks, and users updated in real time.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the analytics dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Create and update tasks and projects to generate data."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the displayed charts and key metrics reflect the data accurately."
+      },
+      {
+        "type": "action",
+        "description": "Filter or change dashboard views."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm visualizations update correctly without errors."
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "UI Component Accessibility and ARIA Compliance",
+    "description": "Verify that all UI components include appropriate ARIA roles, labels, and support keyboard navigation and screen readers.",
+    "category": "accessibility",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate through various UI components using keyboard only."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm all interactive elements are reachable and operable via keyboard."
+      },
+      {
+        "type": "action",
+        "description": "Inspect components for correct ARIA attributes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify screen reader announces labels and roles properly for all components."
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Responsive Layout Verification Across Multiple Devices",
+    "description": "Verify that the application layout adapts correctly on various screen sizes including desktops, tablets, and mobile phones.",
+    "category": "ui",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the application on desktop viewport."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI components render correctly with expected spacing and content."
+      },
+      {
+        "type": "action",
+        "description": "Resize to tablet and mobile viewport sizes or use device emulators."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm layout reflows appropriately, navigation is accessible, and content remains usable."
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Backend API Error Handling for Task CRUD",
+    "description": "Verify that backend errors during task create, update, and delete operations are handled gracefully with user-friendly messages.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate backend API failures (e.g., 500 Internal Server Error) on task create, update, and delete requests."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user receives clear error notifications or toast messages."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI does not reflect incomplete changes and remains consistent."
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "API Retry Logic Verification on Network Failures",
+    "description": "Verify that RESTful API client retries requests on transient network errors and eventually notifies users if unsuccessful.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate network timeouts or transient errors during API calls."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the client retries the request automatically."
+      },
+      {
+        "type": "assertion",
+        "description": "If retries fail, confirm user sees a retry failure notification."
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Local Storage State Persistence",
+    "description": "Verify the application save and restores user state (e.g., task filters, dashboard settings) using local storage.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Apply filters or change settings on dashboard and tasks views."
+      },
+      {
+        "type": "action",
+        "description": "Reload or close and reopen the browser."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user state is restored from local storage and UI reflects previous preferences."
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Error Feedback Display Using Alerts and Toast Notifications",
+    "description": "Verify that all system and user errors provide feedback via consistent and accessible alerts and toast notifications.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger various types of errors such as form validation errors, API failures, and authentication errors."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that alerts or toast notifications appear promptly with clear messages."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm notifications are accessible (ARIA roles) and dismissable."
       }
     ]
   }
