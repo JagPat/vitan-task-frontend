@@ -3,7 +3,7 @@ module.exports = {
   env: { 
     browser: true, 
     es2020: true,
-    node: true
+    node: true,
   },
   extends: [
     'eslint:recommended',
@@ -15,10 +15,10 @@ module.exports = {
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: { 
     ecmaVersion: 'latest', 
-    sourceType: 'module' 
+    sourceType: 'module', 
   },
   settings: { 
-    react: { version: '18.2' } 
+    react: { version: '18.2' }, 
   },
   plugins: ['react-refresh'],
   rules: {
@@ -33,7 +33,6 @@ module.exports = {
     'react/jsx-uses-react': 'off', // Not needed with new JSX transform
     'react/react-in-jsx-scope': 'off', // Not needed with new JSX transform
     'react/no-unknown-property': 'off', // Disable unknown property warnings
-    'no-undef': 'off', // Disable undefined variable warnings
-    'react-refresh/only-export-components': 'off', // Disable fast refresh warnings
+    'no-undef': 'off', // Disable fast refresh warnings
   },
-}
+};

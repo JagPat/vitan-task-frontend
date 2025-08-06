@@ -28,7 +28,11 @@ import {
   Trash2,
   FolderOpen,
   Clock,
-  MoreVertical
+  MoreVertical,
+  UserPlus,
+  Play,
+  CheckCircle,
+  Users
 } from "lucide-react";
 import { isOverdue, formatDate } from '../../utils/dateUtils';
 import { Task } from '@/api/entities';
@@ -39,6 +43,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const priorityIcons = {
   low: <Flag className="w-3 h-3" />,
@@ -53,6 +64,10 @@ export default function UnifiedTaskCard({
   onEdit, 
   onStatusChange, 
   onPriorityChange,
+  onAssignmentChange,
+  onPickup,
+  users = [],
+  currentUser = null,
   showProjectContext = true,
   showActions = true,
   compact = false
@@ -65,6 +80,10 @@ export default function UnifiedTaskCard({
   const statusStyle = getStatusStyle(task.status);
   const priorityStyle = getPriorityStyle(task.priority);
   const priorityIcon = priorityIcons[task.priority] || priorityIcons.medium;
+  
+  // Calculate assigned user name from users list
+  const assignedUser = task.assigned_to ? users.find(u => u.id === task.assigned_to) : null;
+  const assignedUserName = assignedUser?.full_name || assignedUser?.name || assignedUser?.whatsapp_number;
 
   const handleDelete = async () => {
     if (!deleteReason.trim()) {
@@ -107,6 +126,18 @@ export default function UnifiedTaskCard({
       }
     } catch (error) {
       console.error('Error updating task priority:', error);
+    }
+  };
+
+  const handleAssignmentChange = async (value) => {
+    if (onAssignmentChange) {
+      try {
+        // Convert "unassigned" to null/empty
+        const userId = value === "unassigned" ? null : value;
+        await onAssignmentChange(task.id, userId);
+      } catch (error) {
+        console.error('Error updating task assignment:', error);
+      }
     }
   };
 
@@ -182,10 +213,10 @@ export default function UnifiedTaskCard({
             </div>
           )}
 
-          {task.assigned_to_name && (
+          {assignedUserName && (
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              <span className="truncate">{task.assigned_to_name}</span>
+              <span className="truncate">{assignedUserName}</span>
             </div>
           )}
 
@@ -206,36 +237,91 @@ export default function UnifiedTaskCard({
           )}
         </div>
 
-        {/* Quick Actions */}
-        {showActions && !compact && (
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleStatusChange('in_progress')}
-                disabled={task.status === 'in_progress'}
-                className="text-xs"
-              >
-                Start
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleStatusChange('completed')}
-                disabled={task.status === 'completed'}
-                className="text-xs"
-              >
-                Complete
-              </Button>
+        {/* Quick Actions - Always visible and prominent */}
+        {showActions && (
+          <div className="space-y-3 pt-3 border-t border-slate-200">
+            {/* Assignment Section */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                {task.assigned_to ? 'Reassign:' : 'Assign to:'}
+              </span>
+              <div className="min-w-0 flex-1 ml-3">
+                <Select
+                  value={task.assigned_to?.toString() || "unassigned"}
+                  onValueChange={handleAssignmentChange}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Assign to someone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id.toString()}>
+                        {user.full_name || user.name || user.whatsapp_number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            
-            <Link to={createPageUrl(`TaskDetails?id=${task.id}`)}>
-              <Button variant="ghost" size="sm" className="text-xs">
-                View Details
-                <ArrowRight className="w-3 h-3 ml-1" />
-              </Button>
-            </Link>
+
+            {/* Status Actions */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-700">Status:</span>
+              <div className="flex items-center gap-2">
+                {/* Business Logic: Task assignment and status flow */}
+                {!task.assigned_to && task.status === 'pending' && onPickup && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => onPickup(task.id)}
+                    className="text-xs bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Pick up task
+                  </Button>
+                )}
+                
+                {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'pending' && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleStatusChange('in_progress')}
+                    className="text-xs bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Play className="w-3 h-3 mr-1" />
+                    Start Task
+                  </Button>
+                )}
+                
+                {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'in_progress' && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleStatusChange('completed')}
+                    className="text-xs bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Complete
+                  </Button>
+                )}
+                
+                {task.status === 'completed' && (
+                  <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    Completed
+                  </span>
+                )}
+                
+                <Link to={createPageUrl(`TaskDetails?id=${task.id}`)}>
+                  <Button variant="outline" size="sm" className="text-xs">
+                    Details
+                    <ArrowRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>

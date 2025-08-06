@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 13,
-    "passed": 2,
-    "failed": 11,
-    "successRate": "15.4"
+    "passed": 1,
+    "failed": 12,
+    "successRate": "7.7"
   },
   "results": [
     {
@@ -11,88 +11,88 @@
       "passed": true,
       "details": {
         "status": "OK",
-        "timestamp": "2025-08-02T15:30:17.491Z",
-        "uptime": 94376.657047675,
+        "timestamp": "2025-08-03T06:42:15.668Z",
+        "uptime": 492.076357813,
         "environment": "production",
         "port": "8080",
         "metaApi": {
           "configured": true
         }
       },
-      "timestamp": "2025-08-02T15:30:17.790Z"
+      "timestamp": "2025-08-03T06:42:15.892Z"
     },
     {
       "test": "Frontend Load",
-      "passed": true,
-      "details": "Title: WhatsTask - Project Management",
-      "timestamp": "2025-08-02T15:30:19.540Z"
+      "passed": false,
+      "details": "net::ERR_CONNECTION_REFUSED at http://localhost:3004",
+      "timestamp": "2025-08-03T06:42:15.933Z"
     },
     {
       "test": "Authentication Flow",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:contains(\"Login\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.553Z"
+      "timestamp": "2025-08-03T06:42:15.979Z"
     },
     {
       "test": "Dashboard Navigation",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/dashboard\"], a:contains(\"Dashboard\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.555Z"
+      "timestamp": "2025-08-03T06:42:15.980Z"
     },
     {
       "test": "Tasks Navigation",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/tasks\"], a:contains(\"Tasks\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.555Z"
+      "timestamp": "2025-08-03T06:42:15.980Z"
     },
     {
       "test": "Projects Navigation",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/projects\"], a:contains(\"Projects\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.556Z"
+      "timestamp": "2025-08-03T06:42:15.981Z"
     },
     {
       "test": "Team Navigation",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/team\"], a:contains(\"Team\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.557Z"
+      "timestamp": "2025-08-03T06:42:15.981Z"
     },
     {
       "test": "Analytics Navigation",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/analytics\"], a:contains(\"Analytics\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.557Z"
+      "timestamp": "2025-08-03T06:42:15.981Z"
     },
     {
       "test": "Task Management",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:contains(\"Create Task\"), button:contains(\"New Task\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.558Z"
+      "timestamp": "2025-08-03T06:42:15.982Z"
     },
     {
       "test": "Project Management",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:contains(\"Create Project\"), button:contains(\"New Project\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.559Z"
+      "timestamp": "2025-08-03T06:42:15.982Z"
     },
     {
       "test": "Team Management",
       "passed": false,
       "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:contains(\"Invite User\"), button:contains(\"Add Member\")' is not a valid selector.",
-      "timestamp": "2025-08-02T15:30:19.560Z"
+      "timestamp": "2025-08-03T06:42:15.983Z"
     },
     {
       "test": "WhatsApp Integration",
       "passed": false,
-      "details": "this.page.waitForTimeout is not a function",
-      "timestamp": "2025-08-02T15:30:19.633Z"
+      "details": "net::ERR_CONNECTION_REFUSED at http://localhost:3004/whatsapp-admin",
+      "timestamp": "2025-08-03T06:42:16.010Z"
     },
     {
       "test": "Analytics",
       "passed": false,
-      "details": "this.page.waitForTimeout is not a function",
-      "timestamp": "2025-08-02T15:30:19.732Z"
+      "details": "net::ERR_CONNECTION_REFUSED at http://localhost:3004/analytics",
+      "timestamp": "2025-08-03T06:42:16.043Z"
     }
   ],
-  "timestamp": "2025-08-02T15:30:19.732Z"
+  "timestamp": "2025-08-03T06:42:16.043Z"
 }

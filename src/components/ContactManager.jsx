@@ -35,7 +35,7 @@ export default function ContactManager() {
 
   const loadContactStats = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/stats');
+      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/stats', { credentials: 'include' });
       const data = await response.json();
       if (data.success) {
         setStats(data.data);
@@ -47,7 +47,7 @@ export default function ContactManager() {
 
   const loadPendingInvitations = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/pending-invitations');
+      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/pending-invitations', { credentials: 'include' });
       const data = await response.json();
       if (data.success) {
         setPendingInvitations(data.data);
@@ -100,6 +100,7 @@ export default function ContactManager() {
     setLoading(true);
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/contacts/${source}`, {
+        credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,6 +133,7 @@ export default function ContactManager() {
     setLoading(true);
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/invite-bulk', {
+        credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,6 +149,7 @@ export default function ContactManager() {
         setMessage(`Successfully sent ${data.data.successful} invitations.`);
         setSelectedContacts([]);
         loadPendingInvitations();
+        loadContactStats();
       } else {
         setMessage('Error sending invitations: ' + data.error);
       }

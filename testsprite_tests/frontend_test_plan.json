@@ -1,0 +1,377 @@
+{
+  "test_plan_name": "Vitan Task Frontend Comprehensive Test Plan",
+  "project_overview": {
+    "name": "Vitan Task Management System",
+    "description": "AI-powered task management platform with WhatsApp integration",
+    "tech_stack": ["React", "Vite", "Tailwind CSS", "Radix UI", "React Router"]
+  },
+  "test_categories": {
+    "authentication": {
+      "description": "User login, registration, and session management",
+      "test_cases": [
+        {
+          "name": "User Registration Flow",
+          "description": "Test complete user registration process",
+          "steps": [
+            "Navigate to registration page",
+            "Fill in user details (name, email, phone)",
+            "Submit registration form",
+            "Verify email/phone verification",
+            "Complete profile setup"
+          ],
+          "expected_result": "User successfully registered and logged in",
+          "priority": "High"
+        },
+        {
+          "name": "User Login Flow",
+          "description": "Test user login with valid credentials",
+          "steps": [
+            "Navigate to login page",
+            "Enter valid email/phone and password",
+            "Submit login form",
+            "Verify successful login redirect"
+          ],
+          "expected_result": "User logged in and redirected to dashboard",
+          "priority": "High"
+        },
+        {
+          "name": "Session Management",
+          "description": "Test session persistence and logout",
+          "steps": [
+            "Login to application",
+            "Refresh browser page",
+            "Verify session maintained",
+            "Click logout button",
+            "Verify session cleared"
+          ],
+          "expected_result": "Session persists on refresh, clears on logout",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "task_management": {
+      "description": "Task creation, editing, and management features",
+      "test_cases": [
+        {
+          "name": "Task Creation Wizard",
+          "description": "Test the interactive task creation wizard",
+          "steps": [
+            "Navigate to Create Task page",
+            "Start task creation wizard",
+            "Fill in task title",
+            "Add description (optional)",
+            "Select project assignment",
+            "Choose assignee (internal/external)",
+            "Set due date",
+            "Set priority level",
+            "Complete task creation"
+          ],
+          "expected_result": "Task created successfully with all details",
+          "priority": "High"
+        },
+        {
+          "name": "Task List View",
+          "description": "Test task listing and filtering",
+          "steps": [
+            "Navigate to My Tasks page",
+            "Verify task list displays correctly",
+            "Test status filtering (pending, ongoing, completed)",
+            "Test priority filtering",
+            "Test search functionality",
+            "Test pagination"
+          ],
+          "expected_result": "Tasks display correctly with working filters",
+          "priority": "High"
+        },
+        {
+          "name": "Task Details and Editing",
+          "description": "Test task detail view and editing",
+          "steps": [
+            "Click on a task to view details",
+            "Verify all task information displays",
+            "Edit task title",
+            "Update task description",
+            "Change assignee",
+            "Update due date",
+            "Change priority",
+            "Save changes"
+          ],
+          "expected_result": "Task details view and editing work correctly",
+          "priority": "High"
+        },
+        {
+          "name": "Task Status Updates",
+          "description": "Test task status change functionality",
+          "steps": [
+            "Open task details",
+            "Change status from pending to ongoing",
+            "Change status from ongoing to completed",
+            "Verify status updates in list view"
+          ],
+          "expected_result": "Task status updates correctly",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "project_management": {
+      "description": "Project creation and management features",
+      "test_cases": [
+        {
+          "name": "Project Creation",
+          "description": "Test project creation wizard",
+          "steps": [
+            "Navigate to Projects page",
+            "Start project creation wizard",
+            "Enter project name",
+            "Add project description",
+            "Select project category",
+            "Set project timeline",
+            "Add team members",
+            "Complete project creation"
+          ],
+          "expected_result": "Project created successfully",
+          "priority": "High"
+        },
+        {
+          "name": "Project Details View",
+          "description": "Test project detail page",
+          "steps": [
+            "Click on a project to view details",
+            "Verify project information displays",
+            "Check task list under project",
+            "Test team member list",
+            "Verify project statistics"
+          ],
+          "expected_result": "Project details display correctly",
+          "priority": "Medium"
+        },
+        {
+          "name": "Task Assignment to Projects",
+          "description": "Test assigning tasks to projects",
+          "steps": [
+            "Create a new task",
+            "Select project during task creation",
+            "Verify task appears in project",
+            "Move existing task to different project"
+          ],
+          "expected_result": "Tasks assign to projects correctly",
+          "priority": "High"
+        }
+      ]
+    },
+    "team_management": {
+      "description": "Team member management and collaboration",
+      "test_cases": [
+        {
+          "name": "Team Member Invitation",
+          "description": "Test inviting new team members",
+          "steps": [
+            "Navigate to Team page",
+            "Click 'Add Team Member'",
+            "Enter contact details",
+            "Send invitation",
+            "Verify invitation sent"
+          ],
+          "expected_result": "Team member invitation sent successfully",
+          "priority": "High"
+        },
+        {
+          "name": "Contact Management",
+          "description": "Test contact sharing and management",
+          "steps": [
+            "Navigate to Contact Manager",
+            "Add new contact manually",
+            "Share contact via WhatsApp",
+            "Verify contact appears in list",
+            "Edit contact details"
+          ],
+          "expected_result": "Contact management works correctly",
+          "priority": "Medium"
+        },
+        {
+          "name": "User Profile Management",
+          "description": "Test user profile updates",
+          "steps": [
+            "Navigate to user profile",
+            "Update profile information",
+            "Change profile picture",
+            "Update contact details",
+            "Save changes"
+          ],
+          "expected_result": "Profile updates save correctly",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "whatsapp_integration": {
+      "description": "WhatsApp integration and AI features",
+      "test_cases": [
+        {
+          "name": "WhatsApp Admin Interface",
+          "description": "Test WhatsApp admin dashboard",
+          "steps": [
+            "Navigate to WhatsApp Admin page",
+            "Verify message history displays",
+            "Test message filtering",
+            "Check user interactions",
+            "Verify AI responses"
+          ],
+          "expected_result": "WhatsApp admin interface works correctly",
+          "priority": "High"
+        },
+        {
+          "name": "WhatsApp Test Interface",
+          "description": "Test WhatsApp testing interface",
+          "steps": [
+            "Navigate to WhatsApp Test page",
+            "Send test message",
+            "Verify AI response",
+            "Test different message types",
+            "Check error handling"
+          ],
+          "expected_result": "WhatsApp testing works correctly",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "analytics_dashboard": {
+      "description": "Analytics and reporting features",
+      "test_cases": [
+        {
+          "name": "Analytics Dashboard",
+          "description": "Test analytics dashboard display",
+          "steps": [
+            "Navigate to Analytics page",
+            "Verify charts and graphs display",
+            "Test date range filtering",
+            "Check task completion metrics",
+            "Verify team performance data"
+          ],
+          "expected_result": "Analytics dashboard displays correctly",
+          "priority": "Medium"
+        },
+        {
+          "name": "AI Admin Dashboard",
+          "description": "Test AI usage analytics",
+          "steps": [
+            "Navigate to AI Admin Dashboard",
+            "Check AI usage statistics",
+            "Verify cost tracking",
+            "Test performance metrics",
+            "Check error logs"
+          ],
+          "expected_result": "AI admin dashboard works correctly",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "ui_ux": {
+      "description": "User interface and experience testing",
+      "test_cases": [
+        {
+          "name": "Responsive Design",
+          "description": "Test responsive design on different screen sizes",
+          "steps": [
+            "Test on desktop (1920x1080)",
+            "Test on tablet (768x1024)",
+            "Test on mobile (375x667)",
+            "Verify navigation works on all sizes",
+            "Check form layouts adapt correctly"
+          ],
+          "expected_result": "Application responsive on all screen sizes",
+          "priority": "High"
+        },
+        {
+          "name": "Accessibility",
+          "description": "Test accessibility features",
+          "steps": [
+            "Test keyboard navigation",
+            "Verify screen reader compatibility",
+            "Check color contrast ratios",
+            "Test focus indicators",
+            "Verify ARIA labels"
+          ],
+          "expected_result": "Application meets accessibility standards",
+          "priority": "Medium"
+        },
+        {
+          "name": "Loading States",
+          "description": "Test loading states and error handling",
+          "steps": [
+            "Test page loading indicators",
+            "Verify form submission loading states",
+            "Check error message display",
+            "Test network error handling",
+            "Verify offline state handling"
+          ],
+          "expected_result": "Loading states and error handling work correctly",
+          "priority": "Medium"
+        }
+      ]
+    },
+    "performance": {
+      "description": "Performance and optimization testing",
+      "test_cases": [
+        {
+          "name": "Page Load Performance",
+          "description": "Test page load times",
+          "steps": [
+            "Measure initial page load time",
+            "Test navigation between pages",
+            "Check image loading performance",
+            "Verify API response times",
+            "Test with slow network conditions"
+          ],
+          "expected_result": "Pages load within acceptable time limits",
+          "priority": "Medium"
+        },
+        {
+          "name": "Memory Usage",
+          "description": "Test memory usage and leaks",
+          "steps": [
+            "Monitor memory usage during navigation",
+            "Test with large task lists",
+            "Check for memory leaks",
+            "Verify garbage collection",
+            "Test long session usage"
+          ],
+          "expected_result": "Memory usage remains stable",
+          "priority": "Low"
+        }
+      ]
+    }
+  },
+  "test_environment": {
+    "browsers": ["Chrome", "Firefox", "Safari", "Edge"],
+    "devices": ["Desktop", "Tablet", "Mobile"],
+    "network_conditions": ["Fast 3G", "Slow 3G", "Offline"],
+    "test_data": {
+      "users": ["admin", "team_member", "external_user"],
+      "tasks": ["high_priority", "medium_priority", "low_priority"],
+      "projects": ["active", "completed", "archived"]
+    }
+  },
+  "automation_priority": {
+    "high": [
+      "User Registration Flow",
+      "User Login Flow", 
+      "Task Creation Wizard",
+      "Task List View",
+      "Project Creation",
+      "Team Member Invitation"
+    ],
+    "medium": [
+      "Session Management",
+      "Task Details and Editing",
+      "Project Details View",
+      "Contact Management",
+      "WhatsApp Admin Interface",
+      "Responsive Design"
+    ],
+    "low": [
+      "Memory Usage",
+      "Accessibility",
+      "Analytics Dashboard"
+    ]
+  }
+} 

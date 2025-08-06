@@ -43,6 +43,7 @@ export default function CreateProjectTaskDialog({ open, onOpenChange, onTaskCrea
 
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/tasks`, {
+        credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

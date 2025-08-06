@@ -1,20 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Task } from '@/api/entities';
-import { Project } from '@/api/entities';
-import { User } from '@/api/entities';
+import { Task, Project, User } from '@/api/entities';
 import { extractTaskPrimitives, extractProjectPrimitives, extractUserPrimitives } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Plus, 
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Calendar,
+  Plus,
+  Search,
   Filter,
-  Grid3X3,
-  List,
-  Download,
   MoreHorizontal,
-  CheckSquare,
+  Edit,
+  Trash2,
+  Eye,
+  CheckCircle,
   Clock,
   AlertTriangle,
   Users,
@@ -30,6 +72,7 @@ export default function UnifiedTaskView() {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
@@ -46,10 +89,11 @@ export default function UnifiedTaskView() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [tasksData, projectsData, usersData] = await Promise.all([
+      const [tasksData, projectsData, usersData, currentUserData] = await Promise.all([
         Task.getAll(),
         Project.getAll(),
-        User.getAll()
+        User.getAll(),
+        User.me().catch(() => null)
       ]);
       
       // Extract primitive values to prevent React error #130
@@ -60,6 +104,7 @@ export default function UnifiedTaskView() {
       setTasks(cleanTasks);
       setProjects(cleanProjects);
       setUsers(cleanUsers);
+      setCurrentUser(currentUserData || cleanUsers[0]); // Use first user as fallback
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
@@ -227,6 +272,66 @@ export default function UnifiedTaskView() {
 
   const handleTaskPriorityChange = (taskId, newPriority) => {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, priority: newPriority } : t));
+  };
+
+  const handleTaskAssignmentChange = async (taskId, userId) => {
+    try {
+      const assignedUser = userId ? users.find(u => u.id.toString() === userId) : null;
+      await Task.update(taskId, { 
+        assigned_to: userId || null,
+        assigned_to_whatsapp: assignedUser?.whatsapp_number || null
+      });
+      
+      // Reload tasks from API to get updated assignment info with correct names
+      await loadData();
+
+      toast({
+        title: "Task Updated",
+        description: userId 
+          ? `Task assigned to ${assignedUser?.full_name || assignedUser?.name || assignedUser?.whatsapp_number}`
+          : "Task unassigned",
+      });
+    } catch (error) {
+      console.error('Error updating task assignment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task assignment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTaskPickup = async (taskId) => {
+    if (!currentUser) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to pick up tasks.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await Task.update(taskId, { 
+        assigned_to: currentUser.id,
+        assigned_to_whatsapp: currentUser.whatsapp_number || null
+      });
+      
+      // Reload tasks from API to get updated assignment info with correct names
+      await loadData();
+      
+      toast({
+        title: "Task Picked Up",
+        description: `You are now assigned to this task. You can start working on it!`,
+      });
+    } catch (error) {
+      console.error('Error picking up task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to pick up task. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleClearFilters = () => {
@@ -398,45 +503,9 @@ export default function UnifiedTaskView() {
             onFiltersChange={setFilters}
             projects={projects}
             users={users}
-            onClearFilters={handleClearFilters}
           />
         </CardContent>
       </Card>
-
-      {/* Bulk Actions */}
-      {selectedTasks.length > 0 && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary">{selectedTasks.length} selected</Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedTasks([])}
-                >
-                  Clear Selection
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  onClick={() => handleBulkStatusChange('in_progress')}
-                >
-                  Start Selected
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => handleBulkStatusChange('completed')}
-                >
-                  Complete Selected
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Tasks Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -472,6 +541,8 @@ export default function UnifiedTaskView() {
                     onDelete={handleTaskDelete}
                     onStatusChange={handleTaskStatusChange}
                     onPriorityChange={handleTaskPriorityChange}
+                    onAssignmentChange={handleTaskAssignmentChange}
+                    users={users}
                     showProjectContext={true}
                     showActions={true}
                     compact={viewMode === 'list'}

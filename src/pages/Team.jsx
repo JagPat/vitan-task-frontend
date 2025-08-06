@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { User } from "@/api/entities";
-import { Task } from "@/api/entities";
+import { User, Task } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +85,7 @@ export default function Team() {
 
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

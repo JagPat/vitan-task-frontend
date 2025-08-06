@@ -1,0 +1,484 @@
+{
+  "tech_stack": [
+    "JavaScript",
+    "Node.js",
+    "Express.js",
+    "MongoDB",
+    "Railway",
+    "WhatsApp API",
+    "JWT Authentication",
+    "CORS",
+    "Helmet",
+    "Morgan"
+  ],
+  "features": [
+    {
+      "name": "Task Management API",
+      "description": "Complete CRUD operations for task management with validation and error handling",
+      "files": [
+        "backend/routes/tasks.js",
+        "backend/services/taskService.js",
+        "backend/models/Task.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Task Management API",
+          "version": "1.0.0",
+          "description": "API for managing tasks with WhatsApp integration"
+        },
+        "paths": {
+          "/api/tasks": {
+            "get": {
+              "summary": "Get all tasks",
+              "responses": {
+                "200": {
+                  "description": "List of tasks retrieved successfully"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create a new task",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "title": {"type": "string"},
+                        "description": {"type": "string"},
+                        "priority": {"type": "string"},
+                        "status": {"type": "string"},
+                        "assignee": {"type": "string"},
+                        "dueDate": {"type": "string", "format": "date"}
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "201": {
+                  "description": "Task created successfully"
+                },
+                "400": {
+                  "description": "Invalid request data"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              }
+            }
+          },
+          "/api/tasks/{id}": {
+            "get": {
+              "summary": "Get task by ID",
+              "parameters": [
+                {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "schema": {"type": "string"}
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Task retrieved successfully"
+                },
+                "404": {
+                  "description": "Task not found"
+                }
+              }
+            },
+            "put": {
+              "summary": "Update task",
+              "parameters": [
+                {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "schema": {"type": "string"}
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Task updated successfully"
+                },
+                "404": {
+                  "description": "Task not found"
+                }
+              }
+            },
+            "delete": {
+              "summary": "Delete task",
+              "parameters": [
+                {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "schema": {"type": "string"}
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Task deleted successfully"
+                },
+                "404": {
+                  "description": "Task not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User Management API",
+      "description": "User authentication, registration, and profile management",
+      "files": [
+        "backend/routes/users.js",
+        "backend/services/userService.js",
+        "backend/middleware/auth.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "User Management API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/users": {
+            "get": {
+              "summary": "Get all users",
+              "responses": {
+                "200": {
+                  "description": "List of users retrieved successfully"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create new user",
+              "responses": {
+                "201": {
+                  "description": "User created successfully"
+                }
+              }
+            }
+          },
+          "/api/auth/login": {
+            "post": {
+              "summary": "User login",
+              "responses": {
+                "200": {
+                  "description": "Login successful"
+                },
+                "401": {
+                  "description": "Invalid credentials"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "WhatsApp Integration API",
+      "description": "WhatsApp messaging and verification services",
+      "files": [
+        "backend/routes/whatsapp.js",
+        "backend/services/whatsappService.js",
+        "backend/services/otpService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "WhatsApp Integration API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/whatsapp/send": {
+            "post": {
+              "summary": "Send WhatsApp message",
+              "responses": {
+                "200": {
+                  "description": "Message sent successfully"
+                },
+                "400": {
+                  "description": "Invalid phone number or message"
+                }
+              }
+            }
+          },
+          "/api/whatsapp/verify": {
+            "post": {
+              "summary": "Verify WhatsApp OTP",
+              "responses": {
+                "200": {
+                  "description": "OTP verified successfully"
+                },
+                "400": {
+                  "description": "Invalid OTP"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Project Management API",
+      "description": "Project creation, management, and team collaboration",
+      "files": [
+        "backend/routes/projects.js",
+        "backend/services/projectService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Project Management API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/projects": {
+            "get": {
+              "summary": "Get all projects",
+              "responses": {
+                "200": {
+                  "description": "List of projects retrieved successfully"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create new project",
+              "responses": {
+                "201": {
+                  "description": "Project created successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Template Management API",
+      "description": "Task template creation and management",
+      "files": [
+        "backend/routes/templates.js",
+        "backend/services/templateService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Template Management API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/templates": {
+            "get": {
+              "summary": "Get all templates",
+              "responses": {
+                "200": {
+                  "description": "List of templates retrieved successfully"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create new template",
+              "responses": {
+                "201": {
+                  "description": "Template created successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Analytics API",
+      "description": "Task analytics and reporting endpoints",
+      "files": [
+        "backend/routes/analytics.js",
+        "backend/services/analyticsService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Analytics API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/analytics/tasks": {
+            "get": {
+              "summary": "Get task analytics",
+              "responses": {
+                "200": {
+                  "description": "Task analytics retrieved successfully"
+                }
+              }
+            }
+          },
+          "/api/analytics/users": {
+            "get": {
+              "summary": "Get user analytics",
+              "responses": {
+                "200": {
+                  "description": "User analytics retrieved successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Health Check API",
+      "description": "System health monitoring and status endpoints",
+      "files": [
+        "backend/server.js",
+        "backend/routes/health.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Health Check API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/health": {
+            "get": {
+              "summary": "System health check",
+              "responses": {
+                "200": {
+                  "description": "System is healthy",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "status": {"type": "string"},
+                          "timestamp": {"type": "string"},
+                          "uptime": {"type": "number"},
+                          "environment": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Contact Management API",
+      "description": "Contact storage and management with phone number validation",
+      "files": [
+        "backend/routes/contacts.js",
+        "backend/services/contactService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Contact Management API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/contacts": {
+            "get": {
+              "summary": "Get all contacts",
+              "responses": {
+                "200": {
+                  "description": "List of contacts retrieved successfully"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create new contact",
+              "responses": {
+                "201": {
+                  "description": "Contact created successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Team Management API",
+      "description": "Team member management and collaboration features",
+      "files": [
+        "backend/routes/team.js",
+        "backend/services/teamService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Team Management API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/team": {
+            "get": {
+              "summary": "Get team members",
+              "responses": {
+                "200": {
+                  "description": "Team members retrieved successfully"
+                }
+              }
+            }
+          },
+          "/api/team/invite": {
+            "post": {
+              "summary": "Invite team member",
+              "responses": {
+                "200": {
+                  "description": "Invitation sent successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "AI Integration API",
+      "description": "AI-powered features and adaptive learning",
+      "files": [
+        "backend/routes/ai.js",
+        "backend/services/aiService.js"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "AI Integration API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/ai/process": {
+            "post": {
+              "summary": "Process AI commands",
+              "responses": {
+                "200": {
+                  "description": "AI command processed successfully"
+                }
+              }
+            }
+          },
+          "/api/ai/learn": {
+            "post": {
+              "summary": "Update AI learning patterns",
+              "responses": {
+                "200": {
+                  "description": "AI learning updated successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+} 

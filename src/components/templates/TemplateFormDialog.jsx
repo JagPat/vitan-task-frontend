@@ -141,7 +141,7 @@ export default function TemplateFormDialog({ open, onOpenChange, template, onSav
                 </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
-                {formData.default_tags.map(tag => <Badge key={tag} variant="secondary">{tag} <button type="button" onClick={() => handleListChange('default_tags', tag, 'remove')}><X className="w-3 h-3 ml-1"/></button></Badge>)}
+                {formData.default_tags.map((tag, index) => <Badge key={`tag-${tag}-${index}`} variant="secondary">{tag} <button type="button" onClick={() => handleListChange('default_tags', tag, 'remove')}><X className="w-3 h-3 ml-1"/></button></Badge>)}
             </div>
           </div>
           
@@ -154,7 +154,7 @@ export default function TemplateFormDialog({ open, onOpenChange, template, onSav
                 </Button>
             </div>
             <div className="space-y-2 mt-2">
-                {formData.checklist_template.map(item => <div key={item} className="flex items-center gap-2 text-sm p-2 bg-slate-50 rounded-md">{item} <button type="button" className="ml-auto" onClick={() => handleListChange('checklist_template', item, 'remove')}><X className="w-4 h-4 text-red-500"/></button></div>)}
+                {formData.checklist_template.map((item, index) => <div key={`checklist-${item}-${index}`} className="flex items-center gap-2 text-sm p-2 bg-slate-50 rounded-md">{item} <button type="button" className="ml-auto" onClick={() => handleListChange('checklist_template', item, 'remove')}><X className="w-4 h-4 text-red-500"/></button></div>)}
             </div>
           </div>
 

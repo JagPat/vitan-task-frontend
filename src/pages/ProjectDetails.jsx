@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,20 +7,20 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
+  AlertCircle, 
   ArrowLeft, 
-  Plus, 
-  Users, 
+  Calendar, 
   CheckCircle, 
   Clock,
-  AlertCircle,
-  Calendar,
   Edit,
+  MessageSquare,
+  Plus,
   Trash2,
-  MessageSquare
+  Users,
 } from 'lucide-react';
 import CreateProjectTaskDialog from '@/components/projects/CreateProjectTaskDialog';
 import ProjectTeamManager from '@/components/projects/ProjectTeamManager';
-import { parseDate, formatDate } from '../utils/dateUtils';
+import { formatDate } from '../utils/dateUtils';
 
 export default function ProjectDetails() {
   const { projectId } = useParams();
@@ -36,40 +36,40 @@ export default function ProjectDetails() {
     loadProjectDetails();
   }, [projectId]);
 
-  const loadProjectDetails = async () => {
-    try {
-      setLoading(true);
-      const [projectResponse, tasksResponse, membersResponse] = await Promise.all([
-        fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}`),
-        fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/tasks`),
-        fetch('https://vitan-task-production.up.railway.app/api/users')
-      ]);
+const loadProjectDetails = async () => {
+  try {
+    setLoading(true);
+    const [projectResponse, tasksResponse, membersResponse] = await Promise.all([
+      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}`, { credentials: 'include' }),
+      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/tasks`, { credentials: 'include' }),
+      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/members`, { credentials: 'include' }),
+    ]);
 
-      const projectData = await projectResponse.json();
-      const tasksData = await tasksResponse.json();
-      const membersData = await membersResponse.json();
+    const projectData = await projectResponse.json();
+    const tasksData = await tasksResponse.json();
+    const membersData = await membersResponse.json();
 
-      if (projectData.success) {
-        setProject(projectData.data);
-      } else {
-        console.error('Project data error:', projectData);
-      }
-      if (tasksData.success) {
-        setTasks(tasksData.data);
-      } else {
-        console.error('Tasks data error:', tasksData);
-      }
-      if (membersData.success) {
-        setTeamMembers(membersData.data);
-      } else {
-        console.error('Members data error:', membersData);
-      }
-    } catch (error) {
-      console.error('Error loading project details:', error);
-    } finally {
-      setLoading(false);
+    if (projectData.success) {
+      setProject(projectData.data);
+    } else {
+      console.error('Project data error:', projectData);
     }
-  };
+    if (tasksData.success) {
+      setTasks(tasksData.data);
+    } else {
+      console.error('Tasks data error:', tasksData);
+    }
+    if (membersData.success) {
+      setTeamMembers(membersData.data);
+    } else {
+      console.error('Members data error:', membersData);
+    }
+  } catch (error) {
+    console.error('Error loading project details:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleTaskCreated = (newTask) => {
     setTasks(prev => [newTask, ...prev]);
@@ -78,6 +78,7 @@ export default function ProjectDetails() {
   const handleTaskStatusUpdate = async (taskId, newStatus) => {
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/projects/tasks/${taskId}/status`, {
+        credentials: 'include',
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export default function ProjectDetails() {
       const data = await response.json();
       if (data.success) {
         setTasks(prev => prev.map(task => 
-          task.id === taskId ? { ...task, status: newStatus } : task
+          (task.id === taskId ? { ...task, status: newStatus } : task),
         ));
       }
     } catch (error) {

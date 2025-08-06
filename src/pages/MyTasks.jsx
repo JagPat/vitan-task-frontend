@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Task } from '@/api/entities';
-import { extractTaskPrimitives } from '@/utils';
+import { Task, User } from '@/api/entities';
+import { extractTaskPrimitives, extractUserPrimitives } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,6 +22,8 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function MyTasks() {
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,17 +40,43 @@ export default function MyTasks() {
 
   useEffect(() => {
     loadTasks();
+    
+    // Listen for task creation events
+    const handleTaskCreated = (event) => {
+      const newTask = event.detail.task;
+      if (newTask) {
+        // Extract primitive values from new task
+        const cleanTask = extractTaskPrimitives(newTask);
+        if (cleanTask) {
+          setTasks(prev => [cleanTask, ...prev]);
+          calculateStats([cleanTask, ...tasks]);
+        }
+      }
+    };
+    
+    window.addEventListener('taskCreated', handleTaskCreated);
+    
+    return () => {
+      window.removeEventListener('taskCreated', handleTaskCreated);
+    };
   }, []);
 
   const loadTasks = async () => {
     try {
       setLoading(true);
-      const tasksData = await Task.getAll();
+      const [tasksData, usersData, currentUserData] = await Promise.all([
+        Task.getAll(),
+        User.getAll(),
+        User.me().catch(() => null)
+      ]);
       
       // Extract primitive values to prevent React error #130
       const cleanTasks = Array.isArray(tasksData) ? tasksData.map(task => extractTaskPrimitives(task)).filter(task => task !== null) : [];
+      const cleanUsers = Array.isArray(usersData) ? usersData.map(user => extractUserPrimitives(user)).filter(user => user !== null) : [];
       
       setTasks(cleanTasks);
+      setUsers(cleanUsers);
+      setCurrentUser(currentUserData || cleanUsers[0]); // Use first user as fallback
       calculateStats(cleanTasks);
     } catch (error) {
       console.error('Error loading tasks:', error);
@@ -63,12 +91,15 @@ export default function MyTasks() {
   };
 
   const calculateStats = (taskList) => {
+    // Only count tasks assigned to current user
+    const myTasks = taskList.filter(t => currentUser && t.assigned_to === currentUser.id);
+    
     const stats = {
-      total: taskList.length,
-      pending: taskList.filter(t => t.status === 'pending').length,
-      in_progress: taskList.filter(t => t.status === 'in_progress').length,
-      completed: taskList.filter(t => ['completed', 'closed'].includes(t.status)).length,
-      overdue: taskList.filter(t => {
+      total: myTasks.length,
+      pending: myTasks.filter(t => t.status === 'pending').length,
+      in_progress: myTasks.filter(t => t.status === 'in_progress').length,
+      completed: myTasks.filter(t => ['completed', 'closed'].includes(t.status)).length,
+      overdue: myTasks.filter(t => {
         if (!t.due_date) return false;
         const dueDate = new Date(t.due_date);
         const today = new Date();
@@ -79,11 +110,15 @@ export default function MyTasks() {
   };
 
   const filteredTasks = tasks.filter(task => {
+    // Only show tasks assigned to current user
+    const assignedToMe = currentUser && task.assigned_to === currentUser.id;
+    
     const searchMatch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const statusMatch = !statusFilter || task.status === statusFilter;
     const priorityMatch = !priorityFilter || task.priority === priorityFilter;
-    return searchMatch && statusMatch && priorityMatch;
+    
+    return assignedToMe && searchMatch && statusMatch && priorityMatch;
   });
 
   const handleTaskCreated = (newTask) => {
@@ -98,6 +133,75 @@ export default function MyTasks() {
   const handleTaskDelete = (taskId) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
     calculateStats(tasks.filter(t => t.id !== taskId));
+  };
+
+  const handleTaskStatusChange = (taskId, newStatus) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+    calculateStats(tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  };
+
+  const handleTaskPriorityChange = (taskId, newPriority) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, priority: newPriority } : t));
+  };
+
+  const handleTaskAssignmentChange = async (taskId, userId) => {
+    try {
+      const assignedUser = userId ? users.find(u => u.id.toString() === userId) : null;
+      await Task.update(taskId, { 
+        assigned_to: userId || null,
+        assigned_to_whatsapp: assignedUser?.whatsapp_number || null
+      });
+      
+      // Reload tasks from API to get updated assignment info with correct names
+      await loadTasks();
+
+      toast({
+        title: "Task Updated",
+        description: userId 
+          ? `Task assigned to ${assignedUser?.full_name || assignedUser?.name || assignedUser?.whatsapp_number}`
+          : "Task unassigned",
+      });
+    } catch (error) {
+      console.error('Error updating task assignment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task assignment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTaskPickup = async (taskId) => {
+    if (!currentUser) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to pick up tasks.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await Task.update(taskId, { 
+        assigned_to: currentUser.id,
+        assigned_to_whatsapp: currentUser.whatsapp_number || null
+      });
+      
+      // Reload tasks from API to get updated assignment info with correct names
+      await loadTasks();
+      
+      toast({
+        title: "Task Picked Up",
+        description: `You are now assigned to this task. You can start working on it!`,
+      });
+    } catch (error) {
+      console.error('Error picking up task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to pick up task. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -282,6 +386,12 @@ export default function MyTasks() {
                 key={task.id} 
                 task={task} 
                 onDelete={handleTaskDelete}
+                onStatusChange={handleTaskStatusChange}
+                onPriorityChange={handleTaskPriorityChange}
+                onAssignmentChange={handleTaskAssignmentChange}
+                onPickup={handleTaskPickup}
+                users={users}
+                currentUser={currentUser}
                 showProjectContext={true}
                 showActions={true}
               />

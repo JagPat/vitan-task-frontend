@@ -17,6 +17,7 @@ export const Core = {
       formData.append('file', fileData.file);
 
       const response = await fetch(`${whatsTaskClient.baseURL}/api/uploads/file`, {
+      credentials: 'include',
         method: 'POST',
         body: formData,
       });

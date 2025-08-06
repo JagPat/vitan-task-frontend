@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Task } from "@/api/entities";
-import { User } from "@/api/entities";
-import { ActivityLog } from "@/api/entities";
+import { Task, User, ActivityLog } from "@/api/entities";
 import { createPageUrl } from "@/utils";
 import { sendWhatsappMessage } from "@/api/functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,7 +52,7 @@ export default function TaskDetails() {
       const [taskData, userData, usersData, activitiesData] = await Promise.all([
         Task.filter({ id: taskId }).then(tasks => tasks[0]),
         User.me().catch(() => null),
-        fetch('https://vitan-task-production.up.railway.app/api/users').then(res => res.json()).then(data => data.data || []),
+        fetch('https://vitan-task-production.up.railway.app/api/users', { credentials: 'include' }).then(res => res.json()).then(data => data.data || []),
         ActivityLog.filter({ task_id: taskId }, "-created_date")
       ]);
       
@@ -447,7 +445,7 @@ export default function TaskDetails() {
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
         task={task}
-        onUpdate={handleTaskUpdate}
+        onSave={handleTaskUpdate}
       />
       
       <ReassignTaskDialog

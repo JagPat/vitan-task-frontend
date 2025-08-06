@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "verify natural language task creation via whatsapp",
+    "description": "Test the API endpoint responsible for processing natural language commands sent via WhatsApp to create tasks. Verify that the system correctly recognizes intent and entities in multiple languages (English, Hindi, Gujarati, Hinglish) and creates tasks with appropriate attributes."
+  },
+  {
+    "id": "TC002",
+    "title": "validate multiple phone number extraction and user prompt",
+    "description": "Test the API endpoint that handles contact sharing via WhatsApp messages. Verify that when multiple phone numbers are detected in a shared contact, the system extracts all numbers accurately and prompts the user to select the correct number without data loss."
+  },
+  {
+    "id": "TC003",
+    "title": "test dual whatsapp notifications on task events",
+    "description": "Test the API endpoints that trigger WhatsApp notifications upon task creation and status updates. Verify that notifications are sent reliably to both the task assignee and the task creator, and confirm delivery status is received and logged."
+  },
+  {
+    "id": "TC004",
+    "title": "check phone number normalization in authentication api",
+    "description": "Test the authentication API endpoints for login and verification workflows. Verify that phone numbers are normalized consistently (with and without + prefix) across UI and backend, and that WhatsApp verification codes are correctly processed."
+  },
+  {
+    "id": "TC005",
+    "title": "verify admin dashboard ai usage and cost management api",
+    "description": "Test the API endpoints providing real-time AI usage metrics, system health status, and cost management controls on the admin dashboard. Verify live updates and correct data representation."
+  },
+  {
+    "id": "TC006",
+    "title": "validate ai learning system pattern management api",
+    "description": "Test the API endpoints related to the AI learning system that tracks unknown inputs and manages learned patterns. Verify that the system correctly learns from inputs, supports admin manual overrides, and updates patterns accordingly."
+  },
+  {
+    "id": "TC007",
+    "title": "test task management crud api endpoints",
+    "description": "Test the backend API endpoints for task CRUD operations, status tracking, priority handling, and assignment. Verify correct data creation, retrieval, update, and deletion with proper error handling."
+  },
+  {
+    "id": "TC008",
+    "title": "verify team management and role based access api",
+    "description": "Test the API endpoints for user and team management, including role-based access control. Verify that team members can be added, edited, and removed with appropriate permissions enforced."
+  },
+  {
+    "id": "TC009",
+    "title": "validate whatsapp contact registration and messaging api",
+    "description": "Test the API endpoints handling WhatsApp contact registration and messaging integration. Verify that contacts are registered correctly, messages are sent and received properly, and interactive menus function as expected."
+  },
+  {
+    "id": "TC010",
+    "title": "test authentication session management api",
+    "description": "Test the authentication API endpoints for session management including login, logout, and session validation. Verify secure handling of sessions and proper error responses for invalid or expired sessions."
+  }
+]

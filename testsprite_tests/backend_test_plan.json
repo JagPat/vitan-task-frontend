@@ -1,0 +1,490 @@
+{
+  "test_plan_name": "Vitan Task Backend Comprehensive Test Plan",
+  "project_overview": {
+    "name": "Vitan Task Backend API",
+    "description": "Node.js/Express backend with PostgreSQL, OpenAI integration, and WhatsApp Business API",
+    "tech_stack": ["Node.js", "Express.js", "PostgreSQL", "OpenAI API", "WhatsApp Business API"]
+  },
+  "test_categories": {
+    "api_endpoints": {
+      "description": "REST API endpoint testing",
+      "test_cases": [
+        {
+          "name": "User Authentication Endpoints",
+          "description": "Test user registration and authentication APIs",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/api/auth/register",
+              "description": "User registration",
+              "test_cases": [
+                "Valid user registration",
+                "Duplicate email/phone",
+                "Invalid data validation",
+                "Missing required fields"
+              ]
+            },
+            {
+              "method": "POST", 
+              "path": "/api/auth/login",
+              "description": "User login",
+              "test_cases": [
+                "Valid credentials login",
+                "Invalid credentials",
+                "Account not verified",
+                "Rate limiting"
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/auth/logout", 
+              "description": "User logout",
+              "test_cases": [
+                "Successful logout",
+                "Invalid session",
+                "Token expiration"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Task Management Endpoints",
+          "description": "Test task CRUD operations",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/api/tasks",
+              "description": "Create task",
+              "test_cases": [
+                "Valid task creation",
+                "Missing required fields",
+                "Invalid assignee",
+                "Invalid project assignment"
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/tasks",
+              "description": "Get tasks with filters",
+              "test_cases": [
+                "Get all tasks",
+                "Filter by status",
+                "Filter by priority",
+                "Filter by assignee",
+                "Filter by project",
+                "Pagination"
+              ]
+            },
+            {
+              "method": "PUT",
+              "path": "/api/tasks/:id",
+              "description": "Update task",
+              "test_cases": [
+                "Valid task update",
+                "Invalid task ID",
+                "Unauthorized access",
+                "Status transition validation"
+              ]
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/tasks/:id",
+              "description": "Delete task",
+              "test_cases": [
+                "Valid task deletion",
+                "Invalid task ID",
+                "Unauthorized access",
+                "Cascade deletion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Project Management Endpoints",
+          "description": "Test project CRUD operations",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/api/projects",
+              "description": "Create project",
+              "test_cases": [
+                "Valid project creation",
+                "Duplicate project name",
+                "Invalid data validation",
+                "Team member assignment"
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/projects",
+              "description": "Get projects",
+              "test_cases": [
+                "Get all projects",
+                "Filter by status",
+                "Filter by category",
+                "User-specific projects"
+              ]
+            },
+            {
+              "method": "PUT",
+              "path": "/api/projects/:id",
+              "description": "Update project",
+              "test_cases": [
+                "Valid project update",
+                "Invalid project ID",
+                "Unauthorized access"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Team Management Endpoints",
+          "description": "Test team member management",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/api/team/invite",
+              "description": "Invite team member",
+              "test_cases": [
+                "Valid invitation",
+                "Invalid contact details",
+                "Duplicate invitation",
+                "WhatsApp integration"
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/team/members",
+              "description": "Get team members",
+              "test_cases": [
+                "Get all team members",
+                "Filter by role",
+                "Filter by status"
+              ]
+            },
+            {
+              "method": "PUT",
+              "path": "/api/team/members/:id",
+              "description": "Update team member",
+              "test_cases": [
+                "Valid member update",
+                "Role change",
+                "Status update"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Analytics Endpoints",
+          "description": "Test analytics and reporting APIs",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/api/analytics/tasks",
+              "description": "Task analytics",
+              "test_cases": [
+                "Task completion metrics",
+                "Priority distribution",
+                "Status breakdown",
+                "Time-based analytics"
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/analytics/team",
+              "description": "Team performance",
+              "test_cases": [
+                "Member productivity",
+                "Task distribution",
+                "Performance trends"
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/analytics/ai",
+              "description": "AI usage analytics",
+              "test_cases": [
+                "API usage metrics",
+                "Cost tracking",
+                "Performance metrics",
+                "Error rates"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "whatsapp_integration": {
+      "description": "WhatsApp Business API integration testing",
+      "test_cases": [
+        {
+          "name": "Webhook Processing",
+          "description": "Test WhatsApp webhook handling",
+          "test_cases": [
+            "Message reception",
+            "Interactive button responses",
+            "Media message handling",
+            "Status updates",
+            "Error handling"
+          ]
+        },
+        {
+          "name": "Message Sending",
+          "description": "Test sending messages via WhatsApp",
+          "test_cases": [
+            "Text message sending",
+            "Interactive message sending",
+            "Template message sending",
+            "Media message sending",
+            "Bulk message sending"
+          ]
+        },
+        {
+          "name": "AI Integration",
+          "description": "Test AI-powered message processing",
+          "test_cases": [
+            "Intent recognition",
+            "Entity extraction",
+            "Natural language processing",
+            "Response generation",
+            "Context management"
+          ]
+        },
+        {
+          "name": "Contact Management",
+          "description": "Test contact sharing and management",
+          "test_cases": [
+            "Contact card processing",
+            "Contact validation",
+            "Contact storage",
+            "Contact lookup"
+          ]
+        }
+      ]
+    },
+    "database_operations": {
+      "description": "PostgreSQL database operation testing",
+      "test_cases": [
+        {
+          "name": "User Operations",
+          "description": "Test user-related database operations",
+          "test_cases": [
+            "User creation",
+            "User authentication",
+            "User profile updates",
+            "User deletion",
+            "User search"
+          ]
+        },
+        {
+          "name": "Task Operations",
+          "description": "Test task-related database operations",
+          "test_cases": [
+            "Task creation",
+            "Task updates",
+            "Task queries with filters",
+            "Task deletion",
+            "Bulk operations"
+          ]
+        },
+        {
+          "name": "Project Operations",
+          "description": "Test project-related database operations",
+          "test_cases": [
+            "Project creation",
+            "Project updates",
+            "Project queries",
+            "Project deletion",
+            "Task-project relationships"
+          ]
+        },
+        {
+          "name": "Team Operations",
+          "description": "Test team-related database operations",
+          "test_cases": [
+            "Team member creation",
+            "Team member updates",
+            "Team queries",
+            "Invitation management",
+            "Role management"
+          ]
+        }
+      ]
+    },
+    "ai_integration": {
+      "description": "OpenAI API integration testing",
+      "test_cases": [
+        {
+          "name": "Intent Recognition",
+          "description": "Test AI intent recognition",
+          "test_cases": [
+            "Task creation intent",
+            "Project creation intent",
+            "Task status update intent",
+            "Team member addition intent",
+            "Help request intent"
+          ]
+        },
+        {
+          "name": "Entity Extraction",
+          "description": "Test AI entity extraction",
+          "test_cases": [
+            "Task title extraction",
+            "Due date extraction",
+            "Priority extraction",
+            "Assignee extraction",
+            "Project name extraction"
+          ]
+        },
+        {
+          "name": "Response Generation",
+          "description": "Test AI response generation",
+          "test_cases": [
+            "Task confirmation responses",
+            "Error responses",
+            "Help responses",
+            "Clarification requests",
+            "Wizard step responses"
+          ]
+        },
+        {
+          "name": "Cost Management",
+          "description": "Test AI cost tracking",
+          "test_cases": [
+            "Token usage tracking",
+            "Cost calculation",
+            "Rate limiting",
+            "Budget enforcement",
+            "Usage analytics"
+          ]
+        }
+      ]
+    },
+    "security": {
+      "description": "Security and authentication testing",
+      "test_cases": [
+        {
+          "name": "Authentication",
+          "description": "Test authentication mechanisms",
+          "test_cases": [
+            "JWT token validation",
+            "Session management",
+            "Password hashing",
+            "Token expiration",
+            "Refresh token handling"
+          ]
+        },
+        {
+          "name": "Authorization",
+          "description": "Test authorization and access control",
+          "test_cases": [
+            "Role-based access control",
+            "Resource ownership",
+            "Permission validation",
+            "Admin privileges",
+            "User isolation"
+          ]
+        },
+        {
+          "name": "Input Validation",
+          "description": "Test input validation and sanitization",
+          "test_cases": [
+            "SQL injection prevention",
+            "XSS prevention",
+            "Data sanitization",
+            "Input length limits",
+            "Data type validation"
+          ]
+        },
+        {
+          "name": "Rate Limiting",
+          "description": "Test rate limiting mechanisms",
+          "test_cases": [
+            "API rate limiting",
+            "WhatsApp rate limiting",
+            "AI API rate limiting",
+            "IP-based limiting",
+            "User-based limiting"
+          ]
+        }
+      ]
+    },
+    "performance": {
+      "description": "Performance and load testing",
+      "test_cases": [
+        {
+          "name": "Database Performance",
+          "description": "Test database query performance",
+          "test_cases": [
+            "Query optimization",
+            "Index usage",
+            "Connection pooling",
+            "Query timeouts",
+            "Large dataset handling"
+          ]
+        },
+        {
+          "name": "API Performance",
+          "description": "Test API response times",
+          "test_cases": [
+            "Response time measurement",
+            "Concurrent request handling",
+            "Memory usage monitoring",
+            "CPU usage monitoring",
+            "Error rate monitoring"
+          ]
+        },
+        {
+          "name": "WhatsApp Performance",
+          "description": "Test WhatsApp integration performance",
+          "test_cases": [
+            "Message processing speed",
+            "Webhook handling performance",
+            "Media processing performance",
+            "Bulk message performance",
+            "Error handling performance"
+          ]
+        },
+        {
+          "name": "AI Performance",
+          "description": "Test AI integration performance",
+          "test_cases": [
+            "API response times",
+            "Token usage optimization",
+            "Caching mechanisms",
+            "Fallback handling",
+            "Cost optimization"
+          ]
+        }
+      ]
+    }
+  },
+  "test_environment": {
+    "databases": ["PostgreSQL (Development)", "PostgreSQL (Staging)", "PostgreSQL (Production)"],
+    "apis": ["OpenAI API", "WhatsApp Business API", "Railway API"],
+    "load_testing": ["JMeter", "Artillery", "Custom scripts"],
+    "monitoring": ["Railway logs", "Custom logging", "Error tracking"]
+  },
+  "automation_priority": {
+    "high": [
+      "User Authentication Endpoints",
+      "Task Management Endpoints", 
+      "Webhook Processing",
+      "Intent Recognition",
+      "Authentication Security"
+    ],
+    "medium": [
+      "Project Management Endpoints",
+      "Team Management Endpoints",
+      "Message Sending",
+      "Entity Extraction",
+      "Database Performance"
+    ],
+    "low": [
+      "Analytics Endpoints",
+      "Cost Management",
+      "Memory Usage",
+      "AI Performance"
+    ]
+  }
+} 

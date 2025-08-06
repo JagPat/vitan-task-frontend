@@ -1,0 +1,407 @@
+[
+  {
+    "id": "TC001",
+    "title": "Natural Language Command Processing in Supported Languages",
+    "description": "Verify the system correctly processes natural language commands in English, Hindi, Gujarati, and Hinglish with intent recognition accuracy greater than 90%.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send a natural language task creation command via WhatsApp in English."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify intent and entities are correctly extracted with ≥90% accuracy and task is created."
+      },
+      {
+        "type": "action",
+        "description": "Send similar commands in Hindi, Gujarati, and Hinglish sequentially."
+      },
+      {
+        "type": "assertion",
+        "description": "Validate correct intent recognition and task creation in all languages."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Multiple Phone Number Extraction and User Selection",
+    "description": "Confirm that when a contact with multiple phone numbers is shared, the system accurately extracts all numbers and prompts the user for selection without data loss.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send a WhatsApp contact card containing multiple phone numbers."
+      },
+      {
+        "type": "assertion",
+        "description": "System detects all phone numbers and prompts user to select the correct number."
+      },
+      {
+        "type": "action",
+        "description": "Choose one phone number when prompted."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the selected phone number is registered as contact and logged correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Dual WhatsApp Notifications on Task Creation and Status Update",
+    "description": "Ensure that task creation and status updates send notifications to both the task assignee and the task creator with confirmation of delivery.",
+    "category": "integration",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create a new task assigning it to a user via WhatsApp."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify WhatsApp notifications are sent to both assignee and creator with delivery confirmation."
+      },
+      {
+        "type": "action",
+        "description": "Update the task status via WhatsApp."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm both parties receive status update notifications with delivery confirmation."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Phone Number Normalization Consistency Between Frontend and Backend",
+    "description": "Validate that phone numbers are normalized consistently between frontend UI (with + prefix) and backend API (without +), ensuring data consistency.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Enter a phone number in the frontend user interface including country code with + sign."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify frontend normalizes phone number with + prefix."
+      },
+      {
+        "type": "action",
+        "description": "Submit the phone number to backend API."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify backend receives the phone number normalized without + prefix."
+      },
+      {
+        "type": "action",
+        "description": "Retrieve the phone number from backend and display in UI."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure frontend re-applies + prefix correctly without data corruption."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Authentication Workflow with WhatsApp Verification",
+    "description": "Test the authentication system for login and verification via WhatsApp verification code, ensuring no errors in workflows.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt login by entering a valid phone number."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify WhatsApp verification code is sent to the phone number."
+      },
+      {
+        "type": "action",
+        "description": "Enter the correct verification code received."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm successful login and session is established."
+      },
+      {
+        "type": "action",
+        "description": "Attempt login with incorrect verification code."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login fails with appropriate error message and does not lock user out."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Admin Dashboard Real-Time AI Usage and Cost Management",
+    "description": "Validate that the admin dashboard displays real-time AI usage metrics, system health, and cost management controls with live updates.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as an admin and navigate to the AI Admin Dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Check for real-time AI usage statistics and cost tracking visualizations."
+      },
+      {
+        "type": "action",
+        "description": "Trigger AI usage by sending natural language commands."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify usage metrics update live on the dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Use budget control features such as emergency stop."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm budget controls are applied immediately and reflected in system status."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "AI Adaptive Learning and Pattern Management",
+    "description": "Test that the AI learning system tracks unknown user inputs, learns patterns correctly, and supports admin manual override and pattern management.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send unrecognized natural language inputs via WhatsApp."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm inputs are logged as unknown and clarifications are requested."
+      },
+      {
+        "type": "action",
+        "description": "Use the admin dashboard to review and create new AI patterns manually."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the newly created patterns correctly resolve similar inputs."
+      },
+      {
+        "type": "action",
+        "description": "Send previously unknown inputs again."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure AI responds accurately based on learned patterns."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Frontend UI Navigation and SPA Routing Stability",
+    "description": "Verify all frontend UI navigations directly via URLs route correctly with SPA routing, and no 404 errors occur on page refresh or direct access.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Directly access various app URLs for pages such as tasks, projects, team management, dashboard, and templates."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that pages render correctly without 404 errors."
+      },
+      {
+        "type": "action",
+        "description": "Refresh pages at those same URLs."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pages reload successfully with route intact and no errors."
+      },
+      {
+        "type": "action",
+        "description": "Navigate within the frontend SPA using UI elements and browser back/forward controls."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure all navigations work seamlessly without broken links or errors."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Backend API Endpoint Response and Error Handling",
+    "description": "Validate all backend API endpoints return expected responses for valid requests and handle invalid requests gracefully while maintaining data consistency.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send valid API requests to task, project, team, and authentication endpoints."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify correct success responses with accurate data."
+      },
+      {
+        "type": "action",
+        "description": "Send invalid or malformed API requests (e.g. missing parameters, unauthorized access)."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm error responses are descriptive and no data corruption occurs."
+      },
+      {
+        "type": "action",
+        "description": "Concurrently update the same resource to test data consistency and race conditions."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure final data state is consistent and no lost updates are observed."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Clarification Handling to Prevent Loops and Repeated Errors",
+    "description": "Ensure the system provides meaningful clarification messages to users, prevents clarification loops, and offers helpful guidance for error correction.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send ambiguous or incomplete natural language inputs via WhatsApp."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system requests clarifications in a clear way."
+      },
+      {
+        "type": "action",
+        "description": "Respond with another ambiguous input."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm system prevents endless loops by limiting clarifications and suggesting alternative help."
+      },
+      {
+        "type": "action",
+        "description": "Provide correct input following guidance."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system processes input successfully and exits clarification mode."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Comprehensive User Workflow Coverage with Pass Rate Verification",
+    "description": "Automated and manual tests cover all critical user workflows achieving at least 80% pass rate before production deployment.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Execute automated test suites covering task management, project management, team collaboration, WhatsApp interactions, AI learning, and admin dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm all automated tests pass and code coverage is above threshold."
+      },
+      {
+        "type": "action",
+        "description": "Conduct manual exploratory testing of key workflows especially natural language interaction and clarifications."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure manual testing validates system stability and usability with at least 80% overall workflow pass rate."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Task and Project CRUD Operations via Frontend and WhatsApp",
+    "description": "Verify that create, read, update, and delete operations for tasks and projects work seamlessly across the React frontend and WhatsApp interface with data consistency and role-based access control.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create a new task through WhatsApp natural language command and via React frontend."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm tasks are created on both interfaces and data is synchronized."
+      },
+      {
+        "type": "action",
+        "description": "Update task details and status via both interfaces."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updates reflect correctly and notifications trigger as expected."
+      },
+      {
+        "type": "action",
+        "description": "Delete a task via frontend and WhatsApp."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure task deletion is consistent with backend data and UI shows updated task list."
+      },
+      {
+        "type": "action",
+        "description": "Attempt unauthorized CRUD operation as non-admin or unauthorized role."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm access is denied and appropriate error messages are returned."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Team and Role-Based Access Control Validation",
+    "description": "Test team management features and enforce role-based access control for users on task and project operations.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create team members with different roles (admin, member, guest) via frontend."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify role assignments are saved and visible in Team management UI."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to perform privileged actions such as project creation and team editing with each role."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm only authorized roles can perform restricted actions, others receive access denied messages."
+      },
+      {
+        "type": "action",
+        "description": "Review detailed analytics and usage reports restricted to admins."
+      },
+      {
+        "type": "assertion",
+        "description": "Validate that non-admin roles cannot access or see admin analytics."
+      }
+    ]
+  }
+]

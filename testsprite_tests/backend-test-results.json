@@ -1,0 +1,73 @@
+{
+  "total": 13,
+  "passed": 13,
+  "failed": 0,
+  "successRate": 100,
+  "results": [
+    {
+      "name": "GET /api/users",
+      "success": true,
+      "details": "Status: 200, Count: 0"
+    },
+    {
+      "name": "GET /api/contacts",
+      "success": true,
+      "details": "Status: 200, Count: 7"
+    },
+    {
+      "name": "404 Error Handling",
+      "success": true,
+      "details": "Status: 404"
+    },
+    {
+      "name": "GET /api/templates",
+      "success": true,
+      "details": "Status: 200, Count: 0"
+    },
+    {
+      "name": "GET /api/team",
+      "success": true,
+      "details": "Status: 200, Count: 7"
+    },
+    {
+      "name": "GET /api/analytics/tasks",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "name": "GET /api/tasks",
+      "success": true,
+      "details": "Status: 200, Count: 0"
+    },
+    {
+      "name": "POST /api/ai/process",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "name": "CORS Headers",
+      "success": true,
+      "details": "Status: 204"
+    },
+    {
+      "name": "GET /api/projects",
+      "success": true,
+      "details": "Status: 200, Count: 0"
+    },
+    {
+      "name": "POST /api/tasks",
+      "success": true,
+      "details": "Status: 201"
+    },
+    {
+      "name": "Health Check",
+      "success": true,
+      "details": "Status: 200, Data: {\"status\":\"OK\",\"timestamp\":\"2025-08-06T04:47:34.363Z\",\"uptime\":23.107981766,\"environment\":\"production\",\"port\":\"8080\",\"metaApi\":{\"configured\":true}}"
+    },
+    {
+      "name": "POST /api/whatsapp/send",
+      "success": true,
+      "details": "Status: 200"
+    }
+  ]
+}

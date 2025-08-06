@@ -94,21 +94,21 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     setLoadingStats(true);
     try {
       // Load user stats
-      const statsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/stats`);
+      const statsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/stats`, { credentials: 'include' });
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setUserStats(statsData.data);
       }
 
       // Load user projects
-      const projectsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/projects`);
+      const projectsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/projects`, { credentials: 'include' });
       if (projectsResponse.ok) {
         const projectsData = await projectsResponse.json();
         setUserProjects(projectsData.data || []);
       }
 
       // Load user tasks
-      const tasksResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/tasks`);
+      const tasksResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/tasks`, { credentials: 'include' });
       if (tasksResponse.ok) {
         const tasksData = await tasksResponse.json();
         setUserTasks(tasksData.data || []);
@@ -136,7 +136,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const handleDeleteClick = async () => {
     try {
       // Get deletion info first
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/deletion-info`);
+      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/deletion-info`, { credentials: 'include' });
       const data = await response.json();
       
       if (data.success) {
@@ -158,48 +158,39 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ forceDelete }),
-      });
+const handleConfirmDelete = async () => {
+  setIsDeleting(true);
+  try {
+    const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
+      credentials: 'include',
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ forceDelete }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (data.success) {
-        toast({
-          title: "Success",
-          description: data.message || "User deleted successfully",
-        });
-        onDelete(user.id);
-      } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to delete user",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete user",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteDialog(false);
+    if (data.success) {
+      toast.success(data.message || "User deleted successfully");
+      onDelete(user.id);
+    } else {
+      toast.error(data.error || "Failed to delete user");
     }
-  };
+  } catch (error) {
+    toast.error("Failed to delete user");
+  } finally {
+    setIsDeleting(false);
+    setShowDeleteDialog(false);
+  }
+};
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
+        credentials: 'include',
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

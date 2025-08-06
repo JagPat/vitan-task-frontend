@@ -1,0 +1,96 @@
+{
+  "project": "Vitan Task Management System",
+  "environment": "production",
+  "backendUrl": "https://vitan-task-production.up.railway.app",
+  "frontendUrl": "https://vitan-task-frontend.up.railway.app",
+  "timestamp": "2025-08-05T11:22:24.619Z",
+  "summary": {
+    "total": 12,
+    "passed": 9,
+    "failed": 0,
+    "errors": 3
+  },
+  "details": [
+    {
+      "name": "Backend Health Check",
+      "status": "PASS",
+      "response": {
+        "status": "OK",
+        "timestamp": "2025-08-05T11:22:22.372Z",
+        "uptime": 1328.891067923,
+        "environment": "production",
+        "port": "8080",
+        "metaApi": {
+          "configured": true
+        }
+      },
+      "timestamp": "2025-08-05T11:22:22.369Z"
+    },
+    {
+      "name": "Tasks API",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:22.475Z"
+    },
+    {
+      "name": "Users API",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:22.576Z"
+    },
+    {
+      "name": "Analytics API",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:22.685Z"
+    },
+    {
+      "name": "Contacts API",
+      "status": "ERROR",
+      "error": "Request failed with status code 404",
+      "timestamp": "2025-08-05T11:22:22.748Z"
+    },
+    {
+      "name": "Projects API",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:22.851Z"
+    },
+    {
+      "name": "Project Members API",
+      "status": "ERROR",
+      "error": "Request failed with status code 404",
+      "timestamp": "2025-08-05T11:22:22.912Z"
+    },
+    {
+      "name": "Invitations API",
+      "status": "ERROR",
+      "error": "Request failed with status code 404",
+      "timestamp": "2025-08-05T11:22:22.975Z"
+    },
+    {
+      "name": "WhatsApp Webhook",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:23.037Z"
+    },
+    {
+      "name": "Frontend Accessibility",
+      "status": "PASS",
+      "statusCode": 200,
+      "timestamp": "2025-08-05T11:22:23.631Z"
+    },
+    {
+      "name": "Backend Response Time",
+      "status": "PASS",
+      "responseTime": 921,
+      "timestamp": "2025-08-05T11:22:24.553Z"
+    },
+    {
+      "name": "API Response Time",
+      "status": "PASS",
+      "responseTime": 66,
+      "timestamp": "2025-08-05T11:22:24.619Z"
+    }
+  ]
+}

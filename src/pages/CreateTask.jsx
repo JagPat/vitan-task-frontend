@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { sendTaskAssignmentNotification, sendTaskCreationConfirmation } from "@/api/functions";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { toast } from "sonner";
 import { 
   ArrowLeft, 
@@ -59,6 +60,19 @@ export default function CreateTask() {
 
   useEffect(() => {
     loadData();
+    
+    // Test backend connectivity
+    const testBackendConnection = async () => {
+      try {
+        await whatsTaskClient.healthCheck();
+        console.log('Backend connection successful');
+      } catch (error) {
+        console.error('Backend connection failed:', error);
+        toast.error('Backend connection failed. Some features may not work properly.');
+      }
+    };
+    
+    testBackendConnection();
   }, []);
 
   const loadData = async () => {
@@ -102,6 +116,69 @@ export default function CreateTask() {
         assigned_to_phone: ""
       }));
     }
+  };
+
+  // Enhanced validation function
+  const validateForm = () => {
+    const errors = [];
+    
+    // Title validation - allow Unicode characters
+    if (!taskData.title || taskData.title.trim().length === 0) {
+      errors.push("Task title is required");
+    } else if (taskData.title.trim().length < 3) {
+      errors.push("Task title must be at least 3 characters long");
+    }
+    
+    // Description validation - allow Unicode characters
+    if (taskData.description && taskData.description.trim().length > 1000) {
+      errors.push("Description must be less than 1000 characters");
+    }
+    
+    // Assignment validation
+    if (!taskData.is_external_assignment) {
+      // Internal assignment
+      if (!taskData.assigned_to) {
+        errors.push("Please select a team member");
+      }
+    } else {
+      // External assignment
+      if (!taskData.assigned_to_name || taskData.assigned_to_name.trim().length === 0) {
+        errors.push("Contact name is required for external assignment");
+      } else if (taskData.assigned_to_name.trim().length < 2) {
+        errors.push("Contact name must be at least 2 characters long");
+      }
+      
+      if (!taskData.assigned_to_phone || taskData.assigned_to_phone.trim().length === 0) {
+        errors.push("WhatsApp number is required for external assignment");
+      } else {
+        // More lenient phone number validation for international formats
+        const cleanPhone = taskData.assigned_to_phone.replace(/[\s\-\(\)]/g, '');
+        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+          errors.push("Phone number must be between 7 and 15 digits");
+        }
+      }
+    }
+    
+    // Due date validation
+    if (taskData.due_date) {
+      const selectedDate = new Date(taskData.due_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        errors.push("Due date cannot be in the past");
+      }
+    }
+    
+    // Estimated hours validation
+    if (taskData.estimated_hours && taskData.estimated_hours !== "") {
+      const hours = parseFloat(taskData.estimated_hours);
+      if (isNaN(hours) || hours < 0 || hours > 1000) {
+        errors.push("Estimated hours must be between 0 and 1000");
+      }
+    }
+    
+    return errors;
   };
 
   const addTag = () => {
@@ -196,19 +273,32 @@ export default function CreateTask() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    console.log('Form submission started');
+    console.log('Current task data:', taskData);
+    
+    // Validate form before submission
+    const validationErrors = validateForm();
+    console.log('Validation errors:', validationErrors);
+    
+    if (validationErrors.length > 0) {
+      toast.error(validationErrors[0]);
+      return;
+    }
+    
     setLoading(true);
 
     try {
       // Map frontend fields to backend expected fields
       const taskToCreate = {
-        title: taskData.title,
-        description: taskData.description,
+        title: taskData.title.trim(),
+        description: taskData.description.trim(),
         due_date: taskData.due_date,
         priority: taskData.priority,
         estimated_hours: taskData.estimated_hours,
         status: "pending",
         // Map WhatsApp fields
-        assigned_to_whatsapp: taskData.is_external_assignment ? taskData.assigned_to_phone : null,
+        assigned_to_whatsapp: taskData.is_external_assignment ? taskData.assigned_to_phone.trim() : null,
         created_by_whatsapp: currentUser?.whatsapp_number || null,
         // Map internal user assignment
         assigned_to: taskData.is_external_assignment ? null : taskData.assigned_to,
@@ -226,6 +316,7 @@ export default function CreateTask() {
       const createdTask = await Task.create(taskToCreate);
       
       // Task created successfully
+      console.log('Task created successfully:', createdTask);
 
       // Send notifications to both assigned user and creator
       if (createdTask) {
@@ -244,6 +335,9 @@ export default function CreateTask() {
             try {
               await sendTaskAssignmentNotification(notificationTaskData);
               
+              // Show success notification
+              toast.success(`WhatsApp notification sent to ${notificationTaskData.assigned_to_name}`);
+              
               // Log successful assignment notification
               await ActivityLog.create({
                 task_id: createdTask.id,
@@ -254,6 +348,9 @@ export default function CreateTask() {
               });
             } catch (assignmentError) {
               console.error("Failed to send task assignment notification:", assignmentError);
+              
+              // Show warning notification
+              toast.warning(`Task created but WhatsApp notification failed: ${assignmentError.message}`);
               
               // Log failed assignment notification
               await ActivityLog.create({
@@ -271,6 +368,9 @@ export default function CreateTask() {
             try {
               await sendTaskCreationConfirmation(notificationTaskData);
               
+              // Show success notification
+              toast.success("Task creation confirmation sent to your WhatsApp");
+              
               // Log successful creation confirmation
               await ActivityLog.create({
                 task_id: createdTask.id,
@@ -281,6 +381,9 @@ export default function CreateTask() {
               });
             } catch (confirmationError) {
               console.error("Failed to send task creation confirmation:", confirmationError);
+              
+              // Show warning notification
+              toast.warning(`Task created but confirmation message failed: ${confirmationError.message}`);
               
               // Log failed creation confirmation
               await ActivityLog.create({
@@ -345,6 +448,12 @@ export default function CreateTask() {
       }
 
       toast.success("Task created successfully!");
+      
+      // Trigger a global event to refresh task lists
+      window.dispatchEvent(new CustomEvent('taskCreated', { 
+        detail: { task: createdTask } 
+      }));
+      
       navigate(createPageUrl("Dashboard"));
     } catch (error) {
       console.error("Error creating task:", error);
@@ -374,6 +483,22 @@ export default function CreateTask() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Form Validation Feedback */}
+          {validateForm().length > 0 && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2 text-red-700 mb-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="font-medium">Please fix the following issues:</span>
+                </div>
+                <ul className="text-sm text-red-600 space-y-1">
+                  {validateForm().map((error, index) => (
+                    <li key={index}>• {error}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
           {/* Template Selection */}
           {templates.length > 0 && (
             <Card className="border-0 shadow-lg">
@@ -636,7 +761,7 @@ export default function CreateTask() {
               {taskData.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {taskData.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    <Badge key={`tag-${tag}-${index}`} variant="secondary" className="flex items-center gap-1">
                       {tag}
                       <button
                         type="button"
@@ -673,7 +798,7 @@ export default function CreateTask() {
               {taskData.checklist.length > 0 && (
                 <div className="space-y-2">
                   {taskData.checklist.map((item, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div key={`checklist-${item.item}-${index}`} className="flex items-center gap-3 p-3 border rounded-lg">
                       <span className="flex-1">{item.item}</span>
                       <button
                         type="button"
@@ -716,7 +841,7 @@ export default function CreateTask() {
               {taskData.attachments.length > 0 && (
                 <div className="space-y-2">
                   {taskData.attachments.map((attachment, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div key={`attachment-${attachment.name}-${index}`} className="flex items-center gap-3 p-3 border rounded-lg">
                       <span className="flex-1">{attachment.name}</span>
                       <button
                         type="button"
@@ -743,11 +868,8 @@ export default function CreateTask() {
             </Button>
             <Button
               type="submit"
-              disabled={loading || !taskData.title || (
-                (!taskData.is_external_assignment && !taskData.assigned_to) || 
-                (taskData.is_external_assignment && (!taskData.assigned_to_name || !taskData.assigned_to_phone))
-              )}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              disabled={loading || validateForm().length > 0}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create Task'}
             </Button>

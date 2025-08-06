@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8080",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "vitan-task-backend",
+    "projectPath": "/Users/jagrutpatel/Vitan Task/vitan-task-frontend",
+    "testIds": [],
+    "additionalInstruction": "Test the backend API deployed on Railway at https://vitan-task-production.up.railway.app. Focus on API endpoint testing, database operations, authentication, WhatsApp integration, and error handling. Test all CRUD operations for tasks, users, projects, and templates. Verify health check endpoints and system status.",
+    "envs": {
+      "API_KEY": "sk-user-k2ZCJgN9A2rN3Qwpw3HWmK3idoE71yBRpjQwvBOL3trXS5FbpIhcNZYpznQgxTd1f6BOb5LUrKxOZlE75A1-NsJKKS-K_w45oE3mX9nx8sIBuglAOk29DX0pggVNc0Bpm7k"
+    }
+  }
+}

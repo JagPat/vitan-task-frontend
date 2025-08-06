@@ -1,4 +1,4 @@
-import { whatsTaskClient } from './whatsTaskClient';
+import { whatsTaskClient } from './whatsTaskClient.js';
 
 // Task entity using WhatsTask API
 export const Task = {
@@ -25,7 +25,8 @@ export const Task = {
     try {
       const response = await whatsTaskClient.createTask(taskData);
       // Task creation response processed
-      return response.data;
+      console.log('Task creation response:', response);
+      return response.data || response; // Handle both response formats
     } catch (error) {
       console.error('Task creation failed:', error);
       throw error;

@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "project": "WhatsTask",
+    "date": "2025-07-30",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "WhatsTask is a comprehensive WhatsApp-first task and vendor management system designed to enable non-technical users, especially vendors and field agents, to manage tasks naturally via WhatsApp. It seamlessly integrates AI-driven natural language understanding, multi-language support, task and project management, team collaboration, and an admin dashboard with cost control, all accessible through both a modern React frontend and WhatsApp messaging interface.",
+  "core_goals": [
+    "Enable natural language task and vendor management via WhatsApp without needing structured commands.",
+    "Support multiple languages including English, Hindi, Gujarati, and Hinglish for wide adoption.",
+    "Provide an intelligent AI interaction system with adaptive learning and contextual guidance.",
+    "Deliver seamless team and project management with role-based access control.",
+    "Implement robust backend API integration with real-time task notifications through WhatsApp.",
+    "Include a comprehensive admin dashboard with AI cost management and system health monitoring.",
+    "Ensure reliable and scalable deployment using modern cloud infrastructure (Railway)."
+  ],
+  "key_features": [
+    "Natural Language Processing supporting multiple languages with intent recognition and entity extraction.",
+    "Adaptive AI learning interface for unstructured user inputs with real-time clarification and pattern management.",
+    "Comprehensive task and project management with CRUD operations, status tracking, priority handling, and assignment capabilities.",
+    "Team and user management with role-based access and detailed analytics.",
+    "WhatsApp integration for contact registration, task notifications, interactive menus, and status updates.",
+    "Dual WhatsApp notifications system sending alerts to both task assignees and creators.",
+    "Intelligent phone number extraction and handling for contact sharing, supporting multiple phone number formats and user choice.",
+    "Robust authentication system with phone number normalization and verification via WhatsApp.",
+    "Frontend built with React, Vite, Tailwind CSS, and Radix UI, featuring responsive design and rich analytics charts.",
+    "Backend API built with Node.js, Express, and PostgreSQL, featuring webhook handling and AI service integration.",
+    "Cost management system with usage tracking, budget controls, emergency stop, and optimization techniques.",
+    "Comprehensive error handling and user experience enhancements to prevent loops and provide meaningful feedback."
+  ],
+  "user_flow_summary": [
+    "User sends a natural language message or WhatsApp contact to the system.",
+    "The AI processing pipeline detects language, extracts intent and entities, and validates the input.",
+    "For contact sharing, the system extracts multiple phone numbers and prompts the user if multiple numbers are found.",
+    "The system registers the user or vendor, sends confirmation messages, and logs activities.",
+    "For task management commands, the system processes the user request, sends dual WhatsApp notifications to assigned user and creator, and updates status accordingly.",
+    "Admins use the React frontend to create tasks, manage projects and teams, and monitor analytics and AI usage.",
+    "Users interact via WhatsApp sending natural language commands or selecting from interactive menus.",
+    "The AI interface provides contextual guidance, intelligent clarification, and adapts patterns over time with admin review capabilities.",
+    "The admin supervises the AI learning system through a dashboard with cost management and system health monitoring.",
+    "All interactions are logged and validated to ensure data consistency and security."
+  ],
+  "validation_criteria": [
+    "System correctly processes natural language commands in English, Hindi, Gujarati, and Hinglish with expected intent recognition accuracy greater than 90%.",
+    "Multiple phone numbers in contact sharing are detected and user selection is prompted accurately with no data loss.",
+    "Dual WhatsApp notifications are sent reliably to both task assignees and creators upon task creation and status updates, with confirmation of delivery.",
+    "Frontend and backend maintain consistent phone number normalization formats (with and without +) for UI and API respectively.",
+    "Authentication system allows login and verification workflows without errors, including WhatsApp verification code confirmation.",
+    "Admin dashboard provides real-time AI usage metrics, system health status, and cost management controls with live updates.",
+    "The AI learning system tracks unknown inputs, learns patterns correctly, and supports admin manual override and pattern management.",
+    "Frontend UI navigations work directly via URLs with SPA routing fixed and no 404 errors on refresh or direct access.",
+    "All backend API endpoints return expected responses with error handling for invalid requests and maintain data consistency.",
+    "The system gracefully handles clarifications without looping, provides helpful user guidance, and prevents repeated errors.",
+    "Automated and manual tests cover all critical user workflows with at least 80% pass rate before production deployment."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "JavaScript",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+      "Radix UI",
+      "React Router",
+      "Axios",
+      "Lucide React",
+      "Recharts",
+      "Sonner"
+    ],
+    "features": [
+      {
+        "name": "Task Management System",
+        "description": "Comprehensive task management with CRUD operations, status tracking, priority management, and assignment features",
+        "files": [
+          "src/pages/UnifiedTaskView.jsx",
+          "src/pages/MyTasks.jsx",
+          "src/pages/CreateTask.jsx",
+          "src/pages/TaskDetails.jsx",
+          "src/pages/DeletedTasks.jsx",
+          "src/components/tasks/UnifiedTaskCard.jsx",
+          "src/components/tasks/EditTaskDialog.jsx",
+          "src/components/tasks/AdvancedTaskFilters.jsx",
+          "src/components/tasks/KanbanBoardView.jsx"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "description": "Project creation, management, and team collaboration features",
+        "files": [
+          "src/pages/Projects.jsx",
+          "src/pages/ProjectDetails.jsx",
+          "src/components/projects/ProjectCard.jsx",
+          "src/components/projects/CreateProjectDialog.jsx",
+          "src/components/projects/CreateProjectTaskDialog.jsx"
+        ]
+      },
+      {
+        "name": "Team Management",
+        "description": "User management, team member administration, and role-based access control",
+        "files": [
+          "src/pages/Team.jsx",
+          "src/pages/TeamTaskView.jsx",
+          "src/components/team/TeamMemberCard.jsx",
+          "src/components/team/InviteUserDialog.jsx",
+          "src/components/team/EditUserDialog.jsx",
+          "src/components/team/TeamStats.jsx"
+        ]
+      },
+      {
+        "name": "Authentication System",
+        "description": "User authentication, login/logout functionality, and session management",
+        "files": [
+          "src/components/LoginDialog.jsx",
+          "src/pages/Layout.jsx",
+          "src/api/auth.js"
+        ]
+      },
+      {
+        "name": "Dashboard & Analytics",
+        "description": "Comprehensive dashboard with analytics, metrics, and data visualization",
+        "files": [
+          "src/pages/Dashboard.jsx",
+          "src/pages/Analytics.jsx",
+          "src/pages/AIAdminDashboard.jsx",
+          "src/components/dashboard/QuickActions.jsx",
+          "src/components/dashboard/RecentActivity.jsx",
+          "src/components/dashboard/StatsOverview.jsx",
+          "src/components/analytics/AnalyticsHeader.jsx",
+          "src/components/analytics/KeyMetrics.jsx",
+          "src/components/analytics/PriorityBreakdown.jsx"
+        ]
+      },
+      {
+        "name": "WhatsApp Integration",
+        "description": "WhatsApp messaging integration for task notifications and communication",
+        "files": [
+          "src/pages/WhatsAppAdmin.jsx",
+          "src/pages/WhatsAppTest.jsx",
+          "src/components/ContactManager.jsx",
+          "src/components/PhoneNumberInput.jsx",
+          "src/api/whatsapp.js"
+        ]
+      },
+      {
+        "name": "Template System",
+        "description": "Task and project template management for quick creation",
+        "files": [
+          "src/pages/Templates.jsx",
+          "src/components/templates/TemplateCard.jsx",
+          "src/components/templates/TemplateFormDialog.jsx"
+        ]
+      },
+      {
+        "name": "UI Component Library",
+        "description": "Comprehensive UI component library built with Radix UI and Tailwind CSS",
+        "files": [
+          "src/components/ui/button.jsx",
+          "src/components/ui/card.jsx",
+          "src/components/ui/dialog.jsx",
+          "src/components/ui/input.jsx",
+          "src/components/ui/select.jsx",
+          "src/components/ui/tabs.jsx",
+          "src/components/ui/badge.jsx",
+          "src/components/ui/avatar.jsx",
+          "src/components/ui/alert-dialog.jsx",
+          "src/components/ui/tooltip.jsx",
+          "src/components/ui/dropdown-menu.jsx",
+          "src/components/ui/separator.jsx",
+          "src/components/ui/checkbox.jsx",
+          "src/components/ui/label.jsx",
+          "src/components/ui/accordion.jsx",
+          "src/components/ui/alert.jsx",
+          "src/components/ui/aspect-ratio.jsx",
+          "src/components/ui/collapsible.jsx",
+          "src/components/ui/context-menu.jsx",
+          "src/components/ui/hover-card.jsx",
+          "src/components/ui/menubar.jsx",
+          "src/components/ui/navigation-menu.jsx",
+          "src/components/ui/popover.jsx",
+          "src/components/ui/progress.jsx",
+          "src/components/ui/radio-group.jsx",
+          "src/components/ui/scroll-area.jsx",
+          "src/components/ui/slider.jsx",
+          "src/components/ui/switch.jsx",
+          "src/components/ui/toggle.jsx",
+          "src/components/ui/toggle-group.jsx"
+        ]
+      },
+      {
+        "name": "API Integration",
+        "description": "Backend API integration for data management and communication",
+        "files": [
+          "src/api/entities.js",
+          "src/api/functions.js",
+          "src/api/integrations.js",
+          "src/api/auth.js",
+          "src/api/whatsapp.js"
+        ]
+      },
+      {
+        "name": "Utility Functions",
+        "description": "Helper functions and utilities for data processing and formatting",
+        "files": [
+          "src/utils/dateUtils.js",
+          "src/utils/designSystem.js",
+          "src/utils/countryCodes.js",
+          "src/lib/utils.js"
+        ]
+      },
+      {
+        "name": "Custom Hooks",
+        "description": "Custom React hooks for reusable logic and state management",
+        "files": [
+          "src/hooks/use-mobile.jsx"
+        ]
+      },
+      {
+        "name": "Application Routing",
+        "description": "Client-side routing and navigation management",
+        "files": [
+          "src/App.jsx",
+          "src/main.jsx",
+          "src/pages/index.jsx"
+        ]
+      },
+      {
+        "name": "API Testing",
+        "description": "API testing and debugging tools",
+        "files": [
+          "src/components/ApiTest.jsx"
+        ]
+      }
+    ]
+  }
+}

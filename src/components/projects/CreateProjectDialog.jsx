@@ -31,7 +31,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
 
   const loadCategories = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/projects/categories/list');
+      const response = await fetch('https://vitan-task-production.up.railway.app/api/projects/categories/list', { credentials: 'include' });
       const data = await response.json();
       if (data.success) {
         setCategories(data.data);
@@ -47,6 +47,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
 
     try {
       const response = await fetch('https://vitan-task-production.up.railway.app/api/projects', {
+        credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,12 +92,15 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" aria-describedby="create-project-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5" />
             Create New Project
           </DialogTitle>
+          <div id="create-project-description" className="sr-only">
+            Dialog for creating a new project with name, description, category, priority, and dates
+          </div>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

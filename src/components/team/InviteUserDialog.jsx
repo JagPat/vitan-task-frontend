@@ -66,6 +66,7 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
         }
         
         response = await fetch('https://vitan-task-production.up.railway.app/api/invitations/whatsapp', {
+          credentials: 'include',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -87,6 +88,7 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
         }
         
         response = await fetch('https://vitan-task-production.up.railway.app/api/invitations/email', {
+          credentials: 'include',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

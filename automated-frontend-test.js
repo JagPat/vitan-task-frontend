@@ -9,7 +9,7 @@ class FrontendTester {
     this.page = null;
     this.testResults = [];
     this.backendUrl = 'https://vitan-task-production.up.railway.app';
-    this.frontendUrl = 'http://localhost:3004';
+    this.frontendUrl = 'http://localhost:3003';
   }
 
   async init() {
@@ -17,7 +17,7 @@ class FrontendTester {
     this.browser = await puppeteer.launch({ 
       headless: false, 
       defaultViewport: null,
-      args: ['--start-maximized']
+      args: ['--start-maximized'],
     });
     this.page = await this.browser.newPage();
     
@@ -29,7 +29,7 @@ class FrontendTester {
   async testBackendHealth() {
     console.log('\n🔍 Testing Backend Health...');
     try {
-      const response = await fetch(`${this.backendUrl}/health`);
+      const response = await fetch(`${this.backendUrl}/health`, { credentials: 'include' });
       const data = await response.json();
       this.logTest('Backend Health Check', response.ok, data);
     } catch (error) {
@@ -53,9 +53,8 @@ class FrontendTester {
     
     try {
       // Test login dialog appearance
-      const loginButton = await this.page.$('[data-testid="login-button"]') || 
-                         await this.page.$('button:contains("Login")') ||
-                         await this.page.$('button:contains("Sign In")');
+      const loginButton = await this.page.$('[data-testid="login-button"]') ||
+                         await this.page.$('[data-testid="login-dialog"]');
       
       if (loginButton) {
         await loginButton.click();
@@ -90,11 +89,11 @@ class FrontendTester {
     console.log('\n🧭 Testing Navigation...');
     
     const navigationTests = [
-      { name: 'Dashboard', selector: 'a[href="/dashboard"], a:contains("Dashboard")' },
-      { name: 'Tasks', selector: 'a[href="/tasks"], a:contains("Tasks")' },
-      { name: 'Projects', selector: 'a[href="/projects"], a:contains("Projects")' },
-      { name: 'Team', selector: 'a[href="/team"], a:contains("Team")' },
-      { name: 'Analytics', selector: 'a[href="/analytics"], a:contains("Analytics")' }
+      { name: 'Dashboard', selector: 'a[href="/dashboard"], [data-testid="dashboard-link"]' },
+      { name: 'Tasks', selector: 'a[href="/tasks"], [data-testid="tasks-link"]' },
+      { name: 'Projects', selector: 'a[href="/projects"], [data-testid="projects-link"]' },
+      { name: 'Team', selector: 'a[href="/team"], [data-testid="team-link"]' },
+      { name: 'Analytics', selector: 'a[href="/analytics"], [data-testid="analytics-link"]' },
     ];
 
     for (const test of navigationTests) {
@@ -118,7 +117,7 @@ class FrontendTester {
     
     try {
       // Test create task button
-      const createTaskBtn = await this.page.$('button:contains("Create Task"), button:contains("New Task")');
+      const createTaskBtn = await this.page.$('[data-testid="create-task-button"]') || (await this.page.$x("//button[contains(normalize-space(text()), 'Create Task')]"))[0];
       if (createTaskBtn) {
         await createTaskBtn.click();
         await this.page.waitForTimeout(1000);
@@ -145,7 +144,7 @@ class FrontendTester {
         }
         
         // Test save button
-        const saveBtn = await this.page.$('button:contains("Save"), button:contains("Create")');
+        const saveBtn = await this.page.$('[data-testid="save-button"]') || await this.page.$('button[type="submit"]');
         if (saveBtn) {
           await saveBtn.click();
           await this.page.waitForTimeout(1000);
@@ -159,12 +158,12 @@ class FrontendTester {
     }
   }
 
-  async testProjectManagement() {
+async testProjectManagement() {
     console.log('\n📁 Testing Project Management...');
     
     try {
       // Test create project button
-      const createProjectBtn = await this.page.$('button:contains("Create Project"), button:contains("New Project")');
+      const createProjectBtn = await this.page.$('[data-testid="create-project-button"]') || await this.page.$('button');
       if (createProjectBtn) {
         await createProjectBtn.click();
         await this.page.waitForTimeout(1000);
@@ -175,20 +174,26 @@ class FrontendTester {
         if (nameInput) {
           await nameInput.type('Test Project');
           this.logTest('Project Name Input', true, 'Name entered');
+        } else {
+          this.logTest('Project Name Input', false, 'Project name input not found');
         }
         
         const descriptionInput = await this.page.$('textarea[name="description"], textarea[placeholder*="description"]');
         if (descriptionInput) {
           await descriptionInput.type('Test project description');
           this.logTest('Project Description Input', true, 'Description entered');
+        } else {
+          this.logTest('Project Description Input', false, 'Project description input not found');
         }
         
         // Test save button
-        const saveBtn = await this.page.$('button:contains("Save"), button:contains("Create")');
+        const saveBtn = await this.page.$('[data-testid="save-button"]') || await this.page.$('button[type="submit"]');
         if (saveBtn) {
           await saveBtn.click();
           await this.page.waitForTimeout(1000);
           this.logTest('Project Save', true, 'Project saved successfully');
+        } else {
+          this.logTest('Project Save', false, 'Save button not found');
         }
       } else {
         this.logTest('Create Project Button', false, 'Create project button not found');
@@ -197,13 +202,12 @@ class FrontendTester {
       this.logTest('Project Management', false, error.message);
     }
   }
-
-  async testTeamManagement() {
+async testTeamManagement() {
     console.log('\n👥 Testing Team Management...');
     
     try {
       // Test invite user button
-      const inviteBtn = await this.page.$('button:contains("Invite User"), button:contains("Add Member")');
+      const inviteBtn = await this.page.$('[data-testid="invite-user-button"]');
       if (inviteBtn) {
         await inviteBtn.click();
         await this.page.waitForTimeout(1000);
@@ -223,7 +227,7 @@ class FrontendTester {
         }
         
         // Test send invite button
-        const sendBtn = await this.page.$('button:contains("Send Invite"), button:contains("Invite")');
+        const [sendBtn] = await this.page.$x("//button[contains(., 'Send Invite') or contains(., 'Invite')]");
         if (sendBtn) {
           await sendBtn.click();
           await this.page.waitForTimeout(1000);
@@ -307,7 +311,7 @@ class FrontendTester {
       test: testName,
       passed,
       details,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     this.testResults.push(result);
     
@@ -340,10 +344,10 @@ class FrontendTester {
         total: total,
         passed: passed,
         failed: total - passed,
-        successRate: percentage
+        successRate: percentage,
       },
       results: this.testResults,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     
     fs.writeFileSync('frontend-test-report.json', JSON.stringify(report, null, 2));
