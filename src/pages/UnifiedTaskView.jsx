@@ -62,7 +62,8 @@ import {
   Users,
   FolderOpen,
   List,
-  Grid3X3
+  Grid3X3,
+  CheckSquare
 } from 'lucide-react';
 import UnifiedTaskCard from '@/components/tasks/UnifiedTaskCard';
 import AdvancedTaskFilters from '@/components/tasks/AdvancedTaskFilters';
