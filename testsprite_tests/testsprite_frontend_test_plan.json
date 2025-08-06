@@ -1,406 +1,525 @@
 [
   {
     "id": "TC001",
-    "title": "Natural Language Command Processing in Supported Languages",
-    "description": "Verify the system correctly processes natural language commands in English, Hindi, Gujarati, and Hinglish with intent recognition accuracy greater than 90%.",
+    "title": "User Registration and Login via WhatsApp OTP",
+    "description": "Verify that users can successfully register and log in using WhatsApp-based OTP authentication flow with correct phone input and OTP validation.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Send a natural language task creation command via WhatsApp in English."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify intent and entities are correctly extracted with ≥90% accuracy and task is created."
+        "description": "Navigate to the login page"
       },
       {
         "type": "action",
-        "description": "Send similar commands in Hindi, Gujarati, and Hinglish sequentially."
+        "description": "Input a valid WhatsApp phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request OTP and receive it via WhatsApp"
+      },
+      {
+        "type": "action",
+        "description": "Enter the received OTP in the application"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
       },
       {
         "type": "assertion",
-        "description": "Validate correct intent recognition and task creation in all languages."
+        "description": "Verify that login is successful and user is redirected to dashboard"
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Multiple Phone Number Extraction and User Selection",
-    "description": "Confirm that when a contact with multiple phone numbers is shared, the system accurately extracts all numbers and prompts the user for selection without data loss.",
+    "title": "User Login via Email OTP",
+    "description": "Verify that users can successfully log in using Email OTP authentication with correct email input and OTP validation.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Send a WhatsApp contact card containing multiple phone numbers."
-      },
-      {
-        "type": "assertion",
-        "description": "System detects all phone numbers and prompts user to select the correct number."
+        "description": "Navigate to the login page"
       },
       {
         "type": "action",
-        "description": "Choose one phone number when prompted."
+        "description": "Input a valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Request OTP and receive it via email"
+      },
+      {
+        "type": "action",
+        "description": "Enter the received OTP in the application"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
       },
       {
         "type": "assertion",
-        "description": "Confirm the selected phone number is registered as contact and logged correctly."
+        "description": "Verify that login is successful and user is redirected to dashboard"
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Dual WhatsApp Notifications on Task Creation and Status Update",
-    "description": "Ensure that task creation and status updates send notifications to both the task assignee and the task creator with confirmation of delivery.",
-    "category": "integration",
+    "title": "Login Failure with Invalid OTP",
+    "description": "Verify that login fails when an invalid or expired OTP is submitted.",
+    "category": "error handling",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Create a new task assigning it to a user via WhatsApp."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify WhatsApp notifications are sent to both assignee and creator with delivery confirmation."
+        "description": "Navigate to the login page"
       },
       {
         "type": "action",
-        "description": "Update the task status via WhatsApp."
+        "description": "Input a valid phone number or email"
+      },
+      {
+        "type": "action",
+        "description": "Request OTP"
+      },
+      {
+        "type": "action",
+        "description": "Enter an invalid or expired OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP"
       },
       {
         "type": "assertion",
-        "description": "Confirm both parties receive status update notifications with delivery confirmation."
+        "description": "Verify that login fails and appropriate error message is shown"
       }
     ]
   },
   {
     "id": "TC004",
-    "title": "Phone Number Normalization Consistency Between Frontend and Backend",
-    "description": "Validate that phone numbers are normalized consistently between frontend UI (with + prefix) and backend API (without +), ensuring data consistency.",
+    "title": "Task CRUD Operations with Valid Inputs",
+    "description": "Verify that tasks can be created, read, updated, and deleted with valid multi-language inputs, and that status and comments functions work correctly.",
     "category": "functional",
-    "priority": "Medium",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Enter a phone number in the frontend user interface including country code with + sign."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify frontend normalizes phone number with + prefix."
+        "description": "Login and navigate to the Task management page"
       },
       {
         "type": "action",
-        "description": "Submit the phone number to backend API."
+        "description": "Create a new task with valid multi-language title and description"
       },
       {
         "type": "assertion",
-        "description": "Verify backend receives the phone number normalized without + prefix."
+        "description": "Verify task is listed with correct details"
       },
       {
         "type": "action",
-        "description": "Retrieve the phone number from backend and display in UI."
+        "description": "Edit the task to update fields including status and assignment"
       },
       {
         "type": "assertion",
-        "description": "Ensure frontend re-applies + prefix correctly without data corruption."
+        "description": "Verify the updates are reflected correctly"
+      },
+      {
+        "type": "action",
+        "description": "Add comments to the task"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the comments display correctly with timestamps"
+      },
+      {
+        "type": "action",
+        "description": "Delete the task"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify task is removed from the list"
       }
     ]
   },
   {
     "id": "TC005",
-    "title": "Authentication Workflow with WhatsApp Verification",
-    "description": "Test the authentication system for login and verification via WhatsApp verification code, ensuring no errors in workflows.",
-    "category": "security",
-    "priority": "High",
+    "title": "Task Creation Form Validation with Multi-language Input",
+    "description": "Verify client-side form validation handles missing fields, invalid characters and supports multi-language inputs with real-time feedback.",
+    "category": "error handling",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Attempt login by entering a valid phone number."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify WhatsApp verification code is sent to the phone number."
+        "description": "Navigate to the Task creation page"
       },
       {
         "type": "action",
-        "description": "Enter the correct verification code received."
+        "description": "Attempt to create a task without entering required fields"
       },
       {
         "type": "assertion",
-        "description": "Confirm successful login and session is established."
+        "description": "Verify validation errors are shown for required fields"
       },
       {
         "type": "action",
-        "description": "Attempt login with incorrect verification code."
+        "description": "Enter invalid characters or unsupported language scripts"
       },
       {
         "type": "assertion",
-        "description": "Verify login fails with appropriate error message and does not lock user out."
+        "description": "Verify appropriate validation messages are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Enter valid multi-language input (e.g., Arabic, Chinese)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no validation errors and input is accepted"
       }
     ]
   },
   {
     "id": "TC006",
-    "title": "Admin Dashboard Real-Time AI Usage and Cost Management",
-    "description": "Validate that the admin dashboard displays real-time AI usage metrics, system health, and cost management controls with live updates.",
+    "title": "Project Creation and Team Assignment",
+    "description": "Verify users can create new projects, assign team members with roles, and collaborate within project management interface.",
     "category": "functional",
-    "priority": "Medium",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Log in as an admin and navigate to the AI Admin Dashboard."
-      },
-      {
-        "type": "assertion",
-        "description": "Check for real-time AI usage statistics and cost tracking visualizations."
+        "description": "Login and navigate to Project management page"
       },
       {
         "type": "action",
-        "description": "Trigger AI usage by sending natural language commands."
+        "description": "Create a new project with valid details"
       },
       {
         "type": "assertion",
-        "description": "Verify usage metrics update live on the dashboard."
+        "description": "Verify project appears in the project list with correct information"
       },
       {
         "type": "action",
-        "description": "Use budget control features such as emergency stop."
+        "description": "Assign team members with specific roles (e.g., admin, editor, viewer)"
       },
       {
         "type": "assertion",
-        "description": "Confirm budget controls are applied immediately and reflected in system status."
+        "description": "Verify team members are correctly assigned with designated roles"
+      },
+      {
+        "type": "action",
+        "description": "Perform updates to the project details and save"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project updates are persisted"
+      },
+      {
+        "type": "action",
+        "description": "Delete the project"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project is removed from list and team members no longer have access"
       }
     ]
   },
   {
     "id": "TC007",
-    "title": "AI Adaptive Learning and Pattern Management",
-    "description": "Test that the AI learning system tracks unknown user inputs, learns patterns correctly, and supports admin manual override and pattern management.",
+    "title": "Team Management with Role Assignment",
+    "description": "Verify team page allows adding/removing users, assigning roles, and managing contacts with correct permission enforcement.",
     "category": "functional",
-    "priority": "Medium",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Send unrecognized natural language inputs via WhatsApp."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm inputs are logged as unknown and clarifications are requested."
+        "description": "Navigate to team management page"
       },
       {
         "type": "action",
-        "description": "Use the admin dashboard to review and create new AI patterns manually."
+        "description": "Add new team members with valid contact info"
       },
       {
         "type": "assertion",
-        "description": "Verify the newly created patterns correctly resolve similar inputs."
+        "description": "Verify new members appear with correct details"
       },
       {
         "type": "action",
-        "description": "Send previously unknown inputs again."
+        "description": "Assign roles to team members"
       },
       {
         "type": "assertion",
-        "description": "Ensure AI responds accurately based on learned patterns."
+        "description": "Verify roles reflect in UI and restrict/allow appropriate access"
+      },
+      {
+        "type": "action",
+        "description": "Remove a team member"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the member is removed and no longer listed"
       }
     ]
   },
   {
     "id": "TC008",
-    "title": "Frontend UI Navigation and SPA Routing Stability",
-    "description": "Verify all frontend UI navigations directly via URLs route correctly with SPA routing, and no 404 errors occur on page refresh or direct access.",
-    "category": "ui",
-    "priority": "Medium",
+    "title": "WhatsApp Messaging and Notifications Integration",
+    "description": "Verify that WhatsApp messages and notifications are sent correctly through the admin interface with webhook integration for incoming communication.",
+    "category": "integration",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Directly access various app URLs for pages such as tasks, projects, team management, dashboard, and templates."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm that pages render correctly without 404 errors."
+        "description": "Login to the WhatsApp admin dashboard"
       },
       {
         "type": "action",
-        "description": "Refresh pages at those same URLs."
+        "description": "Send a test WhatsApp message to a valid number"
       },
       {
         "type": "assertion",
-        "description": "Verify pages reload successfully with route intact and no errors."
+        "description": "Verify message is delivered and status is confirmed"
       },
       {
         "type": "action",
-        "description": "Navigate within the frontend SPA using UI elements and browser back/forward controls."
+        "description": "Trigger a notification from a task or project event"
       },
       {
         "type": "assertion",
-        "description": "Ensure all navigations work seamlessly without broken links or errors."
+        "description": "Verify notification is sent via WhatsApp to designated users"
+      },
+      {
+        "type": "action",
+        "description": "Simulate an incoming WhatsApp webhook message"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system processes the webhook and updates UI accordingly"
       }
     ]
   },
   {
     "id": "TC009",
-    "title": "Backend API Endpoint Response and Error Handling",
-    "description": "Validate all backend API endpoints return expected responses for valid requests and handle invalid requests gracefully while maintaining data consistency.",
-    "category": "error handling",
-    "priority": "High",
+    "title": "Template Creation and Usage for Tasks and Projects",
+    "description": "Verify that users can create, save, edit, and apply task and project templates effectively for quick setup.",
+    "category": "functional",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Send valid API requests to task, project, team, and authentication endpoints."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify correct success responses with accurate data."
+        "description": "Navigate to the Template management page"
       },
       {
         "type": "action",
-        "description": "Send invalid or malformed API requests (e.g. missing parameters, unauthorized access)."
+        "description": "Create a new task template with required fields"
       },
       {
         "type": "assertion",
-        "description": "Confirm error responses are descriptive and no data corruption occurs."
+        "description": "Verify the template is saved and listed correctly"
       },
       {
         "type": "action",
-        "description": "Concurrently update the same resource to test data consistency and race conditions."
+        "description": "Create a new project template with predefined parameters"
       },
       {
         "type": "assertion",
-        "description": "Ensure final data state is consistent and no lost updates are observed."
+        "description": "Verify the project template is saved correctly"
+      },
+      {
+        "type": "action",
+        "description": "Apply a task template to create a new task"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify task is created with template data prefilled"
       }
     ]
   },
   {
     "id": "TC010",
-    "title": "Clarification Handling to Prevent Loops and Repeated Errors",
-    "description": "Ensure the system provides meaningful clarification messages to users, prevents clarification loops, and offers helpful guidance for error correction.",
-    "category": "error handling",
-    "priority": "Medium",
+    "title": "Analytics Dashboard Data Visualization Accuracy",
+    "description": "Verify that the analytics dashboard renders accurate and timely charts, graphs and metrics reflecting tasks, projects, and team performance.",
+    "category": "functional",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Send ambiguous or incomplete natural language inputs via WhatsApp."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify system requests clarifications in a clear way."
+        "description": "Log in and navigate to the analytics dashboard"
       },
       {
         "type": "action",
-        "description": "Respond with another ambiguous input."
+        "description": "Review displayed charts and data visualizations"
       },
       {
         "type": "assertion",
-        "description": "Confirm system prevents endless loops by limiting clarifications and suggesting alternative help."
+        "description": "Verify data accuracy by comparing with backend data"
       },
       {
         "type": "action",
-        "description": "Provide correct input following guidance."
+        "description": "Filter analytics by project, date range, team member"
       },
       {
         "type": "assertion",
-        "description": "Verify system processes input successfully and exits clarification mode."
+        "description": "Verify filters update the visualizations correctly and efficiently"
       }
     ]
   },
   {
     "id": "TC011",
-    "title": "Comprehensive User Workflow Coverage with Pass Rate Verification",
-    "description": "Automated and manual tests cover all critical user workflows achieving at least 80% pass rate before production deployment.",
+    "title": "Routing and Navigation with Protected Routes",
+    "description": "Verify that application navigation via React Router works correctly with protected routes preventing unauthorized access.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Execute automated test suites covering task management, project management, team collaboration, WhatsApp interactions, AI learning, and admin dashboard."
+        "description": "Attempt to access protected page without login"
       },
       {
         "type": "assertion",
-        "description": "Confirm all automated tests pass and code coverage is above threshold."
+        "description": "Verify redirect to login page occurs"
       },
       {
         "type": "action",
-        "description": "Conduct manual exploratory testing of key workflows especially natural language interaction and clarifications."
+        "description": "Login successfully"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to various protected routes"
       },
       {
         "type": "assertion",
-        "description": "Ensure manual testing validates system stability and usability with at least 80% overall workflow pass rate."
+        "description": "Verify pages load properly without errors or warnings"
       }
     ]
   },
   {
     "id": "TC012",
-    "title": "Task and Project CRUD Operations via Frontend and WhatsApp",
-    "description": "Verify that create, read, update, and delete operations for tasks and projects work seamlessly across the React frontend and WhatsApp interface with data consistency and role-based access control.",
-    "category": "functional",
+    "title": "Accessibility Compliance Verification",
+    "description": "Verify all UI components comply with accessibility standards including ARIA roles, keyboard navigability, and screen reader support.",
+    "category": "ui",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Create a new task through WhatsApp natural language command and via React frontend."
+        "description": "Navigate app pages using keyboard only"
       },
       {
         "type": "assertion",
-        "description": "Confirm tasks are created on both interfaces and data is synchronized."
+        "description": "Verify full keyboard navigation and focus states are present and logical"
       },
       {
         "type": "action",
-        "description": "Update task details and status via both interfaces."
+        "description": "Use screen reader on common UI components like forms, modals, and buttons"
       },
       {
         "type": "assertion",
-        "description": "Verify updates reflect correctly and notifications trigger as expected."
-      },
-      {
-        "type": "action",
-        "description": "Delete a task via frontend and WhatsApp."
-      },
-      {
-        "type": "assertion",
-        "description": "Ensure task deletion is consistent with backend data and UI shows updated task list."
-      },
-      {
-        "type": "action",
-        "description": "Attempt unauthorized CRUD operation as non-admin or unauthorized role."
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm access is denied and appropriate error messages are returned."
+        "description": "Verify ARIA labels and roles announce correct information"
       }
     ]
   },
   {
     "id": "TC013",
-    "title": "Team and Role-Based Access Control Validation",
-    "description": "Test team management features and enforce role-based access control for users on task and project operations.",
+    "title": "API Error Handling and Retry Logic",
+    "description": "Verify that the backend API client correctly handles errors and retries calls according to defined logic without crashing the app.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate API failures such as timeouts and server errors when performing entity CRUD operations"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the client retries the request according to retry policy"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user-friendly error messages appear when retries fail"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application remains responsive and stable without crashes"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Responsive Design Verification on Multiple Devices",
+    "description": "Verify application UI renders correctly and remains usable across various device screen sizes including mobile, tablet, and desktop.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open app on devices or simulators of different screen sizes (320px to 1920px width)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout adjusts properly with no broken elements or overflow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify navigation and interactive elements remain accessible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Real-time Notifications and Toast Messages",
+    "description": "Verify that notification system displays real-time toast messages for task and project updates, errors, and system alerts.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger events such as task creation, status update, failure in API calls"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify toast notifications appear promptly with proper messages"
+      },
+      {
+        "type": "action",
+        "description": "Verify notifications can be dismissed and do not block UI controls"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "JWT Authentication and Session Management Security",
+    "description": "Verify that JWT tokens are issued, refreshed, and revoked appropriately and sessions are managed securely to prevent unauthorized access.",
     "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Create team members with different roles (admin, member, guest) via frontend."
-      },
-      {
-        "type": "assertion",
-        "description": "Verify role assignments are saved and visible in Team management UI."
+        "description": "Login and verify JWT token is received"
       },
       {
         "type": "action",
-        "description": "Attempt to perform privileged actions such as project creation and team editing with each role."
+        "description": "Navigate various protected routes with token"
       },
       {
         "type": "assertion",
-        "description": "Confirm only authorized roles can perform restricted actions, others receive access denied messages."
+        "description": "Verify access is granted while token is valid"
       },
       {
         "type": "action",
-        "description": "Review detailed analytics and usage reports restricted to admins."
+        "description": "Simulate token expiration"
       },
       {
         "type": "assertion",
-        "description": "Validate that non-admin roles cannot access or see admin analytics."
+        "description": "Verify user is logged out or prompted to re-authenticate"
+      },
+      {
+        "type": "action",
+        "description": "Attempt token reuse after logout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied and user redirected to login"
       }
     ]
   }

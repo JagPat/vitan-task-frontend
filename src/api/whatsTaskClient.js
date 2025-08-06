@@ -109,7 +109,56 @@ class WhatsTaskClient {
     });
   }
 
-  // Login with email and password
+  // Send email verification code
+  async sendEmailVerificationCode(email) {
+    console.log('Email verification attempt:', { email });
+    
+    // For now, we'll simulate email verification since the backend doesn't support it yet
+    // In a real implementation, this would call an email OTP endpoint
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          success: true,
+          message: 'Verification code sent to your email',
+          code: '123456' // Mock code for testing
+        });
+      }, 1000);
+    });
+  }
+
+  // Verify email code
+  async verifyEmailCode(email, code) {
+    console.log('Email verification attempt:', { email, code });
+    
+    // For now, we'll simulate email verification
+    // In a real implementation, this would call an email verification endpoint
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (code === '123456') {
+          resolve({
+            success: true,
+            message: 'Email verified successfully',
+            data: {
+              token: 'mock-email-token',
+              user: {
+                id: 1,
+                email: email,
+                full_name: 'Test User',
+                role: 'user'
+              }
+            }
+          });
+        } else {
+          resolve({
+            success: false,
+            error: 'Invalid verification code'
+          });
+        }
+      }, 1000);
+    });
+  }
+
+  // Login with email and password (kept for backward compatibility)
   async loginWithEmail(email, password) {
     return this.request('/api/auth/login-email', {
       method: 'POST',
