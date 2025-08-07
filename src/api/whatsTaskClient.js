@@ -169,6 +169,72 @@ class WhatsTaskClient {
     });
   }
 
+  // Login with OAuth credentials
+  async loginWithOAuth(email, password) {
+    console.log('OAuth login attempt:', { email });
+    
+    // Basic validation
+    if (!email || !password) {
+      return {
+        success: false,
+        error: 'Email and password are required'
+      };
+    }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        success: false,
+        error: 'Please enter a valid email address'
+      };
+    }
+    
+    // Password strength validation
+    if (password.length < 6) {
+      return {
+        success: false,
+        error: 'Password must be at least 6 characters long'
+      };
+    }
+    
+    try {
+      const response = await this.request('/api/auth/oauth-login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email,
+          password
+        })
+      });
+      
+      // Enhanced error handling for invalid credentials
+      if (!response.success) {
+        // Don't allow unauthorized access even if the API fails
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUser');
+        
+        return {
+          success: false,
+          error: response.error || 'Invalid email or password. Please check your credentials.'
+        };
+      }
+      
+      return response;
+      
+    } catch (error) {
+      console.error('OAuth login error:', error);
+      
+      // Ensure no unauthorized access on network errors
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
+      
+      return {
+        success: false,
+        error: 'Login failed. Please check your credentials and try again.'
+      };
+    }
+  }
+
   // Send verification code
   async sendVerificationCode(phoneNumber) {
     const normalizedPhone = normalizePhoneNumberForVerification(phoneNumber);

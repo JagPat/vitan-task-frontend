@@ -506,6 +506,7 @@ export default function UnifiedTaskView() {
             onFiltersChange={setFilters}
             projects={projects}
             users={users}
+            onClearFilters={() => setFilters({})}
           />
         </CardContent>
       </Card>

@@ -285,14 +285,14 @@ export default function TaskTemplateManager({
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Project (Optional)</label>
                   <Select 
-                    value={newTemplate.projectId || ''} 
-                    onValueChange={(value) => setNewTemplate(prev => ({ ...prev, projectId: value || null }))}
+                    value={newTemplate.projectId || 'none'} 
+                    onValueChange={(value) => setNewTemplate(prev => ({ ...prev, projectId: value === "none" ? null : value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select project" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Project</SelectItem>
+                      <SelectItem value="none">No Project</SelectItem>
                       {projects.map((project) => (
                         <SelectItem key={project.id} value={project.id.toString()}>
                           {project.name}

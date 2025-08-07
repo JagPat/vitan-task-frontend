@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,19 +20,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { 
-  Users, 
-  UserPlus, 
-  UserMinus, 
-  Shield, 
-  User, 
-  Eye,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
+  Calendar, 
+  Crown, 
+  Eye, 
+  Mail, 
+  MapPin, 
   MoreVertical,
+  Phone,
   Settings,
-  Crown
+  Shield,
+  User,
+  UserMinus,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -99,7 +99,7 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
         },
         body: JSON.stringify({
           user_id: selectedUser.id,
-          role: selectedRole
+          role: selectedRole,
         }),
       });
 
@@ -197,7 +197,7 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
     const variants = {
       admin: 'bg-yellow-100 text-yellow-800',
       member: 'bg-blue-100 text-blue-800',
-      viewer: 'bg-gray-100 text-gray-800'
+      viewer: 'bg-gray-100 text-gray-800',
     };
     
     return (

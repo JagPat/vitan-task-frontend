@@ -232,12 +232,12 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
           {templates.length > 0 && (
             <div className="space-y-2">
               <Label htmlFor="template">Template (Optional)</Label>
-              <Select value={formData.template_id || ''} onValueChange={(value) => handleInputChange('template_id', value || null)}>
+              <Select value={formData.template_id || 'none'} onValueChange={(value) => handleInputChange('template_id', value === 'none' ? null : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a template (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No template</SelectItem>
+                  <SelectItem value="none">No template</SelectItem>
                   {templates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.name}

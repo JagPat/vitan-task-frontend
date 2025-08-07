@@ -42,6 +42,12 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
   const [emailForm, setEmailForm] = useState({
     email: "",
   });
+
+  // OAuth login form
+  const [oauthForm, setOauthForm] = useState({
+    email: "",
+    password: "",
+  });
   
   // Verification form
   const [verificationForm, setVerificationForm] = useState({
@@ -59,6 +65,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       setShowEmailVerification(false);
       setError("");
       setVerificationForm({ verificationCode: "" });
+      setOauthForm({ email: "", password: "" });
       setPendingWhatsappNumber("");
       setPendingEmail("");
       setResendDisabled(false);
@@ -92,16 +99,15 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     }
 
     try {
-      const response = await whatsTaskClient.loginWithWhatsApp(phoneNumber);
+      // Step 1: Send OTP to WhatsApp number
+      const response = await whatsTaskClient.sendVerificationCode(phoneNumber);
       
       if (response.success) {
-        // Store token and clean user data
-        localStorage.setItem('authToken', response.data.token || '');
-        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
-        
-        toast.success("Login successful!");
-        onLoginSuccess(response.data.user);
-        onOpenChange(false);
+        // Store the phone number for verification step
+        setPendingWhatsappNumber(phoneNumber);
+        setShowVerification(true);
+        setError("");
+        toast.success("Verification code sent to your WhatsApp!");
       } else {
         // Handle specific login errors
         if (response.error && response.error.includes('User not found')) {
@@ -113,7 +119,7 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         } else if (response.error && response.error.includes('Database configuration issue')) {
           setError("System maintenance in progress. Please try again later.");
         } else {
-          setError(response.error || "Login failed");
+          setError(response.error || "Failed to send verification code");
         }
       }
     } catch (error) {
@@ -305,11 +311,77 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
     }
   };
 
+  const handleOAuthLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // Client-side validation
+    if (!oauthForm.email || !oauthForm.password) {
+      setError("Please enter both email and password");
+      setLoading(false);
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(oauthForm.email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
+
+    // Password strength validation
+    if (oauthForm.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await whatsTaskClient.loginWithOAuth(oauthForm.email, oauthForm.password);
+      
+      if (response.success) {
+        // Validate that we actually have valid token and user data
+        if (!response.data || !response.data.token || !response.data.user) {
+          setError("Authentication failed. Invalid response from server.");
+          localStorage.removeItem('authToken');
+          sessionStorage.removeItem('currentUser');
+          return;
+        }
+        
+        // Store token and user data
+        localStorage.setItem('authToken', response.data.token);
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        
+        toast.success("Login successful!");
+        onLoginSuccess(response.data.user);
+        onOpenChange(false);
+        setOauthForm({ email: "", password: "" });
+      } else {
+        // Ensure no unauthorized access on failure
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUser');
+        setError(response.error || "Invalid email or password");
+      }
+    } catch (error) {
+      console.error('OAuth login error:', error);
+      // Ensure no unauthorized access on error
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
+      setError("Login failed. Please check your credentials and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (formType, field, value) => {
     if (formType === 'whatsapp') {
       setWhatsappForm(prev => ({ ...prev, [field]: value }));
     } else if (formType === 'email') {
       setEmailForm(prev => ({ ...prev, [field]: value }));
+    } else if (formType === 'oauth') {
+      setOauthForm(prev => ({ ...prev, [field]: value }));
     } else if (formType === 'verification') {
       setVerificationForm(prev => ({ ...prev, [field]: value }));
     }
@@ -336,9 +408,10 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
         
         {!showVerification && !showEmailVerification ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="oauth">OAuth</TabsTrigger>
             </TabsList>
             
             <TabsContent value="whatsapp" className="space-y-4">
@@ -411,6 +484,53 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
                   <Button type="submit" disabled={loading || !emailForm.email}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
                     Send Verification Code
+                  </Button>
+                </DialogFooter>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="oauth" className="space-y-4">
+              <form onSubmit={handleOAuthLogin} className="space-y-4">
+                <div className="text-sm text-gray-600 mb-2">
+                  <p>Login with your OAuth credentials:</p>
+                  <p className="text-xs mt-1">Enter your registered email and password</p>
+                </div>
+                <div>
+                  <Label htmlFor="oauth_email">Email Address</Label>
+                  <Input
+                    id="oauth_email"
+                    type="email"
+                    value={oauthForm.email}
+                    onChange={(e) => handleInputChange('oauth', 'email', e.target.value)}
+                    placeholder="user@example.com"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="oauth_password">Password</Label>
+                  <Input
+                    id="oauth_password"
+                    type="password"
+                    value={oauthForm.password}
+                    onChange={(e) => handleInputChange('oauth', 'password', e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+                
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                
+                <DialogFooter>
+                  <Button type="submit" disabled={loading || !oauthForm.email || !oauthForm.password}>
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                    Login with OAuth
                   </Button>
                 </DialogFooter>
               </form>

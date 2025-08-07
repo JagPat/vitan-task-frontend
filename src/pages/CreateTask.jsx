@@ -77,17 +77,26 @@ export default function CreateTask() {
 
   const loadData = async () => {
     try {
+      console.log('Loading data for CreateTask...');
       const [usersData, templatesData, userData] = await Promise.all([
         User.list("-created_date"),
         TaskTemplate.list("-usage_count"),
         User.me().catch(() => null)
       ]);
       
-      setUsers(usersData);
-      setTemplates(templatesData);
+      console.log('Users loaded:', usersData);
+      console.log('Templates loaded:', templatesData);
+      console.log('Current user:', userData);
+      
+      setUsers(usersData || []);
+      setTemplates(templatesData || []);
       setCurrentUser(userData);
     } catch (error) {
       console.error("Error loading data:", error);
+      toast.error("Failed to load data. Assignment dropdown may not work properly.");
+      // Set empty arrays as fallback
+      setUsers([]);
+      setTemplates([]);
     }
   };
 
@@ -676,21 +685,27 @@ export default function CreateTask() {
                       <SelectValue placeholder="Select team member" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          <div className="flex items-center gap-2">
-                            <span>{user.full_name}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {user.role}
-                            </Badge>
-                            {user.is_external && (
-                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
-                                External
+                      {users.length > 0 ? (
+                        users.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{user.full_name}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {user.role}
                               </Badge>
-                            )}
-                          </div>
+                              {user.is_external && (
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                  External
+                                </Badge>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-users" disabled>
+                          No team members available
                         </SelectItem>
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
