@@ -331,11 +331,27 @@ export default function LoginDialog({ open, onOpenChange, onLoginSuccess }) {
       return;
     }
 
-    // Password strength validation
+    // Enhanced password strength validation
     if (oauthForm.password.length < 6) {
       setError("Password must be at least 6 characters long");
       setLoading(false);
       return;
+    }
+    
+    // Additional password strength checks
+    const hasUpperCase = /[A-Z]/.test(oauthForm.password);
+    const hasLowerCase = /[a-z]/.test(oauthForm.password);
+    const hasNumbers = /\d/.test(oauthForm.password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(oauthForm.password);
+    
+    if (oauthForm.password.length >= 8) {
+      // For longer passwords, require at least 2 character types
+      const characterTypes = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecialChar].filter(Boolean).length;
+      if (characterTypes < 2) {
+        setError("Password must contain at least 2 of: uppercase, lowercase, numbers, or special characters");
+        setLoading(false);
+        return;
+      }
     }
 
     try {

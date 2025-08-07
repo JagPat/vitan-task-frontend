@@ -224,10 +224,30 @@ class WhatsTaskClient {
         };
       }
 
-      // For successful login, ensure we don't have stale data
-      if (response.success && response.data) {
-        localStorage.setItem('authToken', response.data.token);
-        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+      // For successful login, ensure we store the session data properly
+      if (response.success) {
+        console.log('OAuth login success:', response); // Debug log
+        
+        // Handle different response structures
+        if (response.data) {
+          // Standard response with data object
+          if (response.data.token) {
+            localStorage.setItem('authToken', response.data.token);
+          }
+          if (response.data.user) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+          }
+        } else if (response.token) {
+          // Direct token in response
+          localStorage.setItem('authToken', response.token);
+          if (response.user) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+          }
+        }
+        
+        // Ensure session persistence
+        localStorage.setItem('loginMethod', 'oauth');
+        localStorage.setItem('loginTime', Date.now().toString());
       }
       
       return response;
@@ -314,14 +334,29 @@ class WhatsTaskClient {
         };
       }
       
-      // For successful verification, set auth data
-      if (response.success && response.data) {
-        if (response.data.token) {
-          localStorage.setItem('authToken', response.data.token);
+      // For successful verification, ensure robust session management
+      if (response.success) {
+        console.log('WhatsApp verification success:', response); // Debug log
+        
+        // Handle different response structures
+        if (response.data) {
+          if (response.data.token) {
+            localStorage.setItem('authToken', response.data.token);
+          }
+          if (response.data.user) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+          }
+        } else if (response.token) {
+          // Direct token in response
+          localStorage.setItem('authToken', response.token);
+          if (response.user) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+          }
         }
-        if (response.data.user) {
-          sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
-        }
+        
+        // Ensure session persistence
+        localStorage.setItem('loginMethod', 'whatsapp');
+        localStorage.setItem('loginTime', Date.now().toString());
       }
       
       return response;

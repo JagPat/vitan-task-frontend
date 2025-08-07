@@ -125,19 +125,27 @@ export default function PhoneNumberInput({
             <div className="max-h-[200px] overflow-y-auto">
               {filteredCountries
                 .filter(country => country.code && country.code.trim() !== '')
-                .map((country) => (
-                  <SelectItem 
-                    key={`country-${country.code.replace(/[^a-zA-Z0-9]/g, '')}-${country.country.replace(/[^a-zA-Z0-9]/g, '')}`}
-                    value={country.code}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>{country.flag}</span>
-                      <span className="text-sm">{country.code}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {country.country}
-                      </span>
-                    </div>
-                  </SelectItem>
+                .map((country, index) => {
+                  // Create a truly unique key using multiple identifiers
+                  const sanitizedCode = country.code.replace(/[^a-zA-Z0-9]/g, '');
+                  const sanitizedCountry = country.country.replace(/[^a-zA-Z0-9]/g, '');
+                  const uniqueKey = `country-${sanitizedCode}-${sanitizedCountry}-${index}-${country.code.length}`;
+                  
+                  return (
+                    <SelectItem 
+                      key={uniqueKey}
+                      value={country.code}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{country.flag}</span>
+                        <span className="text-sm">{country.code}</span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {country.country}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  );
+                })
                 ))}
             </div>
           </SelectContent>
