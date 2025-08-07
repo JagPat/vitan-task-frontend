@@ -199,13 +199,14 @@ class WhatsTaskClient {
     }
     
     try {
-      const response = await this.request('/api/auth/oauth-login', {
-        method: 'POST',
-        body: JSON.stringify({
-          email,
-          password
-        })
-      });
+              // Use existing email authentication endpoint
+        const response = await this.request('/api/auth/login-email', {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
       
       // Enhanced error handling for invalid credentials
       if (!response.success) {

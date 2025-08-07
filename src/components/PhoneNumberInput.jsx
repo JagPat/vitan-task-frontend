@@ -127,7 +127,7 @@ export default function PhoneNumberInput({
                 .filter(country => country.code && country.code.trim() !== '')
                 .map((country, index) => (
                   <SelectItem 
-                    key={`country-${country.code}-${country.country}-${index}-${Date.now()}`} 
+                    key={`country-${country.code.replace('+', 'plus')}-${index}`}
                     value={country.code}
                   >
                     <div className="flex items-center gap-2">
