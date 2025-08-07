@@ -145,8 +145,7 @@ export default function PhoneNumberInput({
                       </div>
                     </SelectItem>
                   );
-                })
-                ))}
+                })}
             </div>
           </SelectContent>
         </Select>
