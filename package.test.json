@@ -1,0 +1,40 @@
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:component": "jest --testPathPattern=components",
+    "test:api": "jest --testPathPattern=api",
+    "test:all": "npm run test && npm run test:e2e",
+    "lint:test": "eslint tests/ --ext .js,.jsx,.ts,.tsx"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/user-event": "^14.5.0",
+    "@playwright/test": "^1.40.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/preset-env": "^7.22.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/main.jsx",
+      "!src/**/*.stories.{js,jsx}"
+    ],
+    "testMatch": [
+      "<rootDir>/tests/**/*.{js,jsx}",
+      "<rootDir>/src/**/__tests__/*.{js,jsx}",
+      "<rootDir>/src/**/*.test.{js,jsx}"
+    ]
+  }
+}

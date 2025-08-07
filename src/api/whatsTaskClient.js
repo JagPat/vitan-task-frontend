@@ -208,16 +208,26 @@ class WhatsTaskClient {
           })
         });
       
-      // Enhanced error handling for invalid credentials
+            // Enhanced error handling for invalid credentials
       if (!response.success) {
         // Don't allow unauthorized access even if the API fails
         localStorage.removeItem('authToken');
         sessionStorage.removeItem('currentUser');
         
+        // Clear any existing user data
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('userProfile');
+
         return {
           success: false,
           error: response.error || 'Invalid email or password. Please check your credentials.'
         };
+      }
+
+      // For successful login, ensure we don't have stale data
+      if (response.success && response.data) {
+        localStorage.setItem('authToken', response.data.token);
+        sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
       }
       
       return response;
@@ -245,25 +255,90 @@ class WhatsTaskClient {
       normalized: normalizedPhone
     });
     
-    return this.request('/api/auth/verify', {
-      method: 'POST',
-      body: JSON.stringify({
-        whatsappNumber: normalizedPhone
-      })
-    });
+    try {
+      const response = await this.request('/api/auth/verify', {
+        method: 'POST',
+        body: JSON.stringify({
+          whatsappNumber: normalizedPhone
+        })
+      });
+      
+      // Enhanced security: Clear any stale auth data on verification attempts
+      if (!response.success) {
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('userProfile');
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+      
+      // Clear auth data on network errors
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('userProfile');
+      
+      return {
+        success: false,
+        error: 'Failed to send verification code. Please try again.'
+      };
+    }
   }
 
   // Verify code
   async verifyCode(phoneNumber, code) {
     const normalizedPhone = normalizePhoneNumberForVerification(phoneNumber);
     
-    return this.request('/api/auth/confirm', {
-      method: 'POST',
-      body: JSON.stringify({
-        whatsappNumber: normalizedPhone,
-        verificationCode: code
-      })
-    });
+    try {
+      const response = await this.request('/api/auth/confirm', {
+        method: 'POST',
+        body: JSON.stringify({
+          whatsappNumber: normalizedPhone,
+          verificationCode: code
+        })
+      });
+      
+      // Enhanced authentication handling
+      if (!response.success) {
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('userProfile');
+        
+        return {
+          success: false,
+          error: response.error || 'Invalid verification code. Please try again.'
+        };
+      }
+      
+      // For successful verification, set auth data
+      if (response.success && response.data) {
+        if (response.data.token) {
+          localStorage.setItem('authToken', response.data.token);
+        }
+        if (response.data.user) {
+          sessionStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        }
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Error verifying code:', error);
+      
+      // Clear auth data on network errors
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('userProfile');
+      
+      return {
+        success: false,
+        error: 'Verification failed. Please try again.'
+      };
+    }
   }
 
   // Get current user
