@@ -35,7 +35,7 @@ import {
   Users
 } from "lucide-react";
 import { isOverdue, formatDate } from '../../utils/dateUtils';
-import { Task } from '@/api/entities';
+import { Task, ActivityLog } from '@/api/entities';
 import { toast } from 'sonner';
 import { getStatusStyle, getPriorityStyle, cardStyles } from '@/utils/designSystem';
 import {
@@ -126,10 +126,35 @@ export default function UnifiedTaskCard({
 
   const handleStatusChange = async (newStatus) => {
     try {
+      if (newStatus === 'completed' && currentUser?.id && task.assigned_to && task.assigned_to !== currentUser.id) {
+        try {
+          await ActivityLog.create({
+            task_id: task.id,
+            action: 'completion_attempt_by_non_assignee',
+            notes: `Completion attempted by ${currentUser?.full_name || 'User'} (not assignee)`,
+            performed_by_name: currentUser?.full_name || 'User',
+            whatsapp_message_sent: false
+          });
+        } catch {}
+        return;
+      }
+
       await Task.update(task.id, { status: newStatus });
       if (onStatusChange) {
         onStatusChange(task.id, newStatus);
       }
+      if (newStatus === 'completed' && currentUser?.id && task.assigned_to && task.assigned_to !== currentUser.id) {
+        try {
+          await ActivityLog.create({
+            task_id: task.id,
+            action: 'completed_by_admin',
+            notes: `Task marked completed by admin ${currentUser?.full_name || 'Admin'}`,
+            performed_by_name: currentUser?.full_name || 'Admin',
+            whatsapp_message_sent: false
+          });
+        } catch {}
+      }
+
     } catch (error) {
       console.error('Error updating task status:', error);
     }
@@ -349,9 +374,11 @@ export default function UnifiedTaskCard({
                 ) : (
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{assignedUserName || 'Unassigned'}</Badge>
-                    <Button variant="outline" size="sm" className="text-xs" onClick={handleAssignToMe}>
-                      Assign to me
-                    </Button>
+                    {(!task.assigned_to || task.assigned_to !== currentUser?.id) && (
+                      <Button variant="outline" size="sm" className="text-xs" onClick={handleAssignToMe}>
+                        Assign to me
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
@@ -425,15 +452,13 @@ export default function UnifiedTaskCard({
               </div>
             </div>
 
-            {/* Quick action presets */}
+            {/* Quick action presets (limit to three due shortcuts) */}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-700">Quick actions:</span>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="text-xs" onClick={handleAssignToMe}>Assign to me</Button>
+              <div className="flex flex-wrap items-center gap-2">
                 <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('today')}>Due Today</Button>
                 <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+1')}>+1 day</Button>
                 <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+7')}>+7 days</Button>
-                <Button variant="default" size="sm" className="text-xs bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('completed')}>Done</Button>
               </div>
             </div>
           </div>
