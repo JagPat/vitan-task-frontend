@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { ActivityLog } from "@/api/entities";
 import { Link } from "react-router-dom";
 import { createPageUrl, extractTaskPrimitives, extractUserPrimitives, extractActivityPrimitives } from "@/utils";
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showApiTest, setShowApiTest] = useState(false);
+  const [performance, setPerformance] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -36,9 +38,11 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const [tasksData, usersData] = await Promise.all([
+      const [tasksData, usersData, me, perf] = await Promise.all([
         Task.getAll(),
-        User.getAll()
+        User.getAll(),
+        User.me().catch(() => null),
+        whatsTaskClient.request('/api/analytics/performance').catch(() => ({ data: null }))
       ]);
       
       // Extract primitive values to prevent React error #130
@@ -47,8 +51,9 @@ export default function Dashboard() {
       
       setTasks(cleanTasks);
       setUsers(cleanUsers);
-      setActivities([]); // Activity logs will be implemented later
-      setCurrentUser(cleanUsers[0]); // Use first user as current user for now
+      setActivities([]);
+      setCurrentUser(me || cleanUsers.find(u => u?.role === 'admin') || cleanUsers[0] || null);
+      setPerformance(perf?.data || null);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
     } finally {
