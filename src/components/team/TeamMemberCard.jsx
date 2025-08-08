@@ -23,7 +23,7 @@ import {
   Building,
   Briefcase
 } from 'lucide-react';
-import {
+import { 
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -47,6 +47,9 @@ import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
 import { parseDate, formatDate } from '../../utils/dateUtils';
 import { whatsTaskClient } from '@/api/whatsTaskClient';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
+import { User as UserEntity } from '@/api/entities';
 
 const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -59,6 +62,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const [userProjects, setUserProjects] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     full_name: user?.full_name || '',
     email: user?.email || '',
@@ -152,17 +156,10 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
 const handleConfirmDelete = async () => {
   setIsDeleting(true);
   try {
-    const data = await whatsTaskClient.request(`/api/users/${user.id}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ forceDelete })
-    });
-
-    if (data.success) {
-      toast.success(data.message || "User deleted successfully");
-      onDelete(user.id);
-    } else {
-      toast.error(data.error || "Failed to delete user");
-    }
+    // Prefer centralized entity client for consistency
+    await UserEntity.delete(user.id);
+    toast.success("User deleted successfully");
+    onDelete(user.id);
   } catch (error) {
     toast.error("Failed to delete user");
   } finally {
@@ -248,20 +245,16 @@ const handleConfirmDelete = async () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDetailsDialog(true)}
-                title="View Details"
-              >
-                <Eye className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // Refresh editForm with current user data
+            {/* Kebab menu for consistency with task card */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="More actions">
+                  <Eye className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setDrawerOpen(true)}>View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
                   setEditForm({
                     full_name: user?.full_name || '',
                     email: user?.email || '',
@@ -272,21 +265,10 @@ const handleConfirmDelete = async () => {
                     is_external: user?.is_external || false
                   });
                   setShowEditDialog(true);
-                }}
-                title="Edit User"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleDeleteClick}
-                disabled={isDeleting}
-                title="Delete User"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
+                }}>Edit User</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDeleteClick}>Delete User</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
@@ -459,20 +441,19 @@ const handleConfirmDelete = async () => {
         </DialogContent>
       </Dialog>
 
-      {/* User Details Dialog */}
-      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby="user-details-description">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+      {/* User Details Drawer for parity with task drawer */}
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-auto max-h-[90vh] flex flex-col" aria-describedby="user-details-description">
+          <DrawerHeader>
+            <DrawerTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
-              User Details - {user?.full_name}
-            </DialogTitle>
+              {user?.full_name}
+            </DrawerTitle>
             <div id="user-details-description" className="sr-only">
               Detailed view of user information including statistics, projects, recent tasks, and activity summary.
             </div>
-          </DialogHeader>
-          
-          <div className="space-y-6">
+          </DrawerHeader>
+          <div className="p-4 space-y-6 overflow-y-auto">
             {/* User Stats */}
             {userStats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -574,8 +555,13 @@ const handleConfirmDelete = async () => {
               </div>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
