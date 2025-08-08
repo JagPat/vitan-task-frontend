@@ -189,8 +189,12 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     checkAuthentication();
-    loadPendingTasks();
   }, []);
+
+  // Recalculate pending tasks whenever the authenticated user changes
+  useEffect(() => {
+    loadPendingTasks();
+  }, [user?.id]);
 
   const checkAuthentication = async () => {
     try {
@@ -252,9 +256,16 @@ export default function Layout({ children, currentPageName }) {
 
   const loadPendingTasks = async () => {
     try {
+      if (!user || !user.id) {
+        setPendingTasks(0);
+        return;
+      }
       const tasks = await Task.getAll();
-      const pendingCount = tasks.filter(task => task.status === 'pending').length;
-      setPendingTasks(pendingCount);
+      // Show only pending tasks assigned to the current user, to match "My Tasks" view
+      const pendingCountForUser = tasks.filter(
+        (task) => task && task.status === 'pending' && task.assigned_to === user.id
+      ).length;
+      setPendingTasks(pendingCountForUser);
     } catch (error) {
       console.error('Failed to load pending tasks:', error);
     }
