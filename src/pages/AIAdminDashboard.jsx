@@ -22,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useToast } from '../components/ui/use-toast';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function AIAdminDashboard() {
   const [apiKey, setApiKey] = useState('');
@@ -56,35 +57,19 @@ export default function AIAdminDashboard() {
     setIsLoading(true);
     try {
       // Load API key status
-      const keyResponse = await fetch('https://vitan-task-production.up.railway.app/admin/api-key-status', { credentials: 'include' });
-      if (!keyResponse.ok) {
-        throw new Error('Failed to load API key status');
-      }
-      const keyData = await keyResponse.json();
+      const keyData = await whatsTaskClient.request('/admin/api-key-status');
       setApiKey(keyData.hasKey ? '••••••••••••••••' : '');
       
       // Load cost limits
-      const limitsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/cost-limits', { credentials: 'include' });
-      if (!limitsResponse.ok) {
-        throw new Error('Failed to load cost limits');
-      }
-      const limitsData = await limitsResponse.json();
+      const limitsData = await whatsTaskClient.request('/admin/cost-limits');
       setCostLimits(limitsData);
       
       // Load usage stats
-      const statsResponse = await fetch('https://vitan-task-production.up.railway.app/admin/usage-stats', { credentials: 'include' });
-      if (!statsResponse.ok) {
-        throw new Error('Failed to load usage stats');
-      }
-      const statsData = await statsResponse.json();
+      const statsData = await whatsTaskClient.request('/admin/usage-stats');
       setUsageStats(statsData.global);
       
       // Load system status
-      const statusResponse = await fetch('https://vitan-task-production.up.railway.app/admin/system-status', { credentials: 'include' });
-      if (!statusResponse.ok) {
-        throw new Error('Failed to load system status');
-      }
-      const statusData = await statusResponse.json();
+      const statusData = await whatsTaskClient.request('/admin/system-status');
       setSystemStatus(statusData);
       
     } catch (error) {
@@ -111,14 +96,12 @@ export default function AIAdminDashboard() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/admin/update-api-key', {
-        credentials: 'include',
+      const resp = await whatsTaskClient.request('/admin/update-api-key', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey: apiKey.trim() }),
       });
 
-      if (response.ok) {
+      if (resp?.success || resp?.status === 'ok') {
         toast({
           title: "Success",
           description: "API key updated successfully",
@@ -142,14 +125,12 @@ export default function AIAdminDashboard() {
   const updateCostLimits = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/admin/update-cost-limits', {
-        credentials: 'include',
+      const resp = await whatsTaskClient.request('/admin/update-cost-limits', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costLimits),
       });
 
-      if (response.ok) {
+      if (resp?.success || resp?.status === 'ok') {
         toast({
           title: "Success",
           description: "Cost limits updated successfully",
@@ -171,14 +152,12 @@ export default function AIAdminDashboard() {
   const toggleAiService = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/admin/toggle-ai-service', {
-        credentials: 'include',
+      const resp = await whatsTaskClient.request('/admin/toggle-ai-service', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: !aiEnabled }),
       });
 
-      if (response.ok) {
+      if (resp?.success || resp?.status === 'ok') {
         setAiEnabled(!aiEnabled);
         toast({
           title: "Success",
@@ -201,13 +180,11 @@ export default function AIAdminDashboard() {
   const emergencyStop = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/admin/emergency-stop', {
-        credentials: 'include',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const resp = await whatsTaskClient.request('/admin/emergency-stop', {
+        method: 'POST'
       });
 
-      if (response.ok) {
+      if (resp?.success || resp?.status === 'ok') {
         toast({
           title: "Emergency Stop Activated",
           description: "AI service has been temporarily disabled due to cost limits",
@@ -231,13 +208,11 @@ export default function AIAdminDashboard() {
   const resetDailyCounters = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/admin/reset-daily-counters', {
-        credentials: 'include',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const resp = await whatsTaskClient.request('/admin/reset-daily-counters', {
+        method: 'POST'
       });
 
-      if (response.ok) {
+      if (resp?.success || resp?.status === 'ok') {
         toast({
           title: "Success",
           description: "Daily counters reset successfully",

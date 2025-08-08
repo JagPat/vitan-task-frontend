@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function CreateProjectTaskDialog({ open, onOpenChange, onTaskCreated, projectId, projectName, teamMembers = [] }) {
   const [loading, setLoading] = useState(false);
@@ -42,20 +43,14 @@ export default function CreateProjectTaskDialog({ open, onOpenChange, onTaskCrea
     setLoading(true);
 
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/tasks`, {
-        credentials: 'include',
+      const data = await whatsTaskClient.request(`/api/projects/${projectId}/tasks`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           ...formData,
           due_date: formData.due_date ? format(formData.due_date, 'yyyy-MM-dd') : null,
           estimated_hours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : null,
         }),
       });
-
-      const data = await response.json();
       
       if (data.success) {
         onTaskCreated(data.data);

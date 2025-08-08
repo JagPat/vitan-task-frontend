@@ -35,6 +35,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function ProjectTeamManager({ projectId, projectName, onTeamUpdate }) {
   const [members, setMembers] = useState([]);
@@ -55,9 +56,7 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
 
   const loadProjectMembers = async () => {
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/project-members/${projectId}/members`, { credentials: 'include' });
-      const result = await response.json();
-      
+      const result = await whatsTaskClient.request(`/api/project-members/${projectId}/members`);
       if (result.success) {
         setMembers(result.data);
       } else {
@@ -73,9 +72,7 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
 
   const loadAvailableUsers = async () => {
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/project-members/${projectId}/members/available`, { credentials: 'include' });
-      const result = await response.json();
-      
+      const result = await whatsTaskClient.request(`/api/project-members/${projectId}/members/available`);
       if (result.success) {
         setAvailableUsers(result.data);
       }
@@ -91,19 +88,13 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
     }
 
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/project-members/${projectId}/members`, {
-        credentials: 'include',
+      const result = await whatsTaskClient.request(`/api/project-members/${projectId}/members`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           user_id: selectedUser.id,
           role: selectedRole,
         }),
       });
-
-      const result = await response.json();
       
       if (!response.ok) {
         toast.error(result.error || 'Failed to add member');
@@ -131,12 +122,9 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
     if (!memberToRemove) return;
 
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/project-members/${projectId}/members/${memberToRemove.id}`, {
-        credentials: 'include',
+      const result = await whatsTaskClient.request(`/api/project-members/${projectId}/members/${memberToRemove.id}`, {
         method: 'DELETE',
       });
-
-      const result = await response.json();
       
       if (result.success) {
         toast.success(`Removed ${memberToRemove.full_name} from project`);
@@ -156,16 +144,10 @@ export default function ProjectTeamManager({ projectId, projectName, onTeamUpdat
 
   const updateMemberRole = async (userId, newRole) => {
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/project-members/${projectId}/members/${userId}/role`, {
-        credentials: 'include',
+      const result = await whatsTaskClient.request(`/api/project-members/${projectId}/members/${userId}/role`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ role: newRole }),
       });
-
-      const result = await response.json();
       
       if (result.success) {
         toast.success('Member role updated successfully');

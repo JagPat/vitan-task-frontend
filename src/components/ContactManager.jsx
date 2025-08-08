@@ -17,6 +17,7 @@ import {
   XCircle,
   Clock
 } from 'lucide-react';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function ContactManager() {
   const [contacts, setContacts] = useState([]);
@@ -35,8 +36,7 @@ export default function ContactManager() {
 
   const loadContactStats = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/stats', { credentials: 'include' });
-      const data = await response.json();
+      const data = await whatsTaskClient.request('/api/contacts/stats');
       if (data.success) {
         setStats(data.data);
       }
@@ -47,8 +47,7 @@ export default function ContactManager() {
 
   const loadPendingInvitations = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/pending-invitations', { credentials: 'include' });
-      const data = await response.json();
+      const data = await whatsTaskClient.request('/api/contacts/pending-invitations');
       if (data.success) {
         setPendingInvitations(data.data);
       }
@@ -99,16 +98,10 @@ export default function ContactManager() {
   const processContacts = async (contacts, source) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/contacts/${source}`, {
-        credentials: 'include',
+      const data = await whatsTaskClient.request(`/api/contacts/${source}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contacts }),
+        body: JSON.stringify({ contacts })
       });
-
-      const data = await response.json();
       if (data.success) {
         setMessage(`Successfully processed ${data.data.created} new contacts from ${data.data.total} total contacts.`);
         loadContactStats();
@@ -132,19 +125,13 @@ export default function ContactManager() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/contacts/invite-bulk', {
-        credentials: 'include',
+      const data = await whatsTaskClient.request('/api/contacts/invite-bulk', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ 
           userIds: selectedContacts,
           message: '🎉 Welcome to WhatsTask Team! You\'ve been invited to join our task management platform. Send "help" to see available commands.'
-        }),
+        })
       });
-
-      const data = await response.json();
       if (data.success) {
         setMessage(`Successfully sent ${data.data.successful} invitations.`);
         setSelectedContacts([]);

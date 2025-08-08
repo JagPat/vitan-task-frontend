@@ -21,6 +21,7 @@ import {
 import CreateProjectTaskDialog from '@/components/projects/CreateProjectTaskDialog';
 import ProjectTeamManager from '@/components/projects/ProjectTeamManager';
 import { formatDate } from '../utils/dateUtils';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function ProjectDetails() {
   const { projectId } = useParams();
@@ -39,15 +40,11 @@ export default function ProjectDetails() {
 const loadProjectDetails = async () => {
   try {
     setLoading(true);
-    const [projectResponse, tasksResponse, membersResponse] = await Promise.all([
-      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}`, { credentials: 'include' }),
-      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/tasks`, { credentials: 'include' }),
-      fetch(`https://vitan-task-production.up.railway.app/api/projects/${projectId}/members`, { credentials: 'include' }),
+    const [projectData, tasksData, membersData] = await Promise.all([
+      whatsTaskClient.request(`/api/projects/${projectId}`),
+      whatsTaskClient.request(`/api/projects/${projectId}/tasks`),
+      whatsTaskClient.request(`/api/projects/${projectId}/members`),
     ]);
-
-    const projectData = await projectResponse.json();
-    const tasksData = await tasksResponse.json();
-    const membersData = await membersResponse.json();
 
     if (projectData.success) {
       setProject(projectData.data);
@@ -77,16 +74,10 @@ const loadProjectDetails = async () => {
 
   const handleTaskStatusUpdate = async (taskId, newStatus) => {
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/projects/tasks/${taskId}/status`, {
-        credentials: 'include',
+      const data = await whatsTaskClient.request(`/api/projects/tasks/${taskId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus })
       });
-
-      const data = await response.json();
       if (data.success) {
         setTasks(prev => prev.map(task => 
           (task.id === taskId ? { ...task, status: newStatus } : task),

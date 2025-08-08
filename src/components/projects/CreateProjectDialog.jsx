@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function CreateProjectDialog({ open, onOpenChange, onProjectCreated }) {
   const [loading, setLoading] = useState(false);
@@ -34,8 +35,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
 
   const loadCategories = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/projects/categories/list', { credentials: 'include' });
-      const data = await response.json();
+      const data = await whatsTaskClient.request('/api/projects/categories/list');
       if (data.success) {
         setCategories(data.data);
       }
@@ -46,8 +46,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
 
   const loadTemplates = async () => {
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/templates', { credentials: 'include' });
-      const data = await response.json();
+      const data = await whatsTaskClient.request('/api/templates');
       if (data.success) {
         setTemplates(data.data || []);
       }
@@ -61,20 +60,14 @@ export default function CreateProjectDialog({ open, onOpenChange, onProjectCreat
     setLoading(true);
 
     try {
-      const response = await fetch('https://vitan-task-production.up.railway.app/api/projects', {
-        credentials: 'include',
+      const data = await whatsTaskClient.request('/api/projects', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           ...formData,
           start_date: formData.start_date ? format(formData.start_date, 'yyyy-MM-dd') : null,
           due_date: formData.due_date ? format(formData.due_date, 'yyyy-MM-dd') : null,
         }),
       });
-
-      const data = await response.json();
       
       if (data.success) {
         onProjectCreated(data.data);

@@ -46,6 +46,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
 import { parseDate, formatDate } from '../../utils/dateUtils';
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -94,25 +95,16 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
     setLoadingStats(true);
     try {
       // Load user stats
-      const statsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/stats`, { credentials: 'include' });
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setUserStats(statsData.data);
-      }
+      const statsData = await whatsTaskClient.request(`/api/users/${user.id}/stats`);
+      if (statsData?.success) setUserStats(statsData.data);
 
       // Load user projects
-      const projectsResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/projects`, { credentials: 'include' });
-      if (projectsResponse.ok) {
-        const projectsData = await projectsResponse.json();
-        setUserProjects(projectsData.data || []);
-      }
+      const projectsData = await whatsTaskClient.request(`/api/users/${user.id}/projects`);
+      if (projectsData?.success) setUserProjects(projectsData.data || []);
 
       // Load user tasks
-      const tasksResponse = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/tasks`, { credentials: 'include' });
-      if (tasksResponse.ok) {
-        const tasksData = await tasksResponse.json();
-        setUserTasks(tasksData.data || []);
-      }
+      const tasksData = await whatsTaskClient.request(`/api/users/${user.id}/tasks`);
+      if (tasksData?.success) setUserTasks(tasksData.data || []);
     } catch (error) {
       console.error('Error loading user data:', error);
     } finally {
@@ -136,8 +128,7 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
   const handleDeleteClick = async () => {
     try {
       // Get deletion info first
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}/deletion-info`, { credentials: 'include' });
-      const data = await response.json();
+      const data = await whatsTaskClient.request(`/api/users/${user.id}/deletion-info`);
       
       if (data.success) {
         setDeletionInfo(data.data);
@@ -161,16 +152,10 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
 const handleConfirmDelete = async () => {
   setIsDeleting(true);
   try {
-    const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
-      credentials: 'include',
+    const data = await whatsTaskClient.request(`/api/users/${user.id}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ forceDelete }),
+      body: JSON.stringify({ forceDelete })
     });
-
-    const data = await response.json();
 
     if (data.success) {
       toast.success(data.message || "User deleted successfully");
@@ -189,16 +174,10 @@ const handleConfirmDelete = async () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
-        credentials: 'include',
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editForm),
-      });
-
-      const data = await response.json();
+    const data = await whatsTaskClient.request(`/api/users/${user.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(editForm)
+    });
 
       if (data.success) {
         toast.success("User updated successfully");

@@ -55,7 +55,7 @@ export default function TaskDetails() {
       const [taskData, userData, usersData, activitiesData] = await Promise.all([
         Task.filter({ id: taskId }).then(tasks => tasks[0]),
         User.me().catch(() => null),
-        fetch('https://vitan-task-production.up.railway.app/api/users', { credentials: 'include' }).then(res => res.json()).then(data => data.data || []),
+        User.list('-created_date'),
         ActivityLog.filter({ task_id: taskId }, "-created_date")
       ]);
       

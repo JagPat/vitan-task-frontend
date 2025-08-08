@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, UserPlus, AlertCircle, Info, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { whatsTaskClient } from '@/api/whatsTaskClient';
 
 export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }) {
   const [formData, setFormData] = useState({
@@ -65,12 +66,8 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
           throw new Error("Phone number is required for WhatsApp invitation");
         }
         
-        response = await fetch('https://vitan-task-production.up.railway.app/api/invitations/whatsapp', {
-          credentials: 'include',
+        response = await whatsTaskClient.request('/api/invitations/whatsapp', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             phone_number: formData.phone_number,
             full_name: formData.full_name,
@@ -87,12 +84,8 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
           throw new Error("Email is required for email invitation");
         }
         
-        response = await fetch('https://vitan-task-production.up.railway.app/api/invitations/email', {
-          credentials: 'include',
+        response = await whatsTaskClient.request('/api/invitations/email', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             email: formData.email,
             full_name: formData.full_name,
@@ -104,7 +97,7 @@ export default function InviteUserDialog({ open, onOpenChange, onInviteSuccess }
         });
       }
 
-      const result = await response.json();
+      const result = response;
       
       if (result.success) {
         toast.success(
