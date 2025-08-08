@@ -88,11 +88,11 @@ function PagesContent() {
                 
                 <Route path="/CreateTask" element={<CreateTask />} />
                 
-                <Route path="/MyTasks" element={<MyTasks />} />
+                <Route path="/MyTasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
                 
                 <Route path="/Team" element={<Team />} />
                 
-                <Route path="/Analytics" element={<Analytics />} />
+                <Route path="/Analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 
                 <Route path="/Templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
                 
