@@ -51,6 +51,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
+import EditTaskDialog from "./EditTaskDialog";
+import ReassignTaskDialog from "./ReassignTaskDialog";
 
 const priorityIcons = {
   low: <Flag className="w-3 h-3" />,
@@ -76,6 +86,7 @@ export default function UnifiedTaskCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   
   const taskIsOverdue = task.due_date && isOverdue(task.due_date) && !['completed', 'closed'].includes(task.status);
   const statusStyle = getStatusStyle(task.status);
@@ -257,11 +268,16 @@ export default function UnifiedTaskCard({
               )}
             </div>
             
-            <Link to={createPageUrl(`TaskDetails?id=${task.id}`)} className="group">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="group text-left w-full"
+              aria-label="Open task drawer"
+            >
               <h3 className={`font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors ${compact ? 'text-sm leading-tight' : 'text-base leading-tight'}`}>
                 {task.title}
               </h3>
-            </Link>
+            </button>
             
             {!compact && task.description && (
               <p className="text-sm text-slate-600 line-clamp-2 mt-1">{task.description}</p>
@@ -497,6 +513,88 @@ export default function UnifiedTaskCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Drawer Mode: task quick-detail + inline actions */}
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle className="flex items-center justify-between">
+              <span className="truncate mr-3">{task.title}</span>
+              <Badge className={`${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} border`}>{task.status.replace('_',' ')}</Badge>
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 space-y-3">
+            {task.description && (
+              <p className="text-sm text-slate-600">{task.description}</p>
+            )}
+            <div className="flex items-center gap-4 text-sm text-slate-500">
+              {assignedUserName && (
+                <div className="flex items-center gap-1 min-w-0">
+                  <User className="w-4 h-4" />
+                  <span className="truncate max-w-[12rem]">{assignedUserName}</span>
+                </div>
+              )}
+              {task.due_date && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(task.due_date)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Reuse the icon quick actions row inside drawer */}
+            <div className="flex items-center gap-1 pt-2 border-t">
+              {!task.assigned_to && task.status === 'pending' && onPickup && (
+                <Button variant="outline" size="icon" title="Pick up" onClick={() => onPickup(task.id)}>
+                  <UserPlus className="w-4 h-4" />
+                </Button>
+              )}
+              {showAcceptDecline && (
+                <>
+                  <Button variant="outline" size="icon" title="Decline" onClick={handleDecline}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" title="Accept" onClick={handleAccept}>
+                    <CheckCircle className="w-4 h-4" />
+                  </Button>
+                </>
+              )}
+              {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'pending' && (
+                <Button variant="outline" size="icon" title="Start" onClick={() => handleStatusChange('in_progress')}>
+                  <Play className="w-4 h-4" />
+                </Button>
+              )}
+              {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'in_progress' && (
+                <Button variant="outline" size="icon" title="Complete" onClick={() => handleStatusChange('completed')}>
+                  <CheckCircle className="w-4 h-4" />
+                </Button>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" title="Reschedule">
+                    <Calendar className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleDuePreset('today')}>Due Today</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDuePreset('+1')}>+1 day</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDuePreset('+7')}>+7 days</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+                <Button variant="destructive" size="icon" title="Delete" onClick={() => setShowDeleteDialog(true)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </Card>
   );
 } 
