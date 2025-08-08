@@ -146,8 +146,12 @@ export const User = {
   },
 
   // Delete user
-  async delete(userId) {
-    await whatsTaskClient.deleteUser(userId);
+  async delete(userId, data = {}) {
+    // Prefer unified request to support bodies (e.g., forceDelete)
+    await whatsTaskClient.request(`/api/users/${userId}`, {
+      method: 'DELETE',
+      body: JSON.stringify(data)
+    });
     return { success: true };
   },
 

@@ -157,8 +157,8 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
 const handleConfirmDelete = async () => {
   setIsDeleting(true);
   try {
-    // Prefer centralized entity client for consistency
-    await UserEntity.delete(user.id);
+    // Prefer centralized entity client for consistency, include forceDelete if requested
+    await UserEntity.delete(user.id, { forceDelete });
     toast.success("User deleted successfully");
     onDelete && onDelete(user);
   } catch (error) {
