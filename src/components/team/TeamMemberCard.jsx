@@ -137,6 +137,12 @@ const TeamMemberCard = ({ user, onDelete, onUpdate }) => {
       
       if (data.success) {
         setDeletionInfo(data.data);
+        // Pre-select forceDelete if backend says it's required
+        if (data.data?.requiresForceDelete) {
+          setForceDelete(true);
+        } else {
+          setForceDelete(false);
+        }
         setShowDeleteDialog(true);
       } else {
         toast({
@@ -162,7 +168,19 @@ const handleConfirmDelete = async () => {
     toast.success("User deleted successfully");
     onDelete && onDelete(user);
   } catch (error) {
-    toast.error("Failed to delete user");
+    // If backend requires forceDelete, retry once with forceDelete=true
+    const needsForce = typeof error?.message === 'string' && error.message.includes('Cannot delete user with related data');
+    if (!forceDelete && needsForce) {
+      try {
+        await UserEntity.delete(user.id, { forceDelete: true });
+        toast.success("User deleted successfully");
+        onDelete && onDelete(user);
+      } catch (e2) {
+        toast.error(e2?.message || "Failed to delete user");
+      }
+    } else {
+      toast.error(error?.message || "Failed to delete user");
+    }
   } finally {
     setIsDeleting(false);
     setShowDeleteDialog(false);
