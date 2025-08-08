@@ -1,38 +1,23 @@
+import React, { Suspense, lazy } from 'react';
 import Layout from "./Layout.jsx";
-
-import Dashboard from "./Dashboard";
-
-import CreateTask from "./CreateTask";
-
-import MyTasks from "./MyTasks";
-
-import Team from "./Team";
-
-import Analytics from "./Analytics";
-
-import Templates from "./Templates";
-
-import WhatsAppTest from "./WhatsAppTest";
-
-import TaskDetails from "./TaskDetails";
-
-import TeamTaskView from "./TeamTaskView";
-
-import WhatsAppAdmin from "./WhatsAppAdmin";
-
-import AIAdminDashboard from "./AIAdminDashboard";
-
-import Projects from "./Projects";
-
-import ProjectDetails from "./ProjectDetails";
-
-import DeletedTasks from "./DeletedTasks";
-
-import UnifiedTaskView from "./UnifiedTaskView";
-
-
-
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+
+// Lazy-loaded pages for faster initial load
+const Dashboard = lazy(() => import('./Dashboard'));
+const CreateTask = lazy(() => import('./CreateTask'));
+const MyTasks = lazy(() => import('./MyTasks'));
+const Team = lazy(() => import('./Team'));
+const Analytics = lazy(() => import('./Analytics'));
+const Templates = lazy(() => import('./Templates'));
+const WhatsAppTest = lazy(() => import('./WhatsAppTest'));
+const TaskDetails = lazy(() => import('./TaskDetails'));
+const TeamTaskView = lazy(() => import('./TeamTaskView'));
+const WhatsAppAdmin = lazy(() => import('./WhatsAppAdmin'));
+const AIAdminDashboard = lazy(() => import('./AIAdminDashboard'));
+const Projects = lazy(() => import('./Projects'));
+const ProjectDetails = lazy(() => import('./ProjectDetails'));
+const DeletedTasks = lazy(() => import('./DeletedTasks'));
+const UnifiedTaskView = lazy(() => import('./UnifiedTaskView'));
 
 const PAGES = {
     
@@ -88,6 +73,7 @@ function PagesContent() {
     
     return (
         <Layout currentPageName={currentPage}>
+            <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
             <Routes>            
                 
                     <Route path="/" element={<Dashboard />} />
@@ -124,6 +110,7 @@ function PagesContent() {
                 <Route path="/DeletedTasks" element={<DeletedTasks />} />
                 
             </Routes>
+            </Suspense>
         </Layout>
     );
 }

@@ -67,6 +67,12 @@ class WhatsTaskClient {
           
           console.error(`API request failed (attempt ${attempt + 1}/${retries + 1}):`, response.status, errorMessage);
           
+          // Handle auth errors centrally
+          if (response.status === 401) {
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('currentUser');
+          }
+
           // If this is the last attempt, throw the error
           if (attempt === retries) {
             throw new Error(errorMessage);
