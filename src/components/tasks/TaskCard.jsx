@@ -47,6 +47,8 @@ const statusMap = {
 };
 
 
+// Deprecated: use `UnifiedTaskCard` instead. This component is kept for backward compatibility
+// and will be removed once all references are migrated.
 export default function TaskCard({ task, onDelete }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');

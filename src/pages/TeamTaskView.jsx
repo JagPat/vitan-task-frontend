@@ -27,7 +27,7 @@ import {
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 
-import TaskCard from "../components/tasks/TaskCard";
+import UnifiedTaskCard from "@/components/tasks/UnifiedTaskCard";
 
 const priorityColors = {
   low: "bg-slate-100 text-slate-700",
@@ -374,7 +374,15 @@ export default function TeamTaskView() {
             <TabsContent value={activeTab}>
               <div className="space-y-4">
                 {getFilteredTasks(activeTab).map((task) => (
-                  <TaskCard key={task.id} task={task} />
+                  <UnifiedTaskCard
+                    key={task.id}
+                    task={task}
+                    users={[]}
+                    currentUser={currentUser}
+                    showProjectContext={true}
+                    showActions={false}
+                    compact
+                  />
                 ))}
                 
                 {getFilteredTasks(activeTab).length === 0 && (

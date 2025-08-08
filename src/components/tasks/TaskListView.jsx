@@ -1,5 +1,5 @@
 import React from 'react';
-import TaskCard from './TaskCard';
+import UnifiedTaskCard from '@/components/tasks/UnifiedTaskCard';
 
 export default function TaskListView({ tasks, onDelete }) {
   if (tasks.length === 0) {
@@ -14,7 +14,7 @@ export default function TaskListView({ tasks, onDelete }) {
   return (
     <div className="space-y-4">
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} onDelete={onDelete} />
+        <UnifiedTaskCard key={task.id} task={task} showActions={false} compact />
       ))}
     </div>
   );
