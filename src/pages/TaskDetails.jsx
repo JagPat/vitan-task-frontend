@@ -322,28 +322,7 @@ export default function TaskDetails() {
             Created {task.created_date ? format(parseDate(task.created_date) || new Date(), 'PPP') : 'Unknown date'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {canModifyTask() && (
-            <Button
-              variant="outline"
-              onClick={() => setShowEditDialog(true)}
-              className="gap-2"
-            >
-              <Edit className="w-4 h-4" />
-              Edit Task
-            </Button>
-          )}
-          {canReassignTask() && (
-            <Button
-              variant="outline"
-              onClick={() => setShowReassignDialog(true)}
-              className="gap-2"
-            >
-              <UserCheck className="w-4 h-4" />
-              Reassign
-            </Button>
-          )}
-        </div>
+        {/* Remove top-level duplicate actions to avoid redundancy with Quick Actions */}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -504,17 +483,7 @@ export default function TaskDetails() {
                   onClick={() => setShowEditDialog(true)}
                 >
                   <Edit className="w-4 h-4" />
-                  Edit Task Details
-                </Button>
-              )}
-              {canReassignTask() && (
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                  onClick={() => setShowReassignDialog(true)}
-                >
-                  <UserCheck className="w-4 h-4" />
-                  Reassign Task
+                  Edit Task
                 </Button>
               )}
               <Button

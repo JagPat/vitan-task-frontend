@@ -28,7 +28,8 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
       setFormData({
         title: task.title || "",
         description: task.description || "",
-        due_date: task.due_date || "",
+        // Ensure HTML date input format yyyy-MM-dd
+        due_date: task.due_date ? new Date(task.due_date).toISOString().slice(0, 10) : "",
         priority: task.priority || "medium",
         tags: task.tags || [],
         estimated_hours: task.estimated_hours !== null && task.estimated_hours !== undefined ? String(task.estimated_hours) : "",
@@ -52,7 +53,7 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
       }
     };
     if (open) load();
-  }, [task]);
+  }, [open]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
