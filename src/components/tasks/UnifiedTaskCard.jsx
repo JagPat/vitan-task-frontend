@@ -402,81 +402,50 @@ export default function UnifiedTaskCard({
               </div>
             </div>
 
-            {/* Status Actions */}
+            {/* Icon-only Quick Actions for single-level UX */}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700">Status:</span>
-              <div className="flex items-center gap-2">
-                {/* Business Logic: Task assignment and status flow */}
+              <span className="text-sm font-medium text-slate-700">Quick actions:</span>
+              <div className="flex items-center gap-1">
+                {/* Assignment/state flow */}
                 {!task.assigned_to && task.status === 'pending' && onPickup && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => onPickup(task.id)}
-                    className="text-xs bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    <UserPlus className="w-3 h-3 mr-1" />
-                    Pick up task
+                  <Button variant="outline" size="icon" title="Pick up" onClick={() => onPickup(task.id)}>
+                    <UserPlus className="w-4 h-4" />
                   </Button>
                 )}
-                
+
                 {showAcceptDecline && (
                   <>
-                    <Button variant="outline" size="sm" className="text-xs" onClick={handleDecline}>
-                      Decline
+                    <Button variant="outline" size="icon" title="Decline" onClick={handleDecline}>
+                      <X className="w-4 h-4" />
                     </Button>
-                    <Button variant="default" size="sm" className="text-xs bg-green-600 hover:bg-green-700" onClick={handleAccept}>
-                      Accept
+                    <Button variant="outline" size="icon" title="Accept" onClick={handleAccept}>
+                      <CheckCircle className="w-4 h-4" />
                     </Button>
                   </>
                 )}
 
                 {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'pending' && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => handleStatusChange('in_progress')}
-                    className="text-xs bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Play className="w-3 h-3 mr-1" />
-                    Start Task
+                  <Button variant="outline" size="icon" title="Start" onClick={() => handleStatusChange('in_progress')}>
+                    <Play className="w-4 h-4" />
                   </Button>
                 )}
-                
-                {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'in_progress' && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => handleStatusChange('completed')}
-                    className="text-xs bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Complete
-                  </Button>
-                )}
-                
-                {task.status === 'completed' && (
-                  <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Completed
-                  </span>
-                )}
-                
-                <Link to={createPageUrl(`TaskDetails?id=${task.id}`)}>
-                  <Button variant="outline" size="sm" className="text-xs">
-                    Details
-                    <ArrowRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
 
-            {/* Quick actions (reschedule presets collapsed into menu to reduce clutter) */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700">Quick actions:</span>
-              <div className="flex items-center gap-2">
+                {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'in_progress' && (
+                  <Button variant="outline" size="icon" title="Complete" onClick={() => handleStatusChange('completed')}>
+                    <CheckCircle className="w-4 h-4" />
+                  </Button>
+                )}
+
+                {/* Edit */}
+                <Button variant="outline" size="icon" title="Edit" onClick={() => onEdit && onEdit(task)}>
+                  <Edit className="w-4 h-4" />
+                </Button>
+                {/* Reschedule */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="text-xs">Reschedule</Button>
+                    <Button variant="outline" size="icon" title="Reschedule">
+                      <Calendar className="w-4 h-4" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleDuePreset('today')}>Due Today</DropdownMenuItem>
@@ -484,8 +453,16 @@ export default function UnifiedTaskCard({
                     <DropdownMenuItem onClick={() => handleDuePreset('+7')}>+7 days</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {/* Delete */}
+                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+                  <Button variant="destructive" size="icon" title="Delete" onClick={() => setShowDeleteDialog(true)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
             </div>
+
+            {/* Removed secondary quick actions row to keep single-level UX */}
           </div>
         )}
       </CardContent>
