@@ -91,6 +91,9 @@ export default function UnifiedTaskCard({
     task.assigned_to_name ||
     task.assigned_to_whatsapp ||
     null;
+  const externalAssigneeName = !task.assigned_to && (task.assigned_to_name || task.assigned_to_whatsapp)
+    ? (task.assigned_to_name || task.assigned_to_whatsapp)
+    : null;
 
   const handleDelete = async () => {
     if (!deleteReason.trim()) {
@@ -361,22 +364,31 @@ export default function UnifiedTaskCard({
               </span>
               <div className="min-w-0 flex-1 ml-3">
                 {(currentUser?.role === 'admin' || currentUser?.role === 'manager') ? (
-                  <Select
-                    value={task.assigned_to?.toString() || "unassigned"}
-                    onValueChange={handleAssignmentChange}
-                  >
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Assign to someone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {users.map((user) => (
-                        <SelectItem key={user.id} value={user.id.toString()}>
-                          {user.full_name || user.name || user.whatsapp_number}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  externalAssigneeName ? (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">External: {externalAssigneeName}</Badge>
+                      <Button variant="outline" size="sm" className="text-xs" onClick={() => onEdit && onEdit(task)}>
+                        Reassign
+                      </Button>
+                    </div>
+                  ) : (
+                    <Select
+                      value={task.assigned_to?.toString() || "unassigned"}
+                      onValueChange={handleAssignmentChange}
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="Assign to someone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {users.map((user) => (
+                          <SelectItem key={user.id} value={user.id.toString()}>
+                            {user.full_name || user.name || user.whatsapp_number}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )
                 ) : (
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{assignedUserName || 'Unassigned'}</Badge>
