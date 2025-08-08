@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
 import { ActivityLog } from "@/api/entities";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,8 @@ export default function WhatsAppAdmin() {
   const [activeTab, setActiveTab] = useState("overview");
   const [bulkMessage, setBulkMessage] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [filterPhone, setFilterPhone] = useState("");
+  const [filterDays, setFilterDays] = useState(30);
 
   useEffect(() => {
     loadWhatsAppData();
@@ -55,6 +58,12 @@ export default function WhatsAppAdmin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadUserActivity = async () => {
+    if (!filterPhone) return;
+    const res = await whatsTaskClient.request(`/api/analytics/user/${encodeURIComponent(filterPhone)}/activity?days=${filterDays}`);
+    setActivities(res?.data || []);
   };
 
   const getWhatsAppStats = () => {
@@ -293,6 +302,56 @@ export default function WhatsAppAdmin() {
                         {user.whatsapp_verified ? "Verified" : "Unverified"}
                       </Badge>
                       <Badge variant="outline">{user.role}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Users Activity */}
+        <TabsContent value="users" className="space-y-6">
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>User WhatsApp Activity</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="md:col-span-2">
+                  <Label>Phone (WhatsApp)</Label>
+                  <Input value={filterPhone} onChange={(e) => setFilterPhone(e.target.value)} placeholder="+1234567890" />
+                </div>
+                <div>
+                  <Label>Days</Label>
+                  <Select value={String(filterDays)} onValueChange={(v) => setFilterDays(Number(v))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7">7</SelectItem>
+                      <SelectItem value="30">30</SelectItem>
+                      <SelectItem value="90">90</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={loadUserActivity}>Load Activity</Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {activities.map((a) => (
+                  <div key={a.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
+                    <div className={`p-2 rounded-full ${a.whatsapp_message_sent ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Badge variant="outline">{a.action}</Badge>
+                        {a.whatsapp_message_sent ? <Badge className="bg-green-100 text-green-700" variant="outline">sent</Badge> : <Badge className="bg-amber-100 text-amber-700" variant="outline">not-sent</Badge>}
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1">{a.notes}</p>
                     </div>
                   </div>
                 ))}

@@ -45,6 +45,12 @@ export const Task = {
     return { success: true };
   },
 
+  // Restore soft-deleted task
+  async restore(taskId) {
+    const response = await whatsTaskClient.request(`/api/tasks/${taskId}/restore`, { method: 'POST' });
+    return response.data || {};
+  },
+
   // Get tasks by WhatsApp number
   async getByWhatsApp(whatsappNumber, status = 'all') {
     const filters = { assigned_to_whatsapp: whatsappNumber };

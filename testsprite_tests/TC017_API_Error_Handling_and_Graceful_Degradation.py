@@ -45,81 +45,77 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click 'Show API Test' button to open API test controls for simulating backend errors.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[2]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Click 'Get Tasks' button to simulate fetching tasks and observe error handling.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Simulate backend API error 500 for task fetching by clicking 'Get Tasks' with error simulation enabled.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div[2]/div[2]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Clear the invalid email input and enter a valid email address to proceed with login.
+        # Click 'Projects' navigation link to test backend API error handling for projects.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code to complete login.
+        # Click 'Show API Test' button or equivalent to open API test controls for projects error simulation.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
+        # Check if there is a global API test controls panel accessible from the Projects page or elsewhere to simulate backend errors for projects.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Scroll down the Projects page to check for any hidden API test controls or error simulation options.
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
+        # Click on 'Analytics' navigation link to check for API test controls or error simulation options for analytics backend errors.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[6]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the 'Login' button to authenticate and potentially unlock more features or API test controls.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Input WhatsApp number and attempt login to authenticate user.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Click 'Login' button to submit WhatsApp login form.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Close the login modal to return to the Analytics page and check for any global API test controls or error simulation options.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        assert False, 'Test plan execution failed: backend API error handling test case failed.'
         await asyncio.sleep(5)
     
     finally:

@@ -45,36 +45,31 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click the login button to start login and obtain JWT token.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Input username and password to login and obtain JWT token.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Input email 'test' and send verification code to proceed with login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test')
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Click 'Send Verification Code' button to trigger sending the code.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
+        # Input a valid email address and send verification code to proceed with login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test@example.com')
@@ -85,41 +80,8 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Click the Login button to start the login process again.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code and click Verify to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Generic failing assertion since expected result is unknown and test plan execution failed.
+        assert False, 'Test failed: JWT token expiration and session management could not be verified.'
         await asyncio.sleep(5)
     
     finally:

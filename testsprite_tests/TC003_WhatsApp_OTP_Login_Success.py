@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,47 +45,25 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click the Login button to navigate to the login page
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Enter a valid phone number for WhatsApp OTP login
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Click Verify Account button to request OTP
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code to complete login.
+        # Enter the correct 6-digit OTP code and click Verify button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('123456')
@@ -96,19 +74,24 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Click Login button to reopen login modal and restart WhatsApp OTP login process
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Enter valid phone number and request OTP again
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
+        # Enter the correct OTP code and click Verify button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('123456')
@@ -119,7 +102,17 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Assertion: Verify login success by checking user greeting text on the dashboard
+        user_greeting = await frame.locator('text=Good afternoon, Snehal').text_content()
+        assert user_greeting is not None and 'Good afternoon, Snehal' in user_greeting, 'User greeting not found, login might have failed'
+        
+        # Assertion: Verify redirection to main dashboard by checking page title
+        page_title = await page.title()
+        assert page_title == 'WhatsTask - Project Management', f'Unexpected page title: {page_title}'
+        
+        # Assertion: Verify session token is stored securely in localStorage
+        session_token = await page.evaluate('window.localStorage.getItem("session_token")')
+        assert session_token is not None and len(session_token) > 0, 'Session token not found or empty in localStorage'
         await asyncio.sleep(5)
     
     finally:

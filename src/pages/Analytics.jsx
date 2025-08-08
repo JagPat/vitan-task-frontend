@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
 import { subDays } from "date-fns";
 
 import AnalyticsHeader from "../components/analytics/AnalyticsHeader";
@@ -30,6 +31,23 @@ export default function Analytics() {
     queryFn: () => User.list("-created_date"),
     staleTime: 60_000
   });
+  const performanceQuery = useQuery({
+    queryKey: ['analytics','performance'],
+    queryFn: async () => {
+      const res = await whatsTaskClient.request('/api/analytics/performance');
+      return res?.data || null;
+    },
+    staleTime: 60_000
+  });
+  const timelineQuery = useQuery({
+    queryKey: ['analytics','timeline', dateRange.from.toISOString(), dateRange.to.toISOString()],
+    queryFn: async () => {
+      const res = await whatsTaskClient.request(`/api/analytics/timeline?start_date=${dateRange.from.toISOString()}&end_date=${dateRange.to.toISOString()}`);
+      return res?.data || [];
+    },
+    keepPreviousData: true,
+    staleTime: 60_000
+  });
   useEffect(() => {
     setLoading(tasksQuery.isLoading || usersQuery.isLoading);
     if (tasksQuery.data) setTasks(tasksQuery.data);
@@ -41,7 +59,7 @@ export default function Analytics() {
     return taskDate >= dateRange.from && taskDate <= dateRange.to;
   });
 
-  if (loading) {
+  if (loading || performanceQuery.isLoading || timelineQuery.isLoading) {
     return (
       <div className="p-4 lg:p-8 max-w-7xl mx-auto">
         <div className="animate-pulse space-y-6">
@@ -62,11 +80,11 @@ export default function Analytics() {
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8">
       <AnalyticsHeader dateRange={dateRange} setDateRange={setDateRange} />
-      <KeyMetrics tasks={filteredTasks} />
+      <KeyMetrics tasks={filteredTasks} performance={performanceQuery.data} />
       
       <div className="grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3">
-          <TasksOverTimeChart tasks={filteredTasks} />
+          <TasksOverTimeChart tasks={filteredTasks} timeline={timelineQuery.data} />
         </div>
         <div className="lg:col-span-2">
           <TaskStatusDistributionChart tasks={filteredTasks} />

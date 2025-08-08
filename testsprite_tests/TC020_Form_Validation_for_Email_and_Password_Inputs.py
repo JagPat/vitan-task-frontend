@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,81 +45,54 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click the Login button to navigate to the login form.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Click the Email tab to access the email login form.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Input invalid email formats into the email field and observe validation feedback.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
+        await page.wait_for_timeout(3000); await elem.fill('invalid-email-format')
         
 
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Navigate to the signup or password input form to test password strength validation and input sanitization.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Click the Login button to reopen the login form and check for password input or navigate to signup form if available.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Click the OAuth tab to check if it contains password input or navigate to signup form if available for password strength testing.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
+        # Input weak passwords into the password field and observe validation errors.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('123')
         
 
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        assert False, 'Test failed: Expected validation errors or blocked submission did not occur.'
         await asyncio.sleep(5)
     
     finally:

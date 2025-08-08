@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { parseDate, formatDate } from "../utils/dateUtils";
+import { toast } from "sonner";
 
 import EditTaskDialog from "../components/tasks/EditTaskDialog";
 import ReassignTaskDialog from "../components/tasks/ReassignTaskDialog";
@@ -134,6 +135,26 @@ export default function TaskDetails() {
     } catch (error) {
       console.error("Error updating task:", error);
       // Don't close dialog on error, let user try again
+    }
+  };
+
+  const showAcceptDecline = currentUser && task && task.assigned_to === currentUser.id && !task.accepted_at && !task.declined_at && !['completed','closed'].includes(task.status);
+  const handleAccept = async () => {
+    try {
+      await Task.update(taskId, { accepted_at: new Date().toISOString(), accepted_by: currentUser.id, status: task.status === 'pending' ? 'in_progress' : task.status });
+      toast.success('Accepted');
+      await loadTaskDetails();
+    } catch (e) {
+      toast.error('Failed to accept');
+    }
+  };
+  const handleDecline = async () => {
+    try {
+      await Task.update(taskId, { declined_at: new Date().toISOString(), declined_by: currentUser.id, status: 'pending' });
+      toast.success('Declined');
+      await loadTaskDetails();
+    } catch (e) {
+      toast.error('Failed to decline');
     }
   };
 
@@ -422,6 +443,12 @@ export default function TaskDetails() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              {showAcceptDecline && (
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleDecline}>Decline</Button>
+                  <Button onClick={handleAccept}>Accept</Button>
+                </div>
+              )}
               {canModifyTask() && (
                 <Button
                   variant="outline"

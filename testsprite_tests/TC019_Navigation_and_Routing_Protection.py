@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,47 +45,29 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Attempt to access a protected page directly via URL without authentication to verify redirect to login.
+        await page.goto('http://localhost:3003/protected-route', timeout=10000)
+        
+
+        # Perform login with provided credentials and navigate to protected route.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Input phone number for WhatsApp login and submit to authenticate.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Click the login button to submit the WhatsApp number and authenticate.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code to complete login.
+        # Input verification code and submit to complete login and verify protected route access.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('123456')
@@ -96,19 +78,65 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Click the Login button to attempt login again or explore alternative login methods.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Click the 'Verify Account' button to proceed with WhatsApp verification code sending.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
+        # Input a valid 6-digit verification code and click Verify button to complete login.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('123456')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the Login button to open the login modal and attempt authentication.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click 'Verify Account' button to send verification code and proceed with login.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Input a valid 6-digit verification code and click Verify button to complete login.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('123456')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the Login button to open the login modal and attempt authentication.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click 'Verify Account' button to send verification code and proceed with login.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Input a valid 6-digit verification code and click Verify button to complete login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('123456')

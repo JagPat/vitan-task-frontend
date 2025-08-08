@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,81 +45,72 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click on Analytics link in the sidebar to navigate to Analytics dashboard
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[6]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click Login button to authenticate and access real-time analytics data
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Input phone number and click Login button to authenticate
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/form/div[2]/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('8320303515')
+        
+
+        # Try OAuth login tab and attempt login with provided credentials to authenticate and access real-time analytics data
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Input email and password, then click 'Login with OAuth' button to authenticate
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test')
         
 
-        # Click 'Send Verification Code' button to proceed with login.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password')
         
 
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Close login modal and verify if any error messages or alternative login options are available, or retry login with correct credentials if possible
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Click Login button to attempt login again or explore alternative login methods to access real-time analytics data
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code and click Verify to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Close the login modal and report the issue of failed login preventing access to real-time analytics data.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Click the Login button to attempt login again or explore alternative login methods to access real-time analytics data
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Close the login modal and report the issue of failed login preventing access to real-time analytics data.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        assert False, 'Test plan execution failed: Unable to verify analytics dashboard due to login failure.'
         await asyncio.sleep(5)
     
     finally:

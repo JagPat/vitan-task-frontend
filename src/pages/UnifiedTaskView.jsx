@@ -3,6 +3,7 @@ import { Task, Project, User } from '@/api/entities';
 import { extractTaskPrimitives, extractProjectPrimitives, extractUserPrimitives } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -84,6 +85,9 @@ export default function UnifiedTaskView() {
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [bulkActions, setBulkActions] = useState(false);
   const { toast } = useToast();
+  const [savedFilters, setSavedFilters] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('taskSavedFilters') || '[]'); } catch { return []; }
+  });
 
   useEffect(() => {
     loadData();
@@ -341,6 +345,48 @@ export default function UnifiedTaskView() {
     setFilters({});
   };
 
+  const handleExportCSV = () => {
+    const rows = [
+      ['ID','Title','Status','Priority','Assignee','Project','Due Date','Created At']
+    ];
+    getFilteredTasks().forEach(t => {
+      rows.push([
+        t.id,
+        (t.title || '').replace(/\n/g,' '),
+        t.status,
+        t.priority,
+        t.assigned_to_name || '',
+        t.project_name || '',
+        t.due_date || '',
+        t.created_at || ''
+      ]);
+    });
+    const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tasks_export_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast({ title: 'Exported', description: `Exported ${rows.length-1} tasks to CSV` });
+  };
+
+  const handleSaveFilters = (name) => {
+    const entry = { name, filters };
+    const next = [...savedFilters.filter(f => f.name !== name), entry];
+    setSavedFilters(next);
+    localStorage.setItem('taskSavedFilters', JSON.stringify(next));
+    toast({ title: 'Saved', description: `Saved filter: ${name}` });
+  };
+
+  const handleLoadFilters = (name) => {
+    const found = savedFilters.find(f => f.name === name);
+    if (found) setFilters(found.filters);
+  };
+
   const handleTaskSelect = (taskId) => {
     setSelectedTasks(prev => 
       prev.includes(taskId) 
@@ -428,6 +474,26 @@ export default function UnifiedTaskView() {
             {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
           </Button>
           
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">Saved Filters</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {savedFilters.length === 0 && (
+                <DropdownMenuItem disabled>No saved filters</DropdownMenuItem>
+              )}
+              {savedFilters.map(f => (
+                <DropdownMenuItem key={f.name} onClick={() => handleLoadFilters(f.name)}>{f.name}</DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onClick={() => {
+                const name = prompt('Save current filters as:');
+                if (name) handleSaveFilters(name);
+              }}>Save current…</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>Export CSV</Button>
+
           <Button onClick={() => setShowCreateTask(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Create Task

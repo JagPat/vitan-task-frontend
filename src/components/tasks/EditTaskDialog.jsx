@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Project, User } from "@/api/entities";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 
@@ -19,6 +20,8 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
   const [formData, setFormData] = useState({});
   const [newTag, setNewTag] = useState("");
   const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     if (task) {
@@ -28,9 +31,27 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
         due_date: task.due_date || "",
         priority: task.priority || "medium",
         tags: task.tags || [],
-        estimated_hours: task.estimated_hours !== null && task.estimated_hours !== undefined ? String(task.estimated_hours) : ""
+        estimated_hours: task.estimated_hours !== null && task.estimated_hours !== undefined ? String(task.estimated_hours) : "",
+        project_id: task.project_id || null,
+        watchers: Array.isArray(task.watchers) ? task.watchers : []
       });
     }
+  }, [task]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [p, u] = await Promise.all([
+          Project.getAll(),
+          User.getAll()
+        ]);
+        setProjects(p || []);
+        setUsers(u || []);
+      } catch (e) {
+        // ignore
+      }
+    };
+    if (open) load();
   }, [task]);
 
   const handleInputChange = (field, value) => {
@@ -109,6 +130,23 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
+              <Label htmlFor="project_id">Project</Label>
+              <Select
+                value={formData.project_id?.toString() || 'none'}
+                onValueChange={(value) => handleInputChange('project_id', value === 'none' ? null : Number(value))}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No Project</SelectItem>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="due_date">Due Date</Label>
               <Input
                 id="due_date"
@@ -135,6 +173,30 @@ export default function EditTaskDialog({ open, onOpenChange, task, onSave }) {
                   <SelectItem value="urgent">Urgent</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label>Watchers</Label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {users.map((u) => {
+                const isSelected = (formData.watchers || []).includes(u.id);
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        watchers: isSelected ? prev.watchers.filter(id => id !== u.id) : [...(prev.watchers || []), u.id]
+                      }));
+                    }}
+                    className={`text-xs px-2 py-1 rounded border ${isSelected ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-300'}`}
+                  >
+                    {u.full_name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,81 +45,80 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click the Login button to navigate to the login page
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Click on the Email tab to switch to email login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
+        # Input valid email and incorrect password, then submit login
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test@example.com')
         
 
+        # Check if OAuth tab allows password input or if there is another way to test incorrect password login. Otherwise, test invalid email format error handling.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code to complete login.
+        # Input valid email and incorrect password in OAuth form and click login button
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
         
 
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('wrongpassword')
+        
+
+        # Check for any visible error message elements or alerts on the page related to login failure, or try submitting login with invalid email format to verify error handling.
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
+        # Input invalid email format in OAuth login form and attempt login to verify error handling and error message display
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('invalid-email-format')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('anyPassword123')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[4]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code and click Verify to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Assertion: Verify error message related to invalid credentials is displayed
+        error_message_locator = frame.locator('xpath=//div[contains(text(), "invalid credentials") or contains(text(), "Invalid email or password") or contains(text(), "Incorrect password")]')
+        assert await error_message_locator.is_visible(), "Error message for invalid credentials is not visible"
+          
+        # Assertion: Verify no session token is created (assuming session token is stored in localStorage or cookies)
+        storage = await context.storage_state()
+        cookies = storage.get('cookies', [])
+        session_token_cookie = next((cookie for cookie in cookies if cookie.get('name') == 'session_token'), None)
+        assert session_token_cookie is None, "Session token cookie should not be created on failed login"
+          
+        local_storage = await frame.evaluate('''() => {
+          let items = {};
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            items[key] = localStorage.getItem(key);
+          }
+          return items;
+        }''')
+        assert 'session_token' not in local_storage, "Session token should not be present in localStorage on failed login"
         await asyncio.sleep(5)
     
     finally:

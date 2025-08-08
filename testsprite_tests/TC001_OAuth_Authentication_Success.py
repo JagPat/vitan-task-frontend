@@ -29,7 +29,7 @@ async def run_test():
         page = await context.new_page()
         
         # Navigate to your target URL and wait until the network request is committed
-        await page.goto("http://localhost:3004", wait_until="commit", timeout=10000)
+        await page.goto("http://localhost:3003", wait_until="commit", timeout=10000)
         
         # Wait for the main page to reach DOMContentLoaded state (optional for stability)
         try:
@@ -45,81 +45,87 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Click the Login button to navigate to the login page for OAuth login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Click on the OAuth tab to select OAuth login option.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Input valid email and password for OAuth login and click the 'Login with OAuth' button.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test')
         
 
-        # Click 'Send Verification Code' button to proceed with login.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password')
+        
+
+        # Check browser storage for session token and validate JWT token.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[4]/div/div/div[2]/div/div[2]/div/div[12]/div[2]/a').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Clear the invalid email input and enter a valid email address to proceed with login.
+        # Attempt to login again or investigate why session token is not stored and session is not maintained.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the Login button to start OAuth login process again.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Input valid OAuth credentials and click 'Login with OAuth' button.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('test')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password')
+        
+
+        # Click the 'Login with OAuth' button to submit the login form.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[4]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Clear the email input, enter a valid email 'test@example.com', and retry login with OAuth.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('')
         
 
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[2]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('test@example.com')
         
 
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/form/div[4]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Close the login modal and report the issue of failed OAuth login with correct credentials.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code and click Verify to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        assert False, 'Test plan execution failed: OAuth login validation could not be completed.'
         await asyncio.sleep(5)
     
     finally:

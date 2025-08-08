@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { isOverdue, formatDate } from '../../utils/dateUtils';
 import { Task } from '@/api/entities';
+import { toast } from 'sonner';
 import { getStatusStyle, getPriorityStyle, cardStyles } from '@/utils/designSystem';
 import {
   DropdownMenu,
@@ -99,6 +100,22 @@ export default function UnifiedTaskCard({
       }
       setShowDeleteDialog(false);
       setDeleteReason('');
+
+      // Soft-delete Undo toast
+      toast.success('Task moved to trash', {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            try {
+              await Task.restore(task.id);
+              toast.success('Task restored');
+            } catch (e) {
+              toast.error('Failed to restore task');
+            }
+          }
+        },
+        duration: 30000
+      });
     } catch (error) {
       console.error('Error deleting task:', error);
       alert('Failed to delete task');
@@ -141,6 +158,56 @@ export default function UnifiedTaskCard({
     }
   };
 
+  const handleAssignToMe = async () => {
+    if (!currentUser?.id) return;
+    try {
+      await Task.update(task.id, { assigned_to: currentUser.id, status: task.status === 'pending' ? 'in_progress' : task.status });
+      toast.success('Assigned to you');
+    } catch (e) {
+      toast.error('Failed to assign');
+    }
+  };
+
+  const handleDuePreset = async (preset) => {
+    const today = new Date();
+    let due = new Date(today);
+    if (preset === 'today') {
+      // keep today
+    } else if (preset === '+1') {
+      due.setDate(today.getDate() + 1);
+    } else if (preset === '+7') {
+      due.setDate(today.getDate() + 7);
+    }
+    const dueIso = due.toISOString().slice(0, 10);
+    try {
+      await Task.update(task.id, { due_date: dueIso });
+      toast.success(`Due ${preset === 'today' ? 'today' : preset}`);
+    } catch (e) {
+      toast.error('Failed to update due date');
+    }
+  };
+
+  const showAcceptDecline = !!currentUser?.id && task.assigned_to === currentUser.id && !task.accepted_at && !task.declined_at && !['completed','closed'].includes(task.status);
+  const awaitingAcceptance = task.assigned_to && !task.accepted_at && !task.declined_at;
+
+  const handleAccept = async () => {
+    try {
+      await Task.update(task.id, { accepted_at: new Date().toISOString(), accepted_by: currentUser.id, status: task.status === 'pending' ? 'in_progress' : task.status });
+      toast.success('Accepted');
+    } catch (e) {
+      toast.error('Failed to accept');
+    }
+  };
+
+  const handleDecline = async () => {
+    try {
+      await Task.update(task.id, { declined_at: new Date().toISOString(), declined_by: currentUser.id, status: 'pending' });
+      toast.success('Declined');
+    } catch (e) {
+      toast.error('Failed to decline');
+    }
+  };
+
   return (
     <Card className={`${cardStyles.interactive} ${compact ? 'p-4' : 'p-6'}`}>
       <CardContent className={`${compact ? 'p-0' : 'p-0'} space-y-4`}>
@@ -178,9 +245,11 @@ export default function UnifiedTaskCard({
                 <DropdownMenuItem onClick={() => onEdit && onEdit(task)}>
                   Edit Task
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
-                  Delete Task
-                </DropdownMenuItem>
+                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+                    Delete Task
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -202,6 +271,12 @@ export default function UnifiedTaskCard({
               Overdue
             </Badge>
           )}
+
+          {awaitingAcceptance && (
+            <Badge className="bg-amber-100 text-amber-800 border border-amber-200">
+              Awaiting acceptance
+            </Badge>
+          )}
         </div>
 
         {/* Task Details */}
@@ -217,6 +292,13 @@ export default function UnifiedTaskCard({
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
               <span className="truncate">{assignedUserName}</span>
+            </div>
+          )}
+
+          {Array.isArray(task.watchers) && task.watchers.length > 0 && (
+            <div className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              <span className="truncate">{task.watchers.length} watcher{task.watchers.length === 1 ? '' : 's'}</span>
             </div>
           )}
 
@@ -247,22 +329,31 @@ export default function UnifiedTaskCard({
                 {task.assigned_to ? 'Reassign:' : 'Assign to:'}
               </span>
               <div className="min-w-0 flex-1 ml-3">
-                <Select
-                  value={task.assigned_to?.toString() || "unassigned"}
-                  onValueChange={handleAssignmentChange}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Assign to someone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unassigned">Unassigned</SelectItem>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id.toString()}>
-                        {user.full_name || user.name || user.whatsapp_number}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') ? (
+                  <Select
+                    value={task.assigned_to?.toString() || "unassigned"}
+                    onValueChange={handleAssignmentChange}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Assign to someone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id.toString()}>
+                          {user.full_name || user.name || user.whatsapp_number}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{assignedUserName || 'Unassigned'}</Badge>
+                    <Button variant="outline" size="sm" className="text-xs" onClick={handleAssignToMe}>
+                      Assign to me
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -283,6 +374,17 @@ export default function UnifiedTaskCard({
                   </Button>
                 )}
                 
+                {showAcceptDecline && (
+                  <>
+                    <Button variant="outline" size="sm" className="text-xs" onClick={handleDecline}>
+                      Decline
+                    </Button>
+                    <Button variant="default" size="sm" className="text-xs bg-green-600 hover:bg-green-700" onClick={handleAccept}>
+                      Accept
+                    </Button>
+                  </>
+                )}
+
                 {task.assigned_to && task.assigned_to === currentUser?.id && task.status === 'pending' && (
                   <Button
                     variant="default"
@@ -320,6 +422,18 @@ export default function UnifiedTaskCard({
                     <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </Link>
+              </div>
+            </div>
+
+            {/* Quick action presets */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-700">Quick actions:</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="text-xs" onClick={handleAssignToMe}>Assign to me</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('today')}>Due Today</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+1')}>+1 day</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+7')}>+7 days</Button>
+                <Button variant="default" size="sm" className="text-xs bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('completed')}>Done</Button>
               </div>
             </div>
           </div>

@@ -45,81 +45,88 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Log out or navigate to the login page to start OAuth login test.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Switch to Email tab and input registered user credentials for OAuth login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Clear the invalid email input and enter a valid email address to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Input the 6-digit verification code to complete login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
+        # Log out the current user to reach the login page for OAuth login test.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Click the login button to open the login modal for OAuth login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Input registered user's email 'test' into the email address field and send verification code.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
+        
+
+        # Check for verification code input or any new prompt and handle it before proceeding.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Scroll down to find a logout button or user profile menu to log out the current user.
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
+        # Click the login button at the bottom left to open the login modal and check if it allows logging out or switching user.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the 'Send Verification Code' button to proceed with OAuth login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
+        # Input the 6-digit verification code and click Verify to complete OAuth login.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('123456')
         
 
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div[2]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Assert that the page title is correct indicating dashboard access
+        assert 'WhatsTask - Project Management' in await page.title()
+        
+        # Assert that the logged in user's name and email are displayed correctly
+        user_name_locator = page.locator('text=Rajeev Patel')
+        user_email_locator = page.locator('text=test@example.com')
+        assert await user_name_locator.is_visible()
+        assert await user_email_locator.is_visible()
+        
+        # Assert that the navigation links for dashboard are present
+        expected_nav_links = ['Dashboard', 'All Tasks', 'Projects', 'My Tasks', 'Team', 'Analytics', 'Templates', 'AI Admin', 'Deleted Tasks']
+        for link_text in expected_nav_links:
+            nav_link = page.locator(f'text={link_text}')
+            assert await nav_link.is_visible()
+        
+        # Assert that the user greeting is shown correctly
+        greeting_locator = page.locator('text=Good afternoon, Rajeev')
+        assert await greeting_locator.is_visible()
+        
         await asyncio.sleep(5)
     
     finally:

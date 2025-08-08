@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Task } from "@/api/entities";
-import { User } from "@/api/entities";
-import { TaskTemplate } from "@/api/entities";
+import { Task, User, TaskTemplate, Project } from "@/api/entities";
 import { ActivityLog } from "@/api/entities";
 import { UploadFile } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
@@ -34,6 +32,7 @@ export default function CreateTask() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [templates, setTemplates] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -52,7 +51,9 @@ export default function CreateTask() {
     attachments: [],
     recurring_pattern: "",
     estimated_hours: "",
-    is_external_assignment: false // New field
+    is_external_assignment: false, // New field
+    project_id: null,
+    watchers: []
   });
 
   const [newTag, setNewTag] = useState("");
@@ -78,10 +79,11 @@ export default function CreateTask() {
   const loadData = async () => {
     try {
       console.log('Loading data for CreateTask...');
-      const [usersData, templatesData, userData] = await Promise.all([
+      const [usersData, templatesData, userData, projectsData] = await Promise.all([
         User.list("-created_date"),
         TaskTemplate.list("-usage_count"),
-        User.me().catch(() => null)
+        User.me().catch(() => null),
+        Project.getAll()
       ]);
       
       console.log('Users loaded:', usersData);
@@ -91,6 +93,7 @@ export default function CreateTask() {
       setUsers(usersData || []);
       setTemplates(templatesData || []);
       setCurrentUser(userData);
+      setProjects(projectsData || []);
     } catch (error) {
       console.error("Error loading data:", error);
       toast.error("Failed to load data. Assignment dropdown may not work properly.");
@@ -312,7 +315,10 @@ export default function CreateTask() {
         // Map internal user assignment
         assigned_to: taskData.is_external_assignment ? null : taskData.assigned_to,
         // Map tags
-        tags: taskData.tags || []
+        tags: taskData.tags || [],
+        // Project and watchers
+        project_id: taskData.project_id || null,
+        watchers: taskData.watchers || []
       };
 
       // Ensure estimated_hours is a number or null, not an empty string
@@ -604,6 +610,21 @@ export default function CreateTask() {
                       <SelectItem value="medium">Medium Priority</SelectItem>
                       <SelectItem value="high">High Priority</SelectItem>
                       <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="project_id">Project</Label>
+                  <Select value={taskData.project_id?.toString() || 'none'} onValueChange={(value) => handleInputChange('project_id', value === 'none' ? null : Number(value))}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Select project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Project</SelectItem>
+                      {projects.map((p) => (
+                        <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

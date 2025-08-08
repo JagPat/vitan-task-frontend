@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { differenceInHours } from "date-fns";
 
-export default function KeyMetrics({ tasks }) {
+export default function KeyMetrics({ tasks, performance }) {
   const completedTasks = tasks.filter(t => ['completed', 'closed'].includes(t.status));
   const totalTasks = tasks.length;
   const completionRate = totalTasks > 0 ? (completedTasks.length / totalTasks) * 100 : 0;
@@ -26,10 +26,11 @@ export default function KeyMetrics({ tasks }) {
     ? (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length).toFixed(1)
     : 0;
 
+  const perf = performance?.task_performance;
   const metrics = [
     {
       title: "Completion Rate",
-      value: `${completionRate.toFixed(1)}%`,
+      value: `${(perf?.completion_rate ?? completionRate).toFixed ? (perf?.completion_rate).toFixed(1) + '%' : `${completionRate.toFixed(1)}%`}`,
       icon: CheckCircle2,
       color: "from-green-500 to-emerald-500",
       subtitle: `${completedTasks.length} of ${totalTasks} tasks`

@@ -45,77 +45,81 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Click the Login button to proceed with authentication.
+        # Navigate to task list or Kanban board view
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Switch to Email tab and input username and password for login.
+        # Apply filters by status, assignee, date range, and project
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div/div[2]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input username 'test' into the email field and proceed to send verification code or find password input if available.
+        # Select 'Pending' status filter and then apply filters for assignee, date range, and project
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test')
-        
-
-        # Click 'Send Verification Code' button to proceed with login.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Clear the invalid email input and enter a valid email address to proceed with login.
+        # Apply filter by assignee
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('test@example.com')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[4]/div[2]/div/div/div/div[4]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code to complete login.
+        # Apply filter by date range
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
-        
-
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[4]/div[2]/div/div[8]/div/div[4]/div/div/button/span').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click the Login button to start the login process again.
+        # Apply filter by date range
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/div/div/div[2]/div/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div/div[2]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Click 'Send Verification Code' button to proceed with login.
+        # Apply filter by project
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/form/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[4]/div[2]/div/div[7]/div/div[4]/div[2]/div/a').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Input the 6-digit verification code and click Verify to complete login.
+        # Navigate back to 'All Tasks' page to resume filtering and sorting tests
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/div[2]/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('123456')
+        elem = frame.locator('xpath=html/body/div/div/div/div/div/nav/a[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
+        # Apply filter by project
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[3]/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div/div[2]/button[3]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Select a specific project filter option to apply
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Apply sorting options by priority, due date, or creation date
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div/div[2]/button[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Select a priority sorting option to test sorting behavior
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[2]/div/div/div[3]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Clear filters and sorting to confirm task list resets to default view
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[3]/main/div/div[3]/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
