@@ -88,7 +88,10 @@ export default function UnifiedTaskCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showReassignDialog, setShowReassignDialog] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [commentText, setCommentText] = useState('');
   
   const taskIsOverdue = task.due_date && isOverdue(task.due_date) && !['completed', 'closed'].includes(task.status);
   const statusStyle = getStatusStyle(task.status);
@@ -455,7 +458,7 @@ export default function UnifiedTaskCard({
                 )}
 
                 {/* Edit */}
-                <Button variant="outline" size="icon" title="Edit" onClick={() => onEdit && onEdit(task)}>
+                <Button variant="outline" size="icon" title="Edit" onClick={() => setShowEditDialog(true)}>
                   <Edit className="w-4 h-4" />
                 </Button>
                 {/* Reschedule */}
@@ -515,6 +518,24 @@ export default function UnifiedTaskCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Task Dialog inline from card */}
+      <EditTaskDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        task={task}
+        onSave={async (data) => {
+          try {
+            await Task.update(task.id, data);
+            toast.success('Task updated');
+            setShowEditDialog(false);
+          } catch (e) {
+            toast.error('Failed to update task');
+          }
+        }}
+      />
+
+      {/* Reassign inline dialog if needed in future */}
 
       {/* Drawer Mode: task quick-detail + inline actions */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
