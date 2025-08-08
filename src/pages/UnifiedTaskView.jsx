@@ -613,6 +613,7 @@ export default function UnifiedTaskView() {
                     onPriorityChange={handleTaskPriorityChange}
                     onAssignmentChange={handleTaskAssignmentChange}
                     users={users}
+                    currentUser={currentUser}
                     showProjectContext={true}
                     showActions={true}
                     compact={viewMode === 'list'}

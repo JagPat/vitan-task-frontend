@@ -28,6 +28,7 @@ import {
   Trash2,
   FolderOpen,
   Clock,
+  MoreVertical,
   UserPlus,
   Play,
   CheckCircle,
@@ -288,7 +289,25 @@ export default function UnifiedTaskCard({
             )}
           </div>
           
-          {/* Kebab menu removed to deduplicate actions. All actions live in the icon row below. */}
+          {showActions && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="More actions">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit && onEdit(task)}>
+                  Edit Task
+                </DropdownMenuItem>
+                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+                    Delete Task
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Status and Priority Badges */}
