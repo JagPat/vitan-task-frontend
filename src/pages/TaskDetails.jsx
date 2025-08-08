@@ -42,6 +42,8 @@ export default function TaskDetails() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentText, setCommentText] = useState('');
 
   useEffect(() => {
     if (taskId) {
@@ -110,6 +112,7 @@ export default function TaskDetails() {
               await Task.restore(taskId);
               await loadTaskDetails();
               toast.success('Task restored');
+              navigate(createPageUrl(`TaskDetails?id=${taskId}`));
             } catch (e) {
               toast.error('Failed to restore task');
             }
@@ -117,6 +120,8 @@ export default function TaskDetails() {
         },
         duration: 30000
       });
+      // Navigate to Deleted Tasks so the change is visible immediately
+      navigate(createPageUrl('DeletedTasks'));
     } catch (e) {
       toast.error('Failed to delete task');
     } finally {
@@ -470,6 +475,16 @@ export default function TaskDetails() {
                   {isDeleting ? 'Moving to Trash…' : 'Move to Trash'}
                 </Button>
               )}
+              {canReassignTask() && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setShowReassignDialog(true)}
+                >
+                  <UserCheck className="w-4 h-4" />
+                  {`Reassign (${task.assigned_to_name || 'Unassigned'})`}
+                </Button>
+              )}
               {showAcceptDecline && (
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={handleDecline}>Decline</Button>
@@ -486,14 +501,52 @@ export default function TaskDetails() {
                   Edit Task
                 </Button>
               )}
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={() => {/* Add comment functionality */}}
-              >
-                <MessageSquare className="w-4 h-4" />
-                Add Comment
-              </Button>
+              {!showCommentInput ? (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setShowCommentInput(true)}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Add Comment
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Write a comment..."
+                    className="w-full border rounded-md p-2 text-sm"
+                    rows={3}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        if (!commentText.trim()) return;
+                        try {
+                          await ActivityLog.create({
+                            task_id: taskId,
+                            action: 'comment',
+                            notes: commentText.trim(),
+                            performed_by_name: currentUser?.full_name || 'User',
+                            whatsapp_message_sent: false
+                          });
+                          setCommentText('');
+                          setShowCommentInput(false);
+                          await loadTaskDetails();
+                          toast.success('Comment added');
+                        } catch (e) {
+                          toast.error('Failed to add comment');
+                        }
+                      }}
+                    >
+                      Post Comment
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => { setShowCommentInput(false); setCommentText(''); }}>Cancel</Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
