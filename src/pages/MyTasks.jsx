@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Task, User } from '@/api/entities';
 import { extractTaskPrimitives, extractUserPrimitives } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -38,28 +39,36 @@ export default function MyTasks() {
   });
   const { toast } = useToast();
 
+  // React Query: fetch data
+  const tasksQuery = useQuery({
+    queryKey: ['tasks'],
+    queryFn: () => Task.getAll(),
+    staleTime: 30_000
+  });
+  const usersQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: () => User.getAll(),
+    staleTime: 60_000
+  });
+  const meQuery = useQuery({
+    queryKey: ['me'],
+    queryFn: () => User.me(),
+    staleTime: 60_000
+  });
+
   useEffect(() => {
-    loadTasks();
-    
-    // Listen for task creation events
-    const handleTaskCreated = (event) => {
-      const newTask = event.detail.task;
-      if (newTask) {
-        // Extract primitive values from new task
-        const cleanTask = extractTaskPrimitives(newTask);
-        if (cleanTask) {
-          setTasks(prev => [cleanTask, ...prev]);
-          calculateStats([cleanTask, ...tasks]);
-        }
-      }
-    };
-    
-    window.addEventListener('taskCreated', handleTaskCreated);
-    
-    return () => {
-      window.removeEventListener('taskCreated', handleTaskCreated);
-    };
-  }, []);
+    if (tasksQuery.data) {
+      const cleanTasks = Array.isArray(tasksQuery.data) ? tasksQuery.data.map(t => extractTaskPrimitives(t)).filter(Boolean) : [];
+      setTasks(cleanTasks);
+      calculateStats(cleanTasks);
+    }
+    if (usersQuery.data) {
+      const cleanUsers = Array.isArray(usersQuery.data) ? usersQuery.data.map(u => extractUserPrimitives(u)).filter(Boolean) : [];
+      setUsers(cleanUsers);
+    }
+    if (meQuery.data) setCurrentUser(meQuery.data);
+    setLoading(tasksQuery.isLoading || usersQuery.isLoading || meQuery.isLoading);
+  }, [tasksQuery.data, usersQuery.data, meQuery.data, tasksQuery.isLoading, usersQuery.isLoading, meQuery.isLoading]);
 
   const loadTasks = async () => {
     try {
