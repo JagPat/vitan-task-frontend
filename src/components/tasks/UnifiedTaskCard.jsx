@@ -28,7 +28,6 @@ import {
   Trash2,
   FolderOpen,
   Clock,
-  MoreVertical,
   UserPlus,
   Play,
   CheckCircle,
@@ -289,25 +288,7 @@ export default function UnifiedTaskCard({
             )}
           </div>
           
-          {showActions && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onEdit && onEdit(task)}>
-                  Edit Task
-                </DropdownMenuItem>
-                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
-                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
-                    Delete Task
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* Kebab menu removed to deduplicate actions. All actions live in the icon row below. */}
         </div>
 
         {/* Status and Priority Badges */}
@@ -424,9 +405,7 @@ export default function UnifiedTaskCard({
             </div>
 
             {/* Icon-only Quick Actions for single-level UX */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700">Quick actions:</span>
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 justify-end">
                 {/* Assignment/state flow */}
                 {!task.assigned_to && task.status === 'pending' && onPickup && (
                   <Button variant="outline" size="icon" title="Pick up" onClick={() => onPickup(task.id)}>
@@ -480,7 +459,6 @@ export default function UnifiedTaskCard({
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
-              </div>
             </div>
 
             {/* Removed secondary quick actions row to keep single-level UX */}
