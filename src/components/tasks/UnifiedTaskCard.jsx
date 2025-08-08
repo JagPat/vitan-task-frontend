@@ -244,7 +244,7 @@ export default function UnifiedTaskCard({
 
   return (
     <Card className={`${cardStyles.interactive} ${compact ? 'p-4' : 'p-6'}`}>
-      <CardContent className={`${compact ? 'p-0' : 'p-0'} space-y-4`}>
+      <CardContent className={`p-0 ${compact ? 'space-y-3' : 'space-y-4'}`}>
         {/* Header with Project Context */}
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
@@ -258,7 +258,7 @@ export default function UnifiedTaskCard({
             </div>
             
             <Link to={createPageUrl(`TaskDetails?id=${task.id}`)} className="group">
-              <h3 className={`font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors ${compact ? 'text-sm' : 'text-base'}`}>
+              <h3 className={`font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors ${compact ? 'text-sm leading-tight' : 'text-base leading-tight'}`}>
                 {task.title}
               </h3>
             </Link>
@@ -323,9 +323,9 @@ export default function UnifiedTaskCard({
           )}
 
           {assignedUserName && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 min-w-0">
               <User className="w-4 h-4" />
-              <span className="truncate">{assignedUserName}</span>
+              <span className="truncate max-w-[12rem]">{assignedUserName}</span>
             </div>
           )}
 
@@ -376,7 +376,7 @@ export default function UnifiedTaskCard({
                       value={task.assigned_to?.toString() || "unassigned"}
                       onValueChange={handleAssignmentChange}
                     >
-                      <SelectTrigger className="h-8 text-xs">
+                      <SelectTrigger className="h-8 text-xs min-w-[12rem]">
                         <SelectValue placeholder="Assign to someone" />
                       </SelectTrigger>
                       <SelectContent>
