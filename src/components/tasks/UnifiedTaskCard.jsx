@@ -84,7 +84,13 @@ export default function UnifiedTaskCard({
   
   // Calculate assigned user name from users list
   const assignedUser = task.assigned_to ? users.find(u => u.id === task.assigned_to) : null;
-  const assignedUserName = assignedUser?.full_name || assignedUser?.name || assignedUser?.whatsapp_number;
+  const assignedUserName =
+    assignedUser?.full_name ||
+    assignedUser?.name ||
+    assignedUser?.whatsapp_number ||
+    task.assigned_to_name ||
+    task.assigned_to_whatsapp ||
+    null;
 
   const handleDelete = async () => {
     if (!deleteReason.trim()) {
