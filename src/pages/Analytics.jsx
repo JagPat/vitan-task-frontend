@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
 import { subDays } from "date-fns";
@@ -19,25 +20,21 @@ export default function Analytics() {
     to: new Date(),
   });
 
+  const tasksQuery = useQuery({
+    queryKey: ['analytics','tasks'],
+    queryFn: () => Task.list("-created_date"),
+    staleTime: 60_000
+  });
+  const usersQuery = useQuery({
+    queryKey: ['analytics','users'],
+    queryFn: () => User.list("-created_date"),
+    staleTime: 60_000
+  });
   useEffect(() => {
-    loadAnalyticsData();
-  }, []);
-
-  const loadAnalyticsData = async () => {
-    setLoading(true);
-    try {
-      const [tasksData, usersData] = await Promise.all([
-        Task.list("-created_date"),
-        User.list("-created_date"),
-      ]);
-      setTasks(tasksData);
-      setUsers(usersData);
-    } catch (error) {
-      console.error("Error loading analytics data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(tasksQuery.isLoading || usersQuery.isLoading);
+    if (tasksQuery.data) setTasks(tasksQuery.data);
+    if (usersQuery.data) setUsers(usersQuery.data);
+  }, [tasksQuery.isLoading, usersQuery.isLoading, tasksQuery.data, usersQuery.data]);
 
   const filteredTasks = tasks.filter(task => {
     const taskDate = new Date(task.created_date);
