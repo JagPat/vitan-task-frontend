@@ -470,13 +470,20 @@ export default function UnifiedTaskCard({
               </div>
             </div>
 
-            {/* Quick action presets (limit to three due shortcuts) */}
+            {/* Quick actions (reschedule presets collapsed into menu to reduce clutter) */}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-700">Quick actions:</span>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('today')}>Due Today</Button>
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+1')}>+1 day</Button>
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleDuePreset('+7')}>+7 days</Button>
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="text-xs">Reschedule</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleDuePreset('today')}>Due Today</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleDuePreset('+1')}>+1 day</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleDuePreset('+7')}>+7 days</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
