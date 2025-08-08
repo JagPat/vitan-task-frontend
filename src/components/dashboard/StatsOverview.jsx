@@ -35,7 +35,7 @@ const StatCard = ({ title, value, icon: Icon, color, trend, subtitle }) => (
   </Card>
 );
 
-export default function StatsOverview({ stats }) {
+export default function StatsOverview({ stats, performance }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatCard
@@ -58,7 +58,9 @@ export default function StatsOverview({ stats }) {
         value={stats.completed}
         icon={CheckCircle2}
         color="from-emerald-500 to-green-600"
-        trend="+8% this week"
+        trend={performance?.task_performance?.completion_rate !== undefined
+          ? `${performance.task_performance.completion_rate}% completion`
+          : undefined}
         subtitle="This month"
       />
       <StatCard

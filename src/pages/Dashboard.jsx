@@ -121,8 +121,8 @@ export default function Dashboard() {
       {/* API Test Component */}
       {showApiTest && <ApiTest />}
 
-      {/* Stats Overview */}
-      <StatsOverview stats={stats} />
+      {/* Stats Overview with fused analytics */}
+      <StatsOverview stats={stats} performance={performance} />
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-8">

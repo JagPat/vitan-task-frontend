@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Task, User, ActivityLog } from "@/api/entities";
 import { createPageUrl } from "@/utils";
 import { sendWhatsappMessage } from "@/api/functions";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +41,7 @@ export default function TaskDetails() {
   const [loading, setLoading] = useState(true);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (taskId) {
@@ -84,6 +86,42 @@ export default function TaskDetails() {
       task.created_by === currentUser.id ||
       task.assigned_to === currentUser.id
     );
+  };
+
+  const canDeleteTask = () => {
+    if (!currentUser || !task) return false;
+    return (
+      currentUser.role === 'admin' ||
+      currentUser.role === 'manager' ||
+      task.created_by === currentUser.id
+    );
+  };
+
+  const handleDeleteWithUndo = async () => {
+    if (!task) return;
+    setIsDeleting(true);
+    try {
+      await Task.delete(taskId, { reason: 'Deleted from Task Details' });
+      toast.success('Task moved to trash', {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            try {
+              await Task.restore(taskId);
+              await loadTaskDetails();
+              toast.success('Task restored');
+            } catch (e) {
+              toast.error('Failed to restore task');
+            }
+          }
+        },
+        duration: 30000
+      });
+    } catch (e) {
+      toast.error('Failed to delete task');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleTaskUpdate = async (updatedData) => {
@@ -443,6 +481,16 @@ export default function TaskDetails() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              {canDeleteTask() && (
+                <Button
+                  variant="destructive"
+                  className="w-full justify-start gap-2"
+                  onClick={handleDeleteWithUndo}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Moving to Trash…' : 'Move to Trash'}
+                </Button>
+              )}
               {showAcceptDecline && (
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={handleDecline}>Decline</Button>
