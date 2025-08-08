@@ -30,6 +30,7 @@ import InviteUserDialog from "../components/team/InviteUserDialog";
 import EditUserDialog from "../components/team/EditUserDialog";
 import ContactManager from "../components/ContactManager";
 import { toast } from "sonner";
+import { whatsTaskClient } from "@/api/whatsTaskClient";
 
 export default function Team() {
   const [users, setUsers] = useState([]);
@@ -96,7 +97,7 @@ export default function Team() {
   };
 
   const handleDeleteUser = async (user) => {
-    if (!user) {
+    if (!user || !user.id) {
       toast.error('Invalid user data');
       return;
     }
@@ -106,21 +107,16 @@ export default function Team() {
     }
 
     try {
-      const response = await fetch(`https://vitan-task-production.up.railway.app/api/users/${user.id}`, {
-        credentials: 'include',
+      const result = await whatsTaskClient.request(`/api/users/${user.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ forceDelete: true }),
+        body: JSON.stringify({ forceDelete: true })
       });
 
-      if (response.ok) {
+      if (result?.success) {
         toast.success(`${user?.full_name || 'User'} has been removed from the team`);
         loadTeamData();
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to remove team member');
+        toast.error(result?.error || 'Failed to remove team member');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
