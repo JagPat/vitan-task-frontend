@@ -32,7 +32,9 @@ import {
   UserPlus,
   Play,
   CheckCircle,
-  Users
+  Users,
+  Edit,
+  X
 } from "lucide-react";
 import { isOverdue, formatDate } from '../../utils/dateUtils';
 import { Task, ActivityLog } from '@/api/entities';
