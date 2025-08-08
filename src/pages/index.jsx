@@ -1,6 +1,9 @@
 import React, { Suspense, lazy } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
 import Layout from "./Layout.jsx";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 
 // Lazy-loaded pages for faster initial load
 const Dashboard = lazy(() => import('./Dashboard'));
@@ -73,7 +76,7 @@ function PagesContent() {
     
     return (
         <Layout currentPageName={currentPage}>
-            <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+            <Suspense fallback={<div className="p-6"><div className="space-y-2"><Skeleton className="h-6 w-40" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div></div>}>
             <Routes>            
                 
                     <Route path="/" element={<Dashboard />} />
@@ -91,7 +94,7 @@ function PagesContent() {
                 
                 <Route path="/Analytics" element={<Analytics />} />
                 
-                <Route path="/Templates" element={<Templates />} />
+                <Route path="/Templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
                 
                 <Route path="/WhatsAppTest" element={<WhatsAppTest />} />
                 
@@ -99,15 +102,15 @@ function PagesContent() {
                 
                 <Route path="/TeamTaskView" element={<TeamTaskView />} />
                 
-                <Route path="/WhatsAppAdmin" element={<WhatsAppAdmin />} />
+                <Route path="/WhatsAppAdmin" element={<ProtectedRoute><WhatsAppAdmin /></ProtectedRoute>} />
                 
                 <Route path="/AIAdminDashboard" element={<AIAdminDashboard />} />
                 
-                <Route path="/Projects" element={<Projects />} />
+                <Route path="/Projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
                 
-                <Route path="/ProjectDetails/:projectId" element={<ProjectDetails />} />
+                <Route path="/ProjectDetails/:projectId" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
                 
-                <Route path="/DeletedTasks" element={<DeletedTasks />} />
+                <Route path="/DeletedTasks" element={<ProtectedRoute><DeletedTasks /></ProtectedRoute>} />
                 
             </Routes>
             </Suspense>
@@ -116,9 +119,12 @@ function PagesContent() {
 }
 
 export default function Pages() {
+    const queryClient = new QueryClient();
     return (
-        <Router>
-            <PagesContent />
-        </Router>
+        <QueryClientProvider client={queryClient}>
+            <Router>
+                <PagesContent />
+            </Router>
+        </QueryClientProvider>
     );
 }
