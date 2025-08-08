@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { User, Task } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,9 +42,30 @@ export default function Team() {
   const [editingUser, setEditingUser] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
+  const usersQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: () => User.list('-created_date'),
+    staleTime: 60_000
+  });
+
+  const tasksQuery = useQuery({
+    queryKey: ['tasks'],
+    queryFn: () => Task.list('-created_date'),
+    staleTime: 30_000
+  });
+
+  const meQuery = useQuery({
+    queryKey: ['me'],
+    queryFn: () => User.me(),
+    staleTime: 60_000
+  });
+
   useEffect(() => {
-    loadTeamData();
-  }, []);
+    if (usersQuery.data) setUsers(usersQuery.data);
+    if (tasksQuery.data) setTasks(tasksQuery.data);
+    if (meQuery.data) setCurrentUser(meQuery.data);
+    setLoading(usersQuery.isLoading || tasksQuery.isLoading || meQuery.isLoading);
+  }, [usersQuery.data, tasksQuery.data, meQuery.data, usersQuery.isLoading, tasksQuery.isLoading, meQuery.isLoading]);
 
   const loadTeamData = async () => {
     setLoading(true);

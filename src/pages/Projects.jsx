@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,7 +23,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -35,31 +35,23 @@ export default function Projects() {
   });
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      setLoading(true);
+  // React Query: fetch projects
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
       const projectsData = await Project.getAll();
-      
-      // Extract primitive values to prevent React error #130
-      const cleanProjects = Array.isArray(projectsData) ? projectsData.map(project => extractProjectPrimitives(project)).filter(project => project !== null) : [];
-      
-      setProjects(cleanProjects);
-      calculateStats(cleanProjects);
-    } catch (error) {
-      console.error('Error loading projects:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load projects. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      return Array.isArray(projectsData) ? projectsData.map(p => extractProjectPrimitives(p)).filter(Boolean) : [];
+    },
+    staleTime: 60_000
+  });
+
+  // Sync local state when data changes
+  useEffect(() => {
+    if (data) {
+      setProjects(data);
+      calculateStats(data);
     }
-  };
+  }, [data]);
 
   const calculateStats = (projectList) => {
     const stats = {
@@ -121,16 +113,23 @@ export default function Projects() {
     // View project functionality to be implemented
   };
 
+  // Debounce search input
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    return () => clearTimeout(id);
+  }, [searchTerm]);
+
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = project.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                         project.description?.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesStatus = statusFilter === 'all' || !statusFilter || project.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || !categoryFilter || project.category === categoryFilter;
     
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="p-4 lg:p-8 max-w-7xl mx-auto">
         <div className="flex items-center justify-center h-64">
