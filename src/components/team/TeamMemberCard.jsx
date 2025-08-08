@@ -21,7 +21,8 @@ import {
   Target,
   TrendingUp,
   Building,
-  Briefcase
+  Briefcase,
+  MoreVertical
 } from 'lucide-react';
 import { 
   AlertDialog,
@@ -159,7 +160,7 @@ const handleConfirmDelete = async () => {
     // Prefer centralized entity client for consistency
     await UserEntity.delete(user.id);
     toast.success("User deleted successfully");
-    onDelete(user.id);
+    onDelete && onDelete(user);
   } catch (error) {
     toast.error("Failed to delete user");
   } finally {
@@ -249,7 +250,7 @@ const handleConfirmDelete = async () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="More actions">
-                  <Eye className="w-4 h-4" />
+                  <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -325,6 +326,35 @@ const handleConfirmDelete = async () => {
                 </Badge>
               </div>
             )}
+
+            {/* Icon-only quick actions row (bottom edge) */}
+            <div className="flex items-center gap-2 pt-3 border-t border-slate-200 justify-end">
+              <Button variant="ghost" size="icon" title="View Details" onClick={() => setDrawerOpen(true)}>
+                <Eye className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Edit User"
+                onClick={() => {
+                  setEditForm({
+                    full_name: user?.full_name || '',
+                    email: user?.email || '',
+                    role: user?.role || 'member',
+                    department: user?.department || '',
+                    position: user?.position || '',
+                    phone_number: user?.phone_number || '',
+                    is_external: user?.is_external || false
+                  });
+                  setShowEditDialog(true);
+                }}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button variant="destructive" size="icon" title="Delete User" onClick={handleDeleteClick} disabled={isDeleting}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
