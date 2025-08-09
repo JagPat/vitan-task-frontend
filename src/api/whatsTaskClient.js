@@ -497,8 +497,11 @@ class WhatsTaskClient {
 
   // Delete user
   async deleteUser(userId, data = {}) {
-    return this.request(`/api/users/${userId}`, {
+    const force = data && (data.forceDelete === true || data.forceDelete === 'true');
+    const qs = force ? '?forceDelete=true' : '';
+    return this.request(`/api/users/${userId}${qs}`, {
       method: 'DELETE',
+      headers: force ? { 'X-Force-Delete': 'true' } : undefined,
       body: JSON.stringify(data)
     });
   }
