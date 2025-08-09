@@ -240,8 +240,8 @@ export const Project = {
   },
 
   // Delete project
-  async delete(projectId) {
-    await whatsTaskClient.deleteProject(projectId);
+  async delete(projectId, data = {}) {
+    await whatsTaskClient.deleteProject(projectId, data);
     return { success: true };
   },
 
@@ -250,6 +250,38 @@ export const Project = {
     const response = await whatsTaskClient.getProjects();
     return response.data || [];
   }
+};
+
+// ProjectMember helper wrappers
+export const ProjectMember = {
+  async list(projectId) {
+    const res = await whatsTaskClient.request(`/api/project-members/${projectId}/members`);
+    return res.data || [];
+  },
+  async available(projectId) {
+    const res = await whatsTaskClient.request(`/api/project-members/${projectId}/members/available`);
+    return res.data || [];
+  },
+  async add(projectId, userId, role = 'member') {
+    const res = await whatsTaskClient.request(`/api/project-members/${projectId}/members`, {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, role }),
+    });
+    return res.data;
+  },
+  async remove(projectId, userId) {
+    const res = await whatsTaskClient.request(`/api/project-members/${projectId}/members/${userId}`, {
+      method: 'DELETE',
+    });
+    return res.data;
+  },
+  async updateRole(projectId, userId, role) {
+    const res = await whatsTaskClient.request(`/api/project-members/${projectId}/members/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    });
+    return res.data;
+  },
 };
 
 // Task Template entity

@@ -47,6 +47,21 @@ export default function Projects() {
 
   // Sync local state when data changes
   useEffect(() => {
+    // Load saved filters
+    try {
+      const saved = JSON.parse(localStorage.getItem('projectsFilters') || '{}');
+      if (saved.searchTerm) setSearchTerm(saved.searchTerm);
+      if (saved.statusFilter) setStatusFilter(saved.statusFilter);
+      if (saved.categoryFilter) setCategoryFilter(saved.categoryFilter);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    // Persist filters
+    localStorage.setItem('projectsFilters', JSON.stringify({ searchTerm, statusFilter, categoryFilter }));
+  }, [searchTerm, statusFilter, categoryFilter]);
+
+  useEffect(() => {
     if (data) {
       setProjects(data);
       calculateStats(data);
@@ -82,28 +97,39 @@ export default function Projects() {
   };
 
   const handleDeleteProject = async (project) => {
-    if (confirm(`Are you sure you want to delete "${project.name}"?`)) {
-      try {
-        await Project.delete(project.id);
-        
-        // Remove the project from the local state and recalculate stats
-        setProjects(prev => {
-          const updatedProjects = prev.filter(p => p.id !== project.id);
-          calculateStats(updatedProjects);
-          return updatedProjects;
-        });
-        
-        toast({
-          title: "Success",
-          description: `Project "${project.name}" has been deleted.`,
-        });
-      } catch (error) {
-        console.error('Error deleting project:', error);
-        toast({
-          title: "Error",
-          description: "Failed to delete project. Please try again.",
-          variant: "destructive",
-        });
+    if (!project) return;
+    const proceed = confirm(`Delete project "${project.name}"? If it has members/tasks, confirm again to force delete.`);
+    if (!proceed) return;
+    try {
+      // First try without force
+      await Project.delete(project.id);
+      setProjects(prev => {
+        const updated = prev.filter(p => p.id !== project.id);
+        calculateStats(updated);
+        return updated;
+      });
+      toast({ title: 'Success', description: `Project "${project.name}" deleted.` });
+    } catch (err) {
+      const msg = err?.message || '';
+      const requiresForce = /requiresForceDelete|forceDelete/i.test(msg);
+      if (requiresForce) {
+        const confirmForce = confirm(`This project has related items. Force delete "${project.name}"?`);
+        if (!confirmForce) return;
+        try {
+          await Project.delete(project.id, { forceDelete: true });
+          setProjects(prev => {
+            const updated = prev.filter(p => p.id !== project.id);
+            calculateStats(updated);
+            return updated;
+          });
+          toast({ title: 'Deleted', description: 'Project force-deleted.' });
+        } catch (e2) {
+          console.error('Force delete failed:', e2);
+          toast({ title: 'Error', description: 'Force delete failed.', variant: 'destructive' });
+        }
+      } else {
+        console.error('Error deleting project:', err);
+        toast({ title: 'Error', description: 'Failed to delete project.', variant: 'destructive' });
       }
     }
   };
@@ -231,6 +257,7 @@ export default function Projects() {
             <SelectItem value="completed">Completed</SelectItem>
             <SelectItem value="on_hold">On Hold</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
 
@@ -281,6 +308,11 @@ export default function Projects() {
               onEdit={handleEditProject}
               onDelete={handleDeleteProject}
               onView={handleViewProject}
+              onChanged={refetch}
+              onSetFilters={({ status, category }) => {
+                if (status) setStatusFilter(status);
+                if (category) setCategoryFilter(category);
+              }}
             />
           ))}
         </div>

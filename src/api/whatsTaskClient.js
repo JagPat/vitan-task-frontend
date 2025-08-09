@@ -534,8 +534,11 @@ class WhatsTaskClient {
 
   // Delete project
   async deleteProject(projectId, data = {}) {
-    return this.request(`/api/projects/${projectId}`, {
+    const force = data && (data.forceDelete === true || data.forceDelete === 'true');
+    const qs = force ? '?forceDelete=true' : '';
+    return this.request(`/api/projects/${projectId}${qs}`, {
       method: 'DELETE',
+      headers: force ? { 'X-Force-Delete': 'true' } : undefined,
       body: JSON.stringify(data)
     });
   }
