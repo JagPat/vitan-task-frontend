@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { sendWhatsappMessage } from "@/api/functions";
 import { 
   MessageSquare, 
@@ -49,9 +51,9 @@ export default function WhatsAppAdmin() {
         User.me().catch(() => null)
       ]);
       
-      setTasks(tasksData);
-      setUsers(usersData);
-      setActivities(activitiesData);
+      setTasks(Array.isArray(tasksData) ? tasksData : (tasksData?.data || []));
+      setUsers(Array.isArray(usersData) ? usersData : (usersData?.data || []));
+      setActivities(Array.isArray(activitiesData) ? activitiesData : (activitiesData?.data || []));
       setCurrentUser(userData);
     } catch (error) {
       console.error("Error loading WhatsApp admin data:", error);
@@ -67,12 +69,17 @@ export default function WhatsAppAdmin() {
   };
 
   const getWhatsAppStats = () => {
-    const whatsappUsers = users.filter(u => u.phone_number);
-    const externalTasks = tasks.filter(t => t.is_external_assignment);
-    const whatsappActivities = activities.filter(a => a.whatsapp_message_sent);
-    const todayActivities = activities.filter(a => 
-      new Date(a.created_date).toDateString() === new Date().toDateString()
-    );
+    const safeUsers = Array.isArray(users) ? users : [];
+    const safeTasks = Array.isArray(tasks) ? tasks : [];
+    const safeActivities = Array.isArray(activities) ? activities : [];
+
+    const whatsappUsers = safeUsers.filter(u => u.phone_number);
+    const externalTasks = safeTasks.filter(t => t.is_external_assignment);
+    const whatsappActivities = safeActivities.filter(a => a.whatsapp_message_sent);
+    const todayActivities = safeActivities.filter(a => {
+      const d = a.created_date || a.created_at || a.createdAt;
+      return d && new Date(d).toDateString() === new Date().toDateString();
+    });
 
     return {
       whatsappUsers: whatsappUsers.length,
@@ -89,16 +96,7 @@ export default function WhatsAppAdmin() {
       const promises = selectedUsers.map(async (userId) => {
         const user = users.find(u => u.id === userId);
         if (user?.phone_number) {
-          return sendWhatsappMessage({
-            to: user.phone_number,
-            name: user.full_name,
-            task_title: "Admin Message",
-            due_date: null,
-            priority: "medium",
-            is_external: false,
-            created_by_name: currentUser?.full_name,
-            message: bulkMessage
-          });
+          return whatsTaskClient.sendWhatsAppMessage(user.phone_number, bulkMessage);
         }
       });
 
