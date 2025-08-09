@@ -81,7 +81,19 @@ const navigationItems = [
 ];
 
 // Move Sidebar component outside of Layout to prevent recreation on every render
-const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout, onLoginClick, onMobileMenuClose }) => (
+const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout, onLoginClick, onMobileMenuClose }) => {
+  // Build navigation items with admin-only entries
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const dynamicItems = [...navigationItems];
+  if (isAdmin) {
+    dynamicItems.splice(6, 0, {
+      title: "WA Admin",
+      url: createPageUrl("WhatsAppAdmin"),
+      icon: MessageCircle,
+    });
+  }
+
+  return (
   <div className={`flex flex-col h-full ${mobile ? 'px-4' : ''}`}>
     <div className="p-6 border-b border-slate-200">
       <div className="flex items-center gap-3">
@@ -96,7 +108,7 @@ const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout
     </div>
     
     <nav className="flex-1 p-4 space-y-2">
-      {navigationItems.map((item) => {
+      {dynamicItems.map((item) => {
         const isActive = window.location.pathname === item.url;
         return (
           <Link
@@ -176,7 +188,7 @@ const Sidebar = ({ mobile = false, user, isAuthenticated, pendingTasks, onLogout
       )}
     </div>
   </div>
-);
+)};
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
