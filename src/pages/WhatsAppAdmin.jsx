@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { sendWhatsappMessage } from "@/api/functions";
@@ -36,6 +37,7 @@ export default function WhatsAppAdmin() {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [filterPhone, setFilterPhone] = useState("");
   const [filterDays, setFilterDays] = useState(30);
+  const [invites, setInvites] = useState([]);
 
   useEffect(() => {
     loadWhatsAppData();
@@ -44,17 +46,19 @@ export default function WhatsAppAdmin() {
   const loadWhatsAppData = async () => {
     setLoading(true);
     try {
-      const [tasksData, usersData, activitiesData, userData] = await Promise.all([
+      const [tasksData, usersData, activitiesData, userData, invitesData] = await Promise.all([
         Task.list("-created_date", 100),
         User.list("-created_date"),
         ActivityLog.filter({ whatsapp_message_sent: true }, "-created_date", 50),
-        User.me().catch(() => null)
+        User.me().catch(() => null),
+        whatsTaskClient.request('/api/invitations')
       ]);
       
       setTasks(Array.isArray(tasksData) ? tasksData : (tasksData?.data || []));
       setUsers(Array.isArray(usersData) ? usersData : (usersData?.data || []));
       setActivities(Array.isArray(activitiesData) ? activitiesData : (activitiesData?.data || []));
       setCurrentUser(userData);
+      setInvites(Array.isArray(invitesData?.data) ? invitesData.data : (invitesData?.data?.data || []));
     } catch (error) {
       console.error("Error loading WhatsApp admin data:", error);
     } finally {
@@ -203,11 +207,12 @@ export default function WhatsAppAdmin() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="tasks">External Tasks</TabsTrigger>
           <TabsTrigger value="messaging">Messaging</TabsTrigger>
+          <TabsTrigger value="invitations">Invitations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -450,6 +455,53 @@ export default function WhatsAppAdmin() {
                   <Send className="w-4 h-4 mr-2" />
                   Send Message to {selectedUsers.length} User(s)
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="invitations" className="space-y-6">
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Invitations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Invited</TableHead>
+                      <TableHead>Accepted</TableHead>
+                      <TableHead>Declined</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(invites || []).map((inv) => (
+                      <TableRow key={inv.id}>
+                        <TableCell className="font-medium">{inv.full_name}</TableCell>
+                        <TableCell>{inv.phone_number || '-'}</TableCell>
+                        <TableCell>{inv.email || '-'}</TableCell>
+                        <TableCell><Badge variant="outline">{inv.role || 'member'}</Badge></TableCell>
+                        <TableCell>
+                          <Badge variant={inv.status === 'accepted' ? 'default' : inv.status === 'declined' ? 'destructive' : 'secondary'}>
+                            {inv.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{inv.invited_at ? format(new Date(inv.invited_at), 'MMM d, h:mm a') : '-'}</TableCell>
+                        <TableCell>{inv.accepted_at ? format(new Date(inv.accepted_at), 'MMM d, h:mm a') : '-'}</TableCell>
+                        <TableCell>{inv.declined_at ? format(new Date(inv.declined_at), 'MMM d, h:mm a') : '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {(!invites || invites.length === 0) && (
+                  <p className="text-sm text-slate-500 py-6 text-center">No invitations yet.</p>
+                )}
               </div>
             </CardContent>
           </Card>
