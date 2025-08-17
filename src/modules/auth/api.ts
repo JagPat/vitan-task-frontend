@@ -34,7 +34,10 @@ export interface RegisterUserData {
 export const authApi = {
   // Login user
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/api/modules/auth/login', credentials);
+    const response = await api('/api/modules/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
     if (response.success) {
       localStorage.setItem('accessToken', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -44,7 +47,10 @@ export const authApi = {
 
   // Register new user
   register: async (userData: RegisterUserData): Promise<{ user: User }> => {
-    const response = await api.post<{ user: User }>('/api/modules/auth/register', userData);
+    const response = await api('/api/modules/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
     return response.data;
   },
 
@@ -73,15 +79,18 @@ export const authApi = {
 
   // Update password
   updatePassword: async (currentPassword: string, newPassword: string): Promise<{ message: string }> => {
-    const response = await api.post<{ message: string }>('/api/modules/auth/password/update', {
-      currentPassword,
-      newPassword,
+    const response = await api('/api/modules/auth/password/update', {
+      method: 'POST',
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
     });
     return response.data;
   },
 
   // Health check
   health: async () => {
-    return api.get('/api/modules/auth/health');
+    return api('/api/modules/auth/health');
   },
 };

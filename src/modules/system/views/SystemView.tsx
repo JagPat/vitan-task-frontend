@@ -9,28 +9,18 @@ interface ModuleInfo {
   description: string;
 }
 
-interface EventStats {
-  total: number;
-  byType: Record<string, number>;
-  modules: Record<string, {
-    eventsEmitted: number;
-    lastActivity: string;
-    eventTypes: string[];
-  }>;
-}
-
 export const SystemView: React.FC = () => {
   // Fetch modules status
   const { data: modulesResponse, isLoading: modulesLoading } = useQuery({
     queryKey: ['modules'],
-    queryFn: () => api.get<{ modules: ModuleInfo[] }>('/api/modules'),
+    queryFn: () => api('/api/modules'),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch event statistics
   const { data: eventStatsResponse, isLoading: eventsLoading } = useQuery({
     queryKey: ['event-stats'],
-    queryFn: () => api.get<EventStats>('/api/events/counters'),
+    queryFn: () => api('/api/events/counters'),
     refetchInterval: 10000, // Refresh every 10 seconds
   });
 
@@ -73,7 +63,7 @@ export const SystemView: React.FC = () => {
           </div>
         ) : modules && modules.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {modules.map((module) => (
+            {modules.map((module: ModuleInfo) => (
               <div key={module.name} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-medium text-gray-900 capitalize">{module.name}</h3>
@@ -132,12 +122,12 @@ export const SystemView: React.FC = () => {
                     <div className="flex justify-between items-center mb-2">
                       <h4 className="font-medium text-gray-900 capitalize">{moduleName}</h4>
                       <span className="text-sm font-medium text-blue-600">
-                        {moduleStats.eventsEmitted} events
+                        {(moduleStats as any).eventsEmitted} events
                       </span>
                     </div>
                     <div className="text-xs text-gray-500 space-y-1">
-                      <div>Last Activity: {new Date(moduleStats.lastActivity).toLocaleString()}</div>
-                      <div>Event Types: {moduleStats.eventTypes.join(', ')}</div>
+                      <div>Last Activity: {new Date((moduleStats as any).lastActivity).toLocaleString()}</div>
+                      <div>Event Types: {(moduleStats as any).eventTypes.join(', ')}</div>
                     </div>
                   </div>
                 ))}

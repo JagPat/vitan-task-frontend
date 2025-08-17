@@ -32,7 +32,7 @@ export interface UpdateTaskData {
 }
 
 // Feature toggle for modular vs legacy endpoints
-const USE_MODULAR_TASKS = process.env.REACT_APP_USE_MODULAR_TASKS === 'true';
+const USE_MODULAR_TASKS = import.meta.env.VITE_USE_MODULAR_TASKS === 'true';
 
 // Tasks API functions
 export const tasksApi = {
@@ -40,15 +40,15 @@ export const tasksApi = {
   getTasks: async (): Promise<Task[]> => {
     if (USE_MODULAR_TASKS) {
       try {
-        const response = await api.get<Task[]>('/api/modules/tasks');
+        const response = await api('/api/modules/tasks');
         return response.data;
       } catch (error) {
         // Fallback to legacy endpoint
-        const response = await api.get<Task[]>('/api/tasks');
+        const response = await api('/api/tasks');
         return response.data;
       }
     } else {
-      const response = await api.get<Task[]>('/api/tasks');
+      const response = await api('/api/tasks');
       return response.data;
     }
   },
@@ -57,15 +57,15 @@ export const tasksApi = {
   getTask: async (id: string): Promise<Task> => {
     if (USE_MODULAR_TASKS) {
       try {
-        const response = await api.get<Task>(`/api/modules/tasks/${id}`);
+        const response = await api(`/api/modules/tasks/${id}`);
         return response.data;
       } catch (error) {
         // Fallback to legacy endpoint
-        const response = await api.get<Task>(`/api/tasks/${id}`);
+        const response = await api(`/api/tasks/${id}`);
         return response.data;
       }
     } else {
-      const response = await api.get<Task>(`/api/tasks/${id}`);
+      const response = await api(`/api/tasks/${id}`);
       return response.data;
     }
   },
@@ -74,15 +74,24 @@ export const tasksApi = {
   createTask: async (taskData: CreateTaskData): Promise<Task> => {
     if (USE_MODULAR_TASKS) {
       try {
-        const response = await api.post<Task>('/api/modules/tasks', taskData);
+        const response = await api('/api/modules/tasks', {
+          method: 'POST',
+          body: JSON.stringify(taskData),
+        });
         return response.data;
       } catch (error) {
         // Fallback to legacy endpoint
-        const response = await api.post<Task>('/api/tasks', taskData);
+        const response = await api('/api/tasks', {
+          method: 'POST',
+          body: JSON.stringify(taskData),
+        });
         return response.data;
       }
     } else {
-      const response = await api.post<Task>('/api/tasks', taskData);
+      const response = await api('/api/tasks', {
+        method: 'POST',
+        body: JSON.stringify(taskData),
+      });
       return response.data;
     }
   },
@@ -91,15 +100,24 @@ export const tasksApi = {
   updateTask: async (id: string, taskData: UpdateTaskData): Promise<Task> => {
     if (USE_MODULAR_TASKS) {
       try {
-        const response = await api.put<Task>(`/api/modules/tasks/${id}`, taskData);
+        const response = await api(`/api/modules/tasks/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(taskData),
+        });
         return response.data;
       } catch (error) {
         // Fallback to legacy endpoint
-        const response = await api.put<Task>(`/api/tasks/${id}`, taskData);
+        const response = await api(`/api/tasks/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(taskData),
+        });
         return response.data;
       }
     } else {
-      const response = await api.put<Task>(`/api/tasks/${id}`, taskData);
+      const response = await api(`/api/tasks/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(taskData),
+      });
       return response.data;
     }
   },
@@ -108,13 +126,13 @@ export const tasksApi = {
   deleteTask: async (id: string): Promise<void> => {
     if (USE_MODULAR_TASKS) {
       try {
-        await api.delete(`/api/modules/tasks/${id}`);
+        await api(`/api/modules/tasks/${id}`, { method: 'DELETE' });
       } catch (error) {
         // Fallback to legacy endpoint
-        await api.delete(`/api/tasks/${id}`);
+        await api(`/api/tasks/${id}`, { method: 'DELETE' });
       }
     } else {
-      await api.delete(`/api/tasks/${id}`);
+      await api(`/api/tasks/${id}`, { method: 'DELETE' });
     }
   },
 
@@ -132,7 +150,7 @@ export const tasksApi = {
   health: async () => {
     if (USE_MODULAR_TASKS) {
       try {
-        return await api.get('/api/modules/tasks/health');
+        return await api('/api/modules/tasks/health');
       } catch (error) {
         return { success: false, error: 'Modular endpoint not available' };
       }

@@ -1,5 +1,3 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-
 // Environment configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-production.up.railway.app';
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'WhatsTask';
@@ -19,80 +17,65 @@ export interface ApiError {
   requestId?: string;
 }
 
-// Create axios instance
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
+// Central API function using fetch
+export async function api(path: string, init: RequestInit = {}) {
+  const url = `${API_BASE_URL}${path}`;
+  
+  // Add auth token if present
+  const token = localStorage.getItem('accessToken');
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-App-Name': APP_NAME,
     'X-Environment': ENV_NAME,
-  },
-});
-
-// Request interceptor for auth
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+    ...(init.headers as Record<string, string> || {}),
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
-);
 
-// Response interceptor for error handling
-apiClient.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>) => {
-    return response;
-  },
-  (error: AxiosError<ApiResponse>) => {
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      
-      // Get current path for redirect
-      const currentPath = window.location.pathname;
-      const redirectTo = currentPath !== '/login' ? currentPath : '/tasks';
-      
-      window.location.href = `/login?redirectTo=${encodeURIComponent(redirectTo)}`;
-      return Promise.reject({
-        message: 'Session expired. Please login again.',
-        status: 401,
-      });
-    }
+  const response = await fetch(url, {
+    ...init,
+    headers,
+  });
 
-    // Handle other errors
-    const apiError: ApiError = {
-      message: error.response?.data?.error || error.message || 'An unexpected error occurred',
-      status: error.response?.status || 500,
-      requestId: error.response?.headers?.['x-request-id'] as string,
-    };
-
-    return Promise.reject(apiError);
+  // Handle 401 Unauthorized
+  if (response.status === 401) {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    
+    // Get current path for redirect
+    const currentPath = window.location.pathname;
+    const redirectTo = currentPath !== '/login' ? currentPath : '/tasks';
+    
+    window.location.href = `/login?redirectTo=${encodeURIComponent(redirectTo)}`;
+    throw new Error('Session expired. Please login again.');
   }
-);
 
-// API helper functions
-export const api = {
-  get: <T>(url: string, config = {}) => 
-    apiClient.get<ApiResponse<T>>(url, config).then(res => res.data),
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// API helper functions for backward compatibility
+export const apiClient = {
+  get: (url: string, config = {}) => 
+    api(url, { method: 'GET', ...config }),
   
-  post: <T>(url: string, data = {}, config = {}) => 
-    apiClient.post<ApiResponse<T>>(url, data, config).then(res => res.data),
+  post: (url: string, data = {}, config = {}) => 
+    api(url, { method: 'POST', body: JSON.stringify(data), ...config }),
   
-  put: <T>(url: string, data = {}, config = {}) => 
-    apiClient.put<ApiResponse<T>>(url, data, config).then(res => res.data),
+  put: (url: string, data = {}, config = {}) => 
+    api(url, { method: 'PUT', body: JSON.stringify(data), ...config }),
   
-  delete: <T>(url: string, config = {}) => 
-    apiClient.delete<ApiResponse<T>>(url, config).then(res => res.data),
+  delete: (url: string, config = {}) => 
+    api(url, { method: 'DELETE', ...config }),
   
-  patch: <T>(url: string, data = {}, config = {}) => 
-    apiClient.patch<ApiResponse<T>>(url, data, config).then(res => res.data),
+  patch: (url: string, data = {}, config = {}) => 
+    api(url, { method: 'PATCH', body: JSON.stringify(data), ...config }),
 };
 
 export default apiClient;

@@ -60,48 +60,56 @@ export interface QueueStatus {
 export const whatsappApi = {
   // Get service health
   getHealth: async (): Promise<WhatsAppHealth> => {
-    const response = await api.get<WhatsAppHealth>('/api/modules/whatsapp/health');
+    const response = await api('/api/modules/whatsapp/health');
     return response.data;
   },
 
   // Get service status
   getStatus: async () => {
-    return api.get('/api/modules/whatsapp/status');
+    return api('/api/modules/whatsapp/status');
   },
 
   // Get message templates
   getTemplates: async (): Promise<{ templates: WhatsAppTemplate[]; total: number }> => {
-    const response = await api.get<{ templates: WhatsAppTemplate[]; total: number }>('/api/modules/whatsapp/templates');
+    const response = await api('/api/modules/whatsapp/templates');
     return response.data;
   },
 
   // Send WhatsApp message
   sendMessage: async (messageData: SendMessageData): Promise<SendMessageResponse> => {
-    const response = await api.post<SendMessageResponse>('/api/modules/whatsapp/send', messageData);
+    const response = await api('/api/modules/whatsapp/send', {
+      method: 'POST',
+      body: JSON.stringify(messageData),
+    });
     return response.data;
   },
 
   // Get queue status
   getQueueStatus: async (): Promise<QueueStatus> => {
-    const response = await api.get<QueueStatus>('/api/modules/whatsapp/queue');
+    const response = await api('/api/modules/whatsapp/queue');
     return response.data;
   },
 
   // Clear dead letter queue
   clearDeadLetterQueue: async (): Promise<{ message: string; timestamp: string }> => {
-    const response = await api.post<{ message: string; timestamp: string }>('/api/modules/whatsapp/queue/clear');
+    const response = await api('/api/modules/whatsapp/queue/clear', {
+      method: 'POST',
+    });
     return response.data;
   },
 
   // Verify webhook (for setup)
   verifyWebhook: async (mode: string, token: string, challenge: string): Promise<string> => {
-    const response = await api.get<string>(`/api/modules/whatsapp/webhook?hub.mode=${mode}&hub.verify_token=${token}&hub.challenge=${challenge}`);
+    const response = await api(`/api/modules/whatsapp/webhook?hub.mode=${mode}&hub.verify_token=${token}&hub.challenge=${challenge}`);
     return response.data || '';
   },
 
   // Process webhook (POST endpoint)
   processWebhook: async (webhookData: any): Promise<any> => {
-    const response = await api.post('/api/modules/whatsapp/webhook', webhookData);
+    const response = await api('/api/modules/whatsapp/webhook', {
+      method: 'POST',
+      body: JSON.stringify(webhookData),
+    });
     return response.data;
   },
 };
