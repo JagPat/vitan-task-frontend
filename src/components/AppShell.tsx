@@ -8,9 +8,19 @@ const navigation = [
   { name: 'System', href: '/system', icon: '⚙️' },
 ];
 
+// Get build info from environment or use defaults
+const getBuildInfo = () => {
+  const buildTime = import.meta.env.VITE_BUILD_TIME || new Date().toISOString();
+  const buildSha = import.meta.env.VITE_BUILD_SHA || 'dev';
+  const deployTime = import.meta.env.VITE_DEPLOY_TIME || new Date().toISOString();
+  
+  return { buildTime, buildSha, deployTime };
+};
+
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuthStore();
   const location = useLocation();
+  const buildInfo = getBuildInfo();
 
   const handleLogout = () => {
     logout();
@@ -18,7 +28,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Topbar */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +57,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Left Sidebar */}
         <div className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
           <nav className="mt-8 px-4">
@@ -75,10 +85,26 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">
-          <main className="py-6">
+        <div className="flex-1 flex flex-col">
+          <main className="py-6 flex-1">
             {children}
           </main>
+          
+          {/* Footer */}
+          <footer className="bg-white border-t border-gray-200 py-4 px-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center space-x-4">
+                  <span>Build: {buildInfo.buildSha.substring(0, 7)}</span>
+                  <span>•</span>
+                  <span>Deployed: {new Date(buildInfo.deployTime).toLocaleDateString()}</span>
+                </div>
+                <div className="text-xs">
+                  {import.meta.env.VITE_APP_NAME || 'WhatsTask'} v{import.meta.env.VITE_APP_VERSION || '1.0.0'}
+                </div>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
     </div>

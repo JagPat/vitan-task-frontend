@@ -1,0 +1,21 @@
+{
+  "name": "WhatsTask - Task Management & WhatsApp Integration",
+  "short_name": "WhatsTask",
+  "description": "Manage your tasks and WhatsApp communications with our modular platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
