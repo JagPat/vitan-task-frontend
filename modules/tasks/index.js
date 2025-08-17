@@ -43,14 +43,22 @@ const TasksModule = ModuleFactory.createModule({
       
       // Get dependencies from container
       const database = container.get('database');
-      const eventBus = container.get('eventBus');
+      const eventBusRouter = container.get('eventBusRouter');
       
-      // Initialize task service with shared database connection and event bus
-      this.services.taskService = new TaskService(database, eventBus);
+      // Defensive guards for required services
+      if (!database) {
+        throw new Error('Required service "database" not found in container');
+      }
+      if (!eventBusRouter) {
+        throw new Error('Required service "eventBusRouter" not found in container');
+      }
+      
+      // Initialize task service with shared database connection and event bus router
+      this.services.taskService = new TaskService(database, eventBusRouter);
       
       // Register services with container
       container.register('taskService', this.services.taskService, {
-        dependencies: ['database', 'eventBus']
+        dependencies: ['database', 'eventBusRouter']
       });
       
       // Inject TaskService into app.locals so routes can access it
@@ -63,7 +71,7 @@ const TasksModule = ModuleFactory.createModule({
       }
       
       // Set up event listeners
-      this.setupEventListeners(eventBus);
+      this.setupEventListeners(eventBusRouter);
       
       this.status = 'initialized';
       this.initializedAt = new Date();
@@ -78,11 +86,11 @@ const TasksModule = ModuleFactory.createModule({
   
   /**
    * Set up event listeners for inter-module communication
-   * @param {Object} eventBus - Event bus instance
+   * @param {Object} eventBusRouter - Event bus router instance
    */
-  setupEventListeners(eventBus) {
+  setupEventListeners(eventBusRouter) {
     // Listen for task creation events
-    eventBus.on('task:created', async (taskData) => {
+    eventBusRouter.on('task:created', async (taskData) => {
       try {
         this.logger.info('Task creation event received', { taskId: taskData.id });
         // Handle task creation logic (e.g., notifications, analytics)
@@ -93,7 +101,7 @@ const TasksModule = ModuleFactory.createModule({
     }, { moduleName: 'tasks' });
     
     // Listen for task assignment events
-    eventBus.on('task:assigned', async (assignmentData) => {
+    eventBusRouter.on('task:assigned', async (assignmentData) => {
       try {
         this.logger.info('Task assignment event received', { 
           taskId: assignmentData.taskId,
@@ -107,7 +115,7 @@ const TasksModule = ModuleFactory.createModule({
     }, { moduleName: 'tasks' });
     
     // Listen for task status changes
-    eventBus.on('task:status-changed', async (statusData) => {
+    eventBusRouter.on('task:status-changed', async (statusData) => {
       try {
         this.logger.info('Task status change event received', {
           taskId: statusData.taskId,
@@ -122,7 +130,7 @@ const TasksModule = ModuleFactory.createModule({
     }, { moduleName: 'tasks' });
     
     // Listen for task updates
-    eventBus.on('task:updated', async (updateData) => {
+    eventBusRouter.on('task:updated', async (updateData) => {
       try {
         this.logger.info('Task update event received', {
           taskId: updateData.id,
@@ -136,7 +144,7 @@ const TasksModule = ModuleFactory.createModule({
     }, { moduleName: 'tasks' });
     
     // Listen for task deletions
-    eventBus.on('task:deleted', async (deleteData) => {
+    eventBusRouter.on('task:deleted', async (deleteData) => {
       try {
         this.logger.info('Task deletion event received', {
           taskId: deleteData.id,
