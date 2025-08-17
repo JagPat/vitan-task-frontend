@@ -25,21 +25,30 @@ const checks = [
   ["health.json", `${FRONTEND}/health.json`],
 ];
 
-async function checkAssetDiscovery() {
+async function getDiscoveredAssets() {
   try {
-    console.log("\n🔍 Discovering frontend assets...");
     const rootResponse = await fetch(`${FRONTEND}/`);
     if (!rootResponse.ok) throw new Error(`Root page returned ${rootResponse.status}`);
     
     const html = await rootResponse.text();
     const assetMatches = html.match(/\/assets\/[A-Za-z0-9._-]+\.(?:js|css)/g) || [];
-    const uniqueAssets = [...new Set(assetMatches)];
+    return [...new Set(assetMatches)];
+  } catch (e) {
+    console.error(`❌ Failed to discover assets: ${e.message}`);
+    return [];
+  }
+}
+
+async function checkAssetDiscovery() {
+  try {
+    console.log("\n🔍 Discovering frontend assets...");
+    const assets = await getDiscoveredAssets();
     
-    console.log(`Found ${uniqueAssets.length} assets to verify`);
+    console.log(`Found ${assets.length} assets to verify`);
     
     // Verify each asset
     let assetFailures = 0;
-    for (const asset of uniqueAssets) {
+    for (const asset of assets) {
       try {
         const assetUrl = `${FRONTEND}${asset}`;
         const assetResponse = await fetch(assetUrl, { method: 'HEAD' });
@@ -120,9 +129,11 @@ async function checkHeaders(url, name) {
   
   // Check specific headers
   console.log("\n🔍 Checking response headers...");
+  
+  // Update header checks to use discovered assets
+  const discoveredAssets = await getDiscoveredAssets();
   const headerChecks = [
-    [`${FRONTEND}/assets/index-22a85fb5.js`, "Main JS Bundle"],
-    [`${FRONTEND}/assets/index-2dd81c48.css`, "Main CSS Bundle"],
+    ...discoveredAssets.map(asset => [`${FRONTEND}${asset}`, `Asset ${asset.split('/').pop()}`]),
     [`${FRONTEND}/`, "Root Page"],
   ];
   
