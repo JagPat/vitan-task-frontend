@@ -1,0 +1,8 @@
+{
+  "status": "ok",
+  "app": "WhatsTask",
+  "version": "1.0.0",
+  "timestamp": "2025-08-17T09:09:00.000Z",
+  "environment": "production",
+  "backend": "https://vitan-task-production.up.railway.app"
+}

@@ -6,16 +6,9 @@ import { useAuthStore } from './stores/authStore';
 const LoginView = lazy(() => import('./modules/auth/views/LoginView').then(module => ({ default: module.LoginView })));
 const TasksView = lazy(() => import('./modules/tasks/views/TasksView').then(module => ({ default: module.TasksView })));
 const WhatsAppView = lazy(() => import('./modules/whatsapp/views/WhatsAppView').then(module => ({ default: module.WhatsAppView })));
-const SystemView = lazy(() => import('./modules/system/views/SystemView').then(module => ({ default: module.SystemView })));
+const SystemStatus = lazy(() => import('./pages/SystemStatus').then(module => ({ default: module.SystemStatus })));
 
-// Loading component
-const LoadingSpinner: React.FC = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-  </div>
-);
-
-// Protected Route Component
+// Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
   
@@ -26,64 +19,40 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
-// App Routes Component
-export const AppRoutes: React.FC = () => {
-  const { isAuthenticated } = useAuthStore();
+// Loading component
+const LoadingSpinner: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
+export const AppRoutes: React.FC = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
-        {/* Public Routes */}
-        <Route 
-          path="/login" 
-          element={
-            isAuthenticated ? <Navigate to="/tasks" replace /> : <LoginView />
-          } 
-        />
+        {/* Public routes */}
+        <Route path="/login" element={<LoginView />} />
         
-        {/* Protected Routes */}
-        <Route
-          path="/tasks"
-          element={
-            <ProtectedRoute>
-              <TasksView />
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/whatsapp"
-          element={
-            <ProtectedRoute>
-              <WhatsAppView />
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/system"
-          element={
-            <ProtectedRoute>
-              <SystemView />
-            </ProtectedRoute>
-          }
-        />
-        
-        {/* Default redirect */}
-        <Route
-          path="/"
-          element={
-            <Navigate to={isAuthenticated ? "/tasks" : "/login"} replace />
-          }
-        />
+        {/* Protected routes */}
+        <Route path="/" element={<Navigate to="/tasks" replace />} />
+        <Route path="/tasks" element={
+          <ProtectedRoute>
+            <TasksView />
+          </ProtectedRoute>
+        } />
+        <Route path="/whatsapp" element={
+          <ProtectedRoute>
+            <WhatsAppView />
+          </ProtectedRoute>
+        } />
+        <Route path="/system" element={
+          <ProtectedRoute>
+            <SystemStatus />
+          </ProtectedRoute>
+        } />
         
         {/* Catch all */}
-        <Route
-          path="*"
-          element={
-            <Navigate to={isAuthenticated ? "/tasks" : "/login"} replace />
-          }
-        />
+        <Route path="*" element={<Navigate to="/tasks" replace />} />
       </Routes>
     </Suspense>
   );
