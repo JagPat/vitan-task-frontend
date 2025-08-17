@@ -11,7 +11,8 @@
     "start": "vite preview --host 0.0.0.0 --port $PORT",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc -b --pretty false",
-    "smoke": "node scripts/fe-smoke.mjs"
+    "smoke": "node scripts/fe-smoke.mjs",
+    "verify:dist": "node scripts/verify-dist.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
