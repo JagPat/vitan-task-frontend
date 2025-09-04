@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm ci && npm run build"
+buildCommand = "NPM_CONFIG_CACHE=/tmp/npm-cache npm ci --no-audit --no-fund && npm run build"
 outputDirectory = "dist"
 
 [deploy]
