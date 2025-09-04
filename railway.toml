@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "NPM_CONFIG_CACHE=/tmp/npm-cache npm ci --no-audit --no-fund && npm run build"
+buildCommand = "BROWSERSLIST_CACHE=/tmp/browserslist-cache XDG_CACHE_HOME=/tmp NPM_CONFIG_CACHE=/tmp/npm-cache npm ci --no-audit --no-fund && npm run build"
 outputDirectory = "dist"
 
 [deploy]
