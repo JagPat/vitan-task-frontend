@@ -1,19 +1,18 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm run build"
-outputDirectory = "frontend/dist"
+buildCommand = "npm ci && npm run build"
+outputDirectory = "dist"
 
 [deploy]
-startCommand = "cd frontend && npm run start"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 
 [[services]]
 name = "vitan-task-frontend"
 type = "static"
-directory = "frontend/dist"
+directory = "dist"
 fallback = "index.html"
 
 [static]
-directory = "frontend/dist"
+directory = "dist"
 fallback = "index.html"
