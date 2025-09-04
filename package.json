@@ -4,10 +4,10 @@
   "description": "VitanTask Frontend Application",
   "type": "module",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
-    "start": "cd frontend && npm run start",
-    "dev": "cd frontend && npm run dev",
-    "install-deps": "cd frontend && npm install"
+    "dev": "vite",
+    "build": "vite build",
+    "start": "serve -s dist -l $PORT",
+    "install-deps": "npm install"
   },
   "engines": {
     "node": ">=18.0.0"
