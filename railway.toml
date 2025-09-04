@@ -1,0 +1,19 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd frontend && npm install && npm run build"
+outputDirectory = "frontend/dist"
+
+[deploy]
+startCommand = "cd frontend && npm run start"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
+[[services]]
+name = "vitan-task-frontend"
+type = "static"
+directory = "frontend/dist"
+fallback = "index.html"
+
+[static]
+directory = "frontend/dist"
+fallback = "index.html"
