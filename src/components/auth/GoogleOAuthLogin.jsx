@@ -124,6 +124,9 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
         <p className="text-sm text-gray-600 mb-4">
           Sign in with your Google account to access admin features
         </p>
+        <div className="text-xs text-gray-500">
+          Need access? Contact your workspace admin to be invited.
+        </div>
       </div>
 
       {/* Google OAuth Button Container */}
@@ -155,6 +158,39 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
         <div className="flex items-center justify-center p-2">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
           <span className="ml-2 text-sm text-gray-600">Signing in...</span>
+        </div>
+      )}
+
+      {/* Dev no-auth quick login */}
+      {(import.meta?.env?.VITE_NO_AUTH === 'true' || import.meta?.env?.VITE_DEV_MODE === 'true') && (
+        <div className="text-center space-y-2">
+          <div className="text-xs text-gray-500">Developer quick login (no OAuth)</div>
+          <div className="flex flex-wrap justify-center gap-2">
+            <button
+              onClick={() => login({ token: 'dev-token', user: { email: 'superadmin@demo.local', role: 'super_admin' } }) && navigate('/admin/dashboard')}
+              className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
+            >
+              Super Admin
+            </button>
+            <button
+              onClick={() => login({ token: 'dev-token', user: { email: 'admin@demo.local', role: 'admin' } }) && navigate('/admin/dashboard')}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+            >
+              Admin
+            </button>
+            <button
+              onClick={() => login({ token: 'dev-token', user: { email: 'moderator@demo.local', role: 'moderator' } }) && navigate('/dashboard')}
+              className="px-3 py-1 bg-amber-600 text-white rounded text-sm"
+            >
+              Moderator
+            </button>
+            <button
+              onClick={() => login({ token: 'dev-token', user: { email: 'user@demo.local', role: 'user' } }) && navigate('/dashboard')}
+              className="px-3 py-1 bg-gray-700 text-white rounded text-sm"
+            >
+              User
+            </button>
+          </div>
         </div>
       )}
 

@@ -6,6 +6,7 @@ import jwt_decode from 'jwt-decode';
  * Supports admin and user roles with JWT token management
  */
 export const useAuth = () => {
+  const DEV_MODE = (import.meta?.env?.VITE_NO_AUTH === 'true') || (import.meta?.env?.VITE_DEV_MODE === 'true');
   const [authUser, setAuthUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,6 +34,13 @@ export const useAuth = () => {
           } else {
             // Token expired, clear it
             logout();
+          }
+        } else if (DEV_MODE) {
+          // Dev quick-login support
+          const storedUser = localStorage.getItem('authUser');
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            setAuthUser(user);
           }
         }
       } catch (error) {
@@ -83,8 +91,9 @@ export const useAuth = () => {
 
   // Check if user is authenticated
   const isAuthenticated = useCallback(() => {
+    if (DEV_MODE) return !!authUser; // allow tokenless in dev mode
     return !!authUser && !!authUser.token;
-  }, [authUser]);
+  }, [authUser, DEV_MODE]);
 
   // Check if user is admin
   const isAdmin = useCallback(() => {
@@ -111,8 +120,12 @@ export const useAuth = () => {
     if (!authUser) return [];
     
     switch (authUser.role) {
+      case 'super_admin':
+        return ['read', 'write', 'delete', 'admin', 'manage_users', 'system_settings', 'manage_organizations', 'manage_billing'];
       case 'admin':
         return ['read', 'write', 'delete', 'admin', 'manage_users', 'system_settings'];
+      case 'moderator':
+        return ['read', 'write', 'create_tasks', 'view_dashboard'];
       case 'user':
         return ['read', 'write', 'create_tasks', 'view_dashboard'];
       default:
