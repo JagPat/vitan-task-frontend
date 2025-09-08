@@ -99,7 +99,7 @@ class GoogleAuthService {
    */
   async authenticateWithBackend(idToken) {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/api/modules/auth/google`, {
+      const response = await fetch(`${this.apiBaseUrl}/api/modules/auth/google/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

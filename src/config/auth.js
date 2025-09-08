@@ -15,7 +15,7 @@ export const authConfig = {
   api: {
     baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app',
     endpoints: {
-      googleAuth: '/api/modules/auth/google',
+      googleAuth: '/api/modules/auth/google/login',
       googleVerify: '/api/modules/auth/google/verify',
       adminProfile: '/api/modules/auth/admin/profile',
       adminStats: '/api/modules/auth/admin/stats',
