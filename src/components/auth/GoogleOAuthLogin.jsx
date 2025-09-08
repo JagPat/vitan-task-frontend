@@ -70,7 +70,10 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
       }
     } catch (error) {
       console.error('Failed to initialize Google OAuth:', error);
-      setError('Failed to initialize Google OAuth');
+      const message = error?.message?.includes('Client ID')
+        ? 'Google Sign-In not configured. Please set VITE_GOOGLE_CLIENT_ID.'
+        : 'Failed to initialize Google OAuth';
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -105,6 +108,11 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
     return (
       <div className={`text-center p-4 ${className}`}>
         <div className="text-red-600 mb-2">{error}</div>
+        {error?.includes('VITE_GOOGLE_CLIENT_ID') && (
+          <div className="text-xs text-gray-500 mb-2">
+            Configure an OAuth Client ID in your environment.
+          </div>
+        )}
         <button
           onClick={initializeGoogleOAuth}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"

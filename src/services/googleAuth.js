@@ -17,6 +17,13 @@ class GoogleAuthService {
    * Initialize Google OAuth
    */
   async initialize() {
+    // Guard: missing Client ID
+    if (!this.clientId) {
+      const error = new Error('Google Client ID not configured. Set VITE_GOOGLE_CLIENT_ID');
+      console.warn(error.message);
+      return Promise.reject(error);
+    }
+
     if (!window.google) {
       await this.loadGoogleScript();
     }
@@ -118,6 +125,10 @@ class GoogleAuthService {
    * Render Google OAuth button
    */
   renderButton(elementId) {
+    if (!this.clientId) {
+      console.warn('Google Client ID not configured. Button will not render.');
+      return;
+    }
     if (!window.google?.accounts?.id) {
       console.error('Google OAuth not initialized');
       return;
@@ -140,6 +151,10 @@ class GoogleAuthService {
    * Prompt Google OAuth login
    */
   prompt() {
+    if (!this.clientId) {
+      console.warn('Google Client ID not configured. Prompt will be skipped.');
+      return;
+    }
     if (!window.google?.accounts?.id) {
       console.error('Google OAuth not initialized');
       return;
