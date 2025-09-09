@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastProvider } from './components/ui/ToastProvider';
 import { useAuth } from './hooks/useAuth';
 
 // Auth Components
@@ -34,10 +35,11 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="App">
-        <Navigation />
-        <Routes>
+    <ToastProvider>
+      <Router>
+        <div className="App">
+          <Navigation />
+          <Routes>
           {/* Public Routes */}
           <Route 
             path="/login" 
@@ -96,9 +98,10 @@ function App() {
               )
             } 
           />
-        </Routes>
-      </div>
-    </Router>
+          </Routes>
+        </div>
+      </Router>
+    </ToastProvider>
   );
 }
 
