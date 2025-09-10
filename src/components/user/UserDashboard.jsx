@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
+import { fetchQuickStatsWithFallback } from '../../services/dashboardApi';
 
 const UserDashboard = () => {
   const { authUser, logout } = useAuth();
@@ -14,22 +15,16 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
       try {
-        show({ title: 'Loading dashboard…', type: 'info', duration: 1500 });
-        const res = await fetch(`${baseUrl}/api/modules/tasks`);
-        const json = await res.json();
-        if (!res.ok) throw new Error(json?.error || 'Failed to fetch tasks');
-        const tasks = Array.isArray(json?.data) ? json.data : [];
-        const completed = tasks.filter(t => (t.status || '').toLowerCase() === 'completed').length;
-        const pending = tasks.filter(t => (t.status || '').toLowerCase() !== 'completed').length;
+        show({ title: 'Loading dashboard…', type: 'info', duration: 1200 });
+        const s = await fetchQuickStatsWithFallback();
         setStats({
-          totalTasks: tasks.length,
-          completedTasks: completed,
-          pendingTasks: pending,
-          projects: 0,
+          totalTasks: s.totalTasks,
+          completedTasks: s.completedTasks,
+          pendingTasks: s.pendingTasks,
+          projects: s.projects,
         });
-        show({ title: 'Dashboard updated', type: 'success', duration: 1800 });
+        show({ title: 'Dashboard updated', description: `Source: ${s.source}`, type: 'success', duration: 1800 });
       } catch (err) {
         show({ title: 'Failed to load stats', description: err.message, type: 'error', duration: 3000 });
       }

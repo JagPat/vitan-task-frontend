@@ -19,7 +19,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'https://vitan-task-production.up.railway.app',
+        target: process.env.VITE_DEV_PROXY_TARGET || process.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app',
         changeOrigin: true,
         secure: true,
       },
