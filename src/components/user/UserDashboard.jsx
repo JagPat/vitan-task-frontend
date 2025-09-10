@@ -12,10 +12,14 @@ const UserDashboard = () => {
     pendingTasks: 0,
     projects: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setLoading(true);
+        setError(null);
         show({ title: 'Loading dashboard…', type: 'info', duration: 1200 });
         const s = await fetchQuickStatsWithFallback();
         setStats({
@@ -26,7 +30,10 @@ const UserDashboard = () => {
         });
         show({ title: 'Dashboard updated', description: `Source: ${s.source}`, type: 'success', duration: 1800 });
       } catch (err) {
+        setError(err.message || 'Failed to load stats');
         show({ title: 'Failed to load stats', description: err.message, type: 'error', duration: 3000 });
+      } finally {
+        setLoading(false);
       }
     };
     fetchStats();
@@ -36,8 +43,10 @@ const UserDashboard = () => {
     try {
       await logout();
       // Redirect will be handled by the auth hook
+      show({ title: 'Logged out', type: 'success', duration: 1500 });
     } catch (error) {
       console.error('Logout error:', error);
+      show({ title: 'Logout failed', description: error.message, type: 'error' });
     }
   };
 
@@ -71,10 +80,10 @@ const UserDashboard = () => {
                     {authUser.email.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <div className="text-sm">
-                  <div className="font-medium text-gray-900">{authUser.email}</div>
-                  <div className="text-gray-500">Regular User</div>
-                </div>
+              <div className="text-sm">
+                <div className="font-medium text-gray-900">{authUser.email}</div>
+                <div className="text-gray-500 capitalize">{authUser.role || 'user'}</div>
+              </div>
               </div>
               
               <button
@@ -90,6 +99,21 @@ const UserDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Fetching latest stats…</span>
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">
+            <div className="font-medium">We couldn’t load your stats.</div>
+            <div className="text-sm">{error}</div>
+          </div>
+        )}
         {/* Welcome Section */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -159,6 +183,14 @@ const UserDashboard = () => {
           </div>
         </div>
 
+        {/* Empty State */}
+        {!loading && !error && stats.totalTasks === 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+            <div className="font-medium text-blue-900">No tasks yet</div>
+            <div className="text-sm text-blue-800">Create your first task to get started.</div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
@@ -166,17 +198,26 @@ const UserDashboard = () => {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                onClick={() => show({ title: 'Create Task', description: 'Feature coming soon', type: 'info' })}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="font-medium text-gray-900">Create New Task</div>
                 <div className="text-sm text-gray-500">Add a new task to your list</div>
               </button>
               
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                onClick={() => show({ title: 'Projects', description: 'Projects view not implemented yet', type: 'warning' })}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="font-medium text-gray-900">View Projects</div>
                 <div className="text-sm text-gray-500">Browse your active projects</div>
               </button>
               
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                onClick={() => show({ title: 'Profile', description: 'Profile management coming soon', type: 'info' })}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="font-medium text-gray-900">Update Profile</div>
                 <div className="text-sm text-gray-500">Manage your account settings</div>
               </button>
@@ -189,4 +230,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-

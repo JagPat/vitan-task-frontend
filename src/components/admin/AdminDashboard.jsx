@@ -4,6 +4,8 @@ import googleAuthService from '../../services/googleAuth';
 const AdminDashboard = () => {
   const [adminUser, setAdminUser] = useState(null);
   const [stats, setStats] = useState(null);
+  const [quickStats, setQuickStats] = useState(null);
+  const [qsError, setQsError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -31,7 +33,10 @@ const AdminDashboard = () => {
       }
 
       // Fetch admin stats
-      await fetchAdminStats();
+      await Promise.allSettled([
+        fetchAdminStats(),
+        fetchQuickStats()
+      ]);
       
     } catch (error) {
       setError('Failed to verify admin status');
@@ -41,10 +46,12 @@ const AdminDashboard = () => {
     }
   };
 
+  const API_BASE = import.meta?.env?.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
+
   const fetchAdminStats = async () => {
     try {
       const token = googleAuthService.getAdminToken();
-      const response = await fetch('https://vitan-task-backend-production.up.railway.app/api/modules/auth/admin/stats', {
+      const response = await fetch(`${API_BASE}/api/modules/auth/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -58,6 +65,56 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching admin stats:', error);
+    }
+  };
+
+  const fetchQuickStats = async () => {
+    try {
+      setQsError(null);
+      // Try dashboard quick-stats first
+      const res = await fetch(`${API_BASE}/api/modules/dashboard/quick-stats`);
+      if (res.ok) {
+        const data = await res.json();
+        // Expected keys: completionRate, activeProjects, teamCollaboration
+        if (typeof data === 'object' && data) {
+          setQuickStats({
+            completionRate: Number(data.completionRate) || 0,
+            activeProjects: Number(data.activeProjects) || 0,
+            teamCollaboration: Number(data.teamCollaboration) || 0
+          });
+          return;
+        }
+      }
+      // Fallback to deriving from tasks
+      await deriveQuickStatsFromTasks();
+    } catch (e) {
+      console.warn('Quick-stats fetch failed, deriving from tasks:', e?.message || e);
+      await deriveQuickStatsFromTasks();
+    }
+  };
+
+  const deriveQuickStatsFromTasks = async () => {
+    try {
+      const token = googleAuthService.getAdminToken();
+      const res = await fetch(`${API_BASE}/api/modules/tasks`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (!res.ok) throw new Error('tasks endpoint error');
+      const json = await res.json();
+      const tasks = Array.isArray(json?.data) ? json.data : [];
+      const total = tasks.length;
+      const completed = tasks.filter(t => String(t?.status).toLowerCase() === 'completed').length;
+      const completionRate = total ? Math.round((completed / total) * 100) : 0;
+      const activeProjects = Array.from(new Set(tasks.map(t => t?.project_id).filter(Boolean))).length;
+      setQuickStats({
+        completionRate,
+        activeProjects,
+        // Deriving teamCollaboration requires richer telemetry; default to 0 here.
+        teamCollaboration: 0,
+      });
+    } catch (e) {
+      setQsError('Quick stats unavailable');
+      setQuickStats({ completionRate: 0, activeProjects: 0, teamCollaboration: 0 });
     }
   };
 
@@ -156,6 +213,45 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Quick Stats (Dashboard) */}
+        {quickStats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <span className="text-blue-600 text-xl">📈</span>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Completion Rate</p>
+                  <p className="text-2xl font-semibold text-gray-900">{quickStats.completionRate}%</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <span className="text-green-600 text-xl">🚀</span>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Active Projects</p>
+                  <p className="text-2xl font-semibold text-gray-900">{quickStats.activeProjects}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <span className="text-purple-600 text-xl">👥</span>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Team Collaboration</p>
+                  <p className="text-2xl font-semibold text-gray-900">{quickStats.teamCollaboration}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Grid */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -246,4 +342,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
