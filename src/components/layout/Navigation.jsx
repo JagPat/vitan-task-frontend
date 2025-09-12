@@ -106,6 +106,12 @@ const Navigation = () => {
                   >
                     Projects
                   </Link>
+                  <Link
+                    to="/onboarding"
+                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    Onboarding
+                  </Link>
                 </>
               )}
             </div>
@@ -171,6 +177,14 @@ const Navigation = () => {
                   >
                     Projects
                   </Link>
+                  <Link
+                    to="/onboarding"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    role="menuitem"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Onboarding
+                  </Link>
                 </div>
                 <div className="py-1 border-t border-gray-100" role="none">
                   <button
@@ -191,4 +205,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-

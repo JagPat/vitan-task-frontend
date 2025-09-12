@@ -16,6 +16,7 @@ import UserDashboard from './components/user/UserDashboard';
 import CreateTask from './components/tasks/CreateTask';
 import ProjectsList from './components/projects/ProjectsList';
 import Profile from './components/profile/Profile';
+import Onboarding from './components/onboarding/Onboarding';
 
 // Layout Components
 import Navigation from './components/layout/Navigation';
@@ -98,6 +99,14 @@ function App() {
             element={
               <UserRoute>
                 <Profile />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <UserRoute>
+                <Onboarding />
               </UserRoute>
             }
           />
