@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
+import { useNavigate } from 'react-router-dom';
 import { fetchQuickStatsWithFallback } from '../../services/dashboardApi';
 
 const UserDashboard = () => {
   const { authUser, logout } = useAuth();
   const { show } = useToast();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -199,7 +201,7 @@ const UserDashboard = () => {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <button
-                onClick={() => show({ title: 'Create Task', description: 'Feature coming soon', type: 'info' })}
+                onClick={() => navigate('/tasks/new')}
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
               >
                 <div className="font-medium text-gray-900">Create New Task</div>
@@ -207,7 +209,7 @@ const UserDashboard = () => {
               </button>
               
               <button
-                onClick={() => show({ title: 'Projects', description: 'Projects view not implemented yet', type: 'warning' })}
+                onClick={() => navigate('/projects')}
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
               >
                 <div className="font-medium text-gray-900">View Projects</div>
@@ -215,7 +217,7 @@ const UserDashboard = () => {
               </button>
               
               <button
-                onClick={() => show({ title: 'Profile', description: 'Profile management coming soon', type: 'info' })}
+                onClick={() => navigate('/profile')}
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
               >
                 <div className="font-medium text-gray-900">Update Profile</div>

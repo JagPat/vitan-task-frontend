@@ -13,6 +13,9 @@ import UserRoute from './components/auth/UserRoute';
 // Dashboard Components
 import AdminDashboard from './components/admin/AdminDashboard';
 import UserDashboard from './components/user/UserDashboard';
+import CreateTask from './components/tasks/CreateTask';
+import ProjectsList from './components/projects/ProjectsList';
+import Profile from './components/profile/Profile';
 
 // Layout Components
 import Navigation from './components/layout/Navigation';
@@ -73,6 +76,30 @@ function App() {
                 <UserDashboard />
               </UserRoute>
             } 
+          />
+          <Route
+            path="/tasks/new"
+            element={
+              <UserRoute>
+                <CreateTask />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <UserRoute>
+                <ProjectsList />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <UserRoute>
+                <Profile />
+              </UserRoute>
+            }
           />
 
           {/* Default Routes */}
