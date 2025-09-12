@@ -12,6 +12,7 @@ import UserRoute from './components/auth/UserRoute';
 
 // Dashboard Components
 import AdminDashboard from './components/admin/AdminDashboard';
+import RoleManager from './components/admin/RoleManager';
 import UserDashboard from './components/user/UserDashboard';
 import CreateTask from './components/tasks/CreateTask';
 import ProjectsList from './components/projects/ProjectsList';
@@ -63,6 +64,7 @@ function App() {
               <AdminRoute>
                 <Routes>
                   <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="roles" element={<RoleManager />} />
                   <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
                 </Routes>
               </AdminRoute>
