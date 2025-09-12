@@ -15,6 +15,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import RoleManager from './components/admin/RoleManager';
 import UserDashboard from './components/user/UserDashboard';
 import CreateTask from './components/tasks/CreateTask';
+import TaskList from './components/tasks/TaskList';
 import ProjectsList from './components/projects/ProjectsList';
 import Profile from './components/profile/Profile';
 import Onboarding from './components/onboarding/Onboarding';
@@ -93,6 +94,14 @@ function App() {
             element={
               <UserRoute>
                 <ProjectsList />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <UserRoute>
+                <TaskList />
               </UserRoute>
             }
           />
