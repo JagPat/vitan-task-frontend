@@ -2,22 +2,18 @@ import { test, expect } from '@playwright/test';
 
 const SCREENSHOT_DIR = 'tests/__screenshots__';
 
-async function devLogin(page, role: 'user' | 'admin') {
+async function quickLoginViaButtons(page, role: 'user' | 'admin') {
   await page.goto('/login');
-  // Dev quick login by setting localStorage directly
-  const baseUser = { email: role === 'admin' ? 'admin@demo.local' : 'user@demo.local', role: role === 'admin' ? 'admin' : 'user', name: role === 'admin' ? 'Admin' : 'User' };
-  await page.addInitScript((u) => {
-    localStorage.setItem('adminToken', 'dev-token');
-    localStorage.setItem('adminUser', JSON.stringify(u));
-  }, baseUser);
-  // Reload to pick up localStorage
-  await page.reload();
-  await page.goto(role === 'admin' ? '/admin/dashboard' : '/dashboard');
+  // Use the dev quick login buttons rendered by GoogleOAuthLogin when VITE_NO_AUTH=true
+  const btnName = role === 'admin' ? 'Admin' : 'User';
+  await page.getByRole('button', { name: btnName, exact: true }).click();
+  // Buttons navigate automatically; wait for destination
+  await page.waitForLoadState('networkidle');
 }
 
 test.describe('Navigation bar', () => {
   test('User role sees user links only', async ({ page }) => {
-    await devLogin(page, 'user');
+    await quickLoginViaButtons(page, 'user');
 
     await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
     await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
@@ -26,6 +22,7 @@ test.describe('Navigation bar', () => {
     await expect(page.getByTestId('nav-link-onboarding')).toBeVisible();
     await expect(page.getByTestId('nav-link-create-task')).toBeVisible();
 
+    // Admin links should not exist for normal user
     await expect(page.getByTestId('nav-link-admin-dashboard')).toHaveCount(0);
     await expect(page.getByTestId('nav-link-admin-roles')).toHaveCount(0);
     await expect(page.getByTestId('nav-link-admin-settings')).toHaveCount(0);
@@ -35,7 +32,7 @@ test.describe('Navigation bar', () => {
   });
 
   test('Admin role sees both user and admin links', async ({ page }) => {
-    await devLogin(page, 'admin');
+    await quickLoginViaButtons(page, 'admin');
 
     await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
     await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
