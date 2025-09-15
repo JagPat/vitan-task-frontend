@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import './_hooks';
 
 const SCREENSHOT_DIR = 'tests/__screenshots__';
 
@@ -28,6 +29,7 @@ test.describe('Navigation bar', () => {
     await expect(page.getByTestId('nav-link-admin-settings')).toHaveCount(0);
     await expect(page.getByTestId('nav-link-admin-analytics')).toHaveCount(0);
 
+    // Explicit named screenshot
     await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-user.png` });
   });
 
@@ -46,6 +48,7 @@ test.describe('Navigation bar', () => {
     await expect(page.getByTestId('nav-link-admin-settings')).toBeVisible();
     await expect(page.getByTestId('nav-link-admin-analytics')).toBeVisible();
 
+    // Explicit named screenshot
     await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-admin.png` });
   });
 });
