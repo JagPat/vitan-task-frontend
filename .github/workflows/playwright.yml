@@ -40,6 +40,15 @@ jobs:
           cd frontend
           npx playwright test --reporter=line
 
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-tests-screenshots
+          path: frontend/tests/__screenshots__/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload Playwright screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
