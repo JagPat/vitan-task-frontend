@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ToastProvider } from './components/ui/ToastProvider';
 import { useAuth } from './hooks/useAuth';
 
@@ -60,21 +60,14 @@ function App() {
             } 
           />
 
-          {/* Protected Admin Routes */}
-          <Route 
-            path="/admin/*" 
-            element={
-              <AdminRoute>
-                <Routes>
-                  <Route path="dashboard" element={<AdminDashboard />} />
-                  <Route path="roles" element={<RoleManager />} />
-                  <Route path="settings" element={<AdminSettings />} />
-                  <Route path="analytics" element={<AdminAnalytics />} />
-                  <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-                </Routes>
-              </AdminRoute>
-            } 
-          />
+          {/* Protected Admin Routes (nested) */}
+          <Route path="/admin" element={<AdminRoute><Outlet /></AdminRoute>}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="roles" element={<RoleManager />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          </Route>
 
           {/* Protected User Routes */}
           <Route 
