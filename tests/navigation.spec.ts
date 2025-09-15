@@ -9,7 +9,7 @@ async function quickLogin(page, role: 'user' | 'admin') {
   // Try dev quick-login button first (available when built with NO_AUTH)
   const btn = page.getByRole('button', { name: btnName, exact: true });
   try {
-    await btn.waitFor({ state: 'visible', timeout: 1000 });
+    await btn.waitFor({ state: 'visible', timeout: 1200 });
     await btn.click();
     await page.waitForLoadState('networkidle');
     return;
@@ -31,39 +31,43 @@ test.describe('Navigation bar', () => {
   test('User role sees user links only', async ({ page }) => {
     await quickLogin(page, 'user');
 
-    await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
-    await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
-    await expect(page.getByTestId('nav-link-projects')).toBeVisible();
-    await expect(page.getByTestId('nav-link-profile')).toBeVisible();
-    await expect(page.getByTestId('nav-link-onboarding')).toBeVisible();
-    await expect(page.getByTestId('nav-link-create-task')).toBeVisible();
+    try {
+      await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
+      await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
+      await expect(page.getByTestId('nav-link-projects')).toBeVisible();
+      await expect(page.getByTestId('nav-link-profile')).toBeVisible();
+      await expect(page.getByTestId('nav-link-onboarding')).toBeVisible();
+      await expect(page.getByTestId('nav-link-create-task')).toBeVisible();
 
-    // Admin links should not exist for normal user
-    await expect(page.getByTestId('nav-link-admin-dashboard')).toHaveCount(0);
-    await expect(page.getByTestId('nav-link-admin-roles')).toHaveCount(0);
-    await expect(page.getByTestId('nav-link-admin-settings')).toHaveCount(0);
-    await expect(page.getByTestId('nav-link-admin-analytics')).toHaveCount(0);
-
-    // Explicit named screenshot (CI artifact target)
-    await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-user.png` });
+      // Admin links should not exist for normal user
+      await expect(page.getByTestId('nav-link-admin-dashboard')).toHaveCount(0);
+      await expect(page.getByTestId('nav-link-admin-roles')).toHaveCount(0);
+      await expect(page.getByTestId('nav-link-admin-settings')).toHaveCount(0);
+      await expect(page.getByTestId('nav-link-admin-analytics')).toHaveCount(0);
+    } finally {
+      // Explicit named screenshot (CI artifact target)
+      await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-user.png` });
+    }
   });
 
   test('Admin role sees both user and admin links', async ({ page }) => {
     await quickLogin(page, 'admin');
 
-    await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
-    await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
-    await expect(page.getByTestId('nav-link-projects')).toBeVisible();
-    await expect(page.getByTestId('nav-link-profile')).toBeVisible();
-    await expect(page.getByTestId('nav-link-onboarding')).toBeVisible();
-    await expect(page.getByTestId('nav-link-create-task')).toBeVisible();
+    try {
+      await expect(page.getByTestId('nav-link-dashboard')).toBeVisible();
+      await expect(page.getByTestId('nav-link-tasks')).toBeVisible();
+      await expect(page.getByTestId('nav-link-projects')).toBeVisible();
+      await expect(page.getByTestId('nav-link-profile')).toBeVisible();
+      await expect(page.getByTestId('nav-link-onboarding')).toBeVisible();
+      await expect(page.getByTestId('nav-link-create-task')).toBeVisible();
 
-    await expect(page.getByTestId('nav-link-admin-dashboard')).toBeVisible();
-    await expect(page.getByTestId('nav-link-admin-roles')).toBeVisible();
-    await expect(page.getByTestId('nav-link-admin-settings')).toBeVisible();
-    await expect(page.getByTestId('nav-link-admin-analytics')).toBeVisible();
-
-    // Explicit named screenshot (CI artifact target)
-    await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-admin.png` });
+      await expect(page.getByTestId('nav-link-admin-dashboard')).toBeVisible();
+      await expect(page.getByTestId('nav-link-admin-roles')).toBeVisible();
+      await expect(page.getByTestId('nav-link-admin-settings')).toBeVisible();
+      await expect(page.getByTestId('nav-link-admin-analytics')).toBeVisible();
+    } finally {
+      // Explicit named screenshot (CI artifact target)
+      await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-admin.png` });
+    }
   });
 });
