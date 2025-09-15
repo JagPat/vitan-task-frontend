@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import './_hooks';
 
-const SCREENSHOT_DIR = 'tests/__screenshots__';
+const SCREENSHOT_DIR = 'tests/screenshots';
 
 async function quickLoginViaButtons(page, role: 'user' | 'admin') {
   await page.goto('/login');
@@ -29,7 +29,7 @@ test.describe('Navigation bar', () => {
     await expect(page.getByTestId('nav-link-admin-settings')).toHaveCount(0);
     await expect(page.getByTestId('nav-link-admin-analytics')).toHaveCount(0);
 
-    // Explicit named screenshot
+    // Explicit named screenshot (CI artifact target)
     await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-user.png` });
   });
 
@@ -48,7 +48,7 @@ test.describe('Navigation bar', () => {
     await expect(page.getByTestId('nav-link-admin-settings')).toBeVisible();
     await expect(page.getByTestId('nav-link-admin-analytics')).toBeVisible();
 
-    // Explicit named screenshot
+    // Explicit named screenshot (CI artifact target)
     await page.screenshot({ path: `${SCREENSHOT_DIR}/nav-admin.png` });
   });
 });

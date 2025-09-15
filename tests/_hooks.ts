@@ -12,7 +12,7 @@ function toSafeName(title: string): string {
 test.afterEach(async ({ page }, testInfo) => {
   try {
     const safe = toSafeName(testInfo.title);
-    await page.screenshot({ path: `tests/__screenshots__/${safe}.png`, fullPage: true });
+    await page.screenshot({ path: `tests/screenshots/${safe}.png`, fullPage: true });
   } catch {
     // best-effort; ignore errors capturing screenshots
   }
