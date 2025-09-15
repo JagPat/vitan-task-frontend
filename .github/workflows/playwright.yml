@@ -34,7 +34,16 @@ jobs:
       - name: Run Playwright tests
         env:
           BACKEND_BASE: https://vitan-task-backend-production.up.railway.app
+          VITE_NO_AUTH: true
+          VITE_DEV_MODE: true
         run: |
           cd frontend
           npx playwright test --reporter=line
+
+      - name: Upload Playwright screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots
+          path: frontend/tests/__screenshots__
 
