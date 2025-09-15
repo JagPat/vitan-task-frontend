@@ -63,54 +63,81 @@ const Navigation = () => {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              {isAdmin() ? (
-                // Admin Navigation
+              {/* User routes (visible to all authenticated users including admins) */}
+              <Link
+                to="/dashboard"
+                data-testid="nav-link-dashboard"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/tasks"
+                data-testid="nav-link-tasks"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Tasks
+              </Link>
+              <Link
+                to="/projects"
+                data-testid="nav-link-projects"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Projects
+              </Link>
+              <Link
+                to="/profile"
+                data-testid="nav-link-profile"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/onboarding"
+                data-testid="nav-link-onboarding"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Onboarding
+              </Link>
+              {/* Optional: Create Task quick link */}
+              <Link
+                to="/tasks/new"
+                data-testid="nav-link-create-task"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Create Task
+              </Link>
+
+              {/* Admin-only additional routes */}
+              {isAdmin() && (
                 <>
                   <Link
                     to="/admin/dashboard"
+                    data-testid="nav-link-admin-dashboard"
                     className="text-gray-700 hover:text-blue-600 transition-colors"
                   >
                     Admin Dashboard
                   </Link>
                   <Link
-                    to="/admin/users"
+                    to="/admin/roles"
+                    data-testid="nav-link-admin-roles"
                     className="text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    User Management
+                    Admin Roles
                   </Link>
                   <Link
                     to="/admin/settings"
+                    data-testid="nav-link-admin-settings"
                     className="text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    System Settings
-                  </Link>
-                </>
-              ) : (
-                // User Navigation
-                <>
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Dashboard
+                    Admin Settings
                   </Link>
                   <Link
-                    to="/tasks"
+                    to="/admin/analytics"
+                    data-testid="nav-link-admin-analytics"
                     className="text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    Tasks
-                  </Link>
-                  <Link
-                    to="/projects"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Projects
-                  </Link>
-                  <Link
-                    to="/onboarding"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Onboarding
+                    Admin Analytics
                   </Link>
                 </>
               )}
@@ -149,46 +176,20 @@ const Navigation = () => {
                   <p className="truncate text-sm font-medium text-gray-900">{authUser?.email}</p>
                 </div>
                 <div className="py-1" role="none">
-                  {!isAdmin() && (
-                    <Link
-                      to="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      role="menuitem"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
-                  )}
-                  {isAdmin() && (
-                    <Link
-                      to="/admin/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      role="menuitem"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
                   <Link
-                    to="/projects"
+                    to="/profile"
+                    data-testid="nav-dropdown-profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     role="menuitem"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Projects
-                  </Link>
-                  <Link
-                    to="/onboarding"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                    role="menuitem"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Onboarding
+                    Profile
                   </Link>
                 </div>
                 <div className="py-1 border-t border-gray-100" role="none">
                   <button
                     onClick={handleLogout}
+                    data-testid="nav-dropdown-logout"
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     role="menuitem"
                   >
