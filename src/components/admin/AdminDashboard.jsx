@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import googleAuthService from '../../services/googleAuth';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [quickStats, setQuickStats] = useState(null);
@@ -320,17 +322,29 @@ const AdminDashboard = () => {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                data-testid="admin-action-users"
+                onClick={() => navigate('/admin/roles')}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="font-medium text-gray-900">User Management</div>
                 <div className="text-sm text-gray-500">Manage users and permissions</div>
               </button>
               
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                data-testid="admin-action-settings"
+                onClick={() => navigate('/admin/settings')}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="font-medium text-gray-900">System Settings</div>
                 <div className="text-sm text-gray-500">Configure system parameters</div>
               </button>
               
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
+              <button
+                data-testid="admin-action-analytics"
+                onClick={() => navigate('/admin/analytics')}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
                 <div className="text-sm text-gray-500">View system logs and analytics</div>
               </button>
             </div>
