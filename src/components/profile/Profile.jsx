@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useToast } from '../ui/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
 
@@ -66,20 +68,20 @@ const Profile = () => {
         <form onSubmit={onSave} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input value={user?.email || ''} disabled className="w-full border rounded px-3 py-2 bg-gray-50" />
+              <Label className="mb-1 block">Email</Label>
+              <Input value={user?.email || ''} disabled className="bg-gray-50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <input value={user?.role || 'user'} disabled className="w-full border rounded px-3 py-2 bg-gray-50 capitalize" />
+              <Label className="mb-1 block">Role</Label>
+              <Input value={user?.role || 'user'} disabled className="bg-gray-50 capitalize" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="Your name" />
+            <Label className="mb-1 block">Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+            <Label className="mb-1 block">Preferred Language</Label>
             <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full border rounded px-3 py-2">
               <option value="en">English</option>
               <option value="es">Español</option>

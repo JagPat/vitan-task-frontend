@@ -1,5 +1,5 @@
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { useAuth } from '../../hooks/useAuth';
 
 /**
@@ -22,11 +22,17 @@ const UserRoute = ({ children, fallback = null }) => {
 
   // Not authenticated - redirect to login
   if (!isAuthenticated()) {
+    if (fallback) return fallback;
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // User is authenticated - render the protected content
   return children;
+};
+
+UserRoute.propTypes = {
+  children: PropTypes.node,
+  fallback: PropTypes.node,
 };
 
 export default UserRoute;

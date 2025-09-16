@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const API_BASE = import.meta?.env?.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
 
@@ -20,7 +20,7 @@ const AdminAnalytics = () => {
           loadAiUsage(),
           loadWaStats()
         ]);
-      } catch (e) {
+      } catch {
         setError('Failed to load analytics');
       }
     };

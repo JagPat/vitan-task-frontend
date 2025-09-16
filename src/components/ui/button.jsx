@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const base = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 const variants = {
@@ -23,6 +25,13 @@ export function Button({ variant = 'default', size = 'md', className = '', child
     </button>
   );
 }
+
+Button.propTypes = {
+  variant: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
 
 export default Button;
 

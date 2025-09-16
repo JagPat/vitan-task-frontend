@@ -4,6 +4,9 @@ import { useToast } from '../ui/ToastProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 const CreateTask = () => {
   const { show } = useToast();
@@ -47,16 +50,16 @@ const CreateTask = () => {
       )}
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input name="title" value={form.title} onChange={onChange} required className="w-full border rounded px-3 py-2" placeholder="Task title" />
+          <Label className="mb-1 block">Title</Label>
+          <Input name="title" value={form.title} onChange={onChange} required placeholder="Task title" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea name="description" value={form.description} onChange={onChange} className="w-full border rounded px-3 py-2" placeholder="Details" />
+          <Label className="mb-1 block">Description</Label>
+          <Textarea name="description" value={form.description} onChange={onChange} placeholder="Details" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <Label className="mb-1 block">Priority</Label>
             <select name="priority" value={form.priority} onChange={onChange} className="w-full border rounded px-3 py-2">
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -64,8 +67,8 @@ const CreateTask = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Project ID (optional)</label>
-            <input name="project_id" value={form.project_id} onChange={onChange} className="w-full border rounded px-3 py-2" placeholder="e.g. 123" />
+            <Label className="mb-1 block">Project ID (optional)</Label>
+            <Input name="project_id" value={form.project_id} onChange={onChange} placeholder="e.g. 123" />
           </div>
         </div>
         <div className="flex gap-3">

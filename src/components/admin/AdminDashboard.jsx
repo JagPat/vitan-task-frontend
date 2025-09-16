@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import googleAuthService from '../../services/googleAuth';
 import { Button } from '../ui/button';
@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   const [adminUser, setAdminUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [quickStats, setQuickStats] = useState(null);
-  const [qsError, setQsError] = useState(null);
+  // const [qsError, setQsError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,9 +42,9 @@ const AdminDashboard = () => {
         fetchQuickStats()
       ]);
       
-    } catch (error) {
+    } catch (_error) {
       setError('Failed to verify admin status');
-      console.error('Admin status check error:', error);
+      console.error('Admin status check error:', _error);
     } finally {
       setIsLoading(false);
     }
@@ -67,14 +67,14 @@ const AdminDashboard = () => {
       } else {
         console.warn('Failed to fetch admin stats');
       }
-    } catch (error) {
-      console.error('Error fetching admin stats:', error);
+    } catch (_error) {
+      console.error('Error fetching admin stats:', _error);
     }
   };
 
   const fetchQuickStats = async () => {
     try {
-      setQsError(null);
+      // setQsError(null);
       // Try dashboard quick-stats first
       const res = await fetch(`${API_BASE}/api/modules/dashboard/quick-stats`);
       if (res.ok) {
@@ -91,8 +91,8 @@ const AdminDashboard = () => {
       }
       // Fallback to deriving from tasks
       await deriveQuickStatsFromTasks();
-    } catch (e) {
-      console.warn('Quick-stats fetch failed, deriving from tasks:', e?.message || e);
+    } catch (_e) {
+      console.warn('Quick-stats fetch failed, deriving from tasks');
       await deriveQuickStatsFromTasks();
     }
   };
@@ -116,8 +116,8 @@ const AdminDashboard = () => {
         // Deriving teamCollaboration requires richer telemetry; default to 0 here.
         teamCollaboration: 0,
       });
-    } catch (e) {
-      setQsError('Quick stats unavailable');
+    } catch (_e) {
+      // setQsError('Quick stats unavailable');
       setQuickStats({ completionRate: 0, activeProjects: 0, teamCollaboration: 0 });
     }
   };

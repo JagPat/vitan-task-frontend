@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
 import { useNavigate } from 'react-router-dom';
@@ -113,7 +113,7 @@ const UserDashboard = () => {
         )}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">
-            <div className="font-medium">We couldn’t load your stats.</div>
+            <div className="font-medium">We couldn't load your stats.</div>
             <div className="text-sm">{error}</div>
           </div>
         )}

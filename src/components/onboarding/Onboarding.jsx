@@ -4,6 +4,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 const Onboarding = () => {
   const { authUser } = useAuth();
@@ -61,7 +63,7 @@ const Onboarding = () => {
       {error && <div className="mb-3 text-red-600">{error}</div>}
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+          <Label className="mb-1 block">Preferred Language</Label>
           <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full border rounded px-3 py-2">
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -70,8 +72,8 @@ const Onboarding = () => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Describe your use-case</label>
-          <textarea value={useCase} onChange={(e) => setUseCase(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="e.g., Manage project tasks via WhatsApp, daily summaries, etc." />
+          <Label className="mb-1 block">Describe your use-case</Label>
+          <Textarea value={useCase} onChange={(e) => setUseCase(e.target.value)} placeholder="e.g., Manage project tasks via WhatsApp, daily summaries, etc." />
         </div>
         <Button disabled={loading}>
           {loading ? 'Saving…' : 'Save Preferences'}

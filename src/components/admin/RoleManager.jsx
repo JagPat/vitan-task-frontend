@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { apiGet, apiPost } from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
+import { Label } from '@/components/ui/label';
 
 const RoleManager = () => {
   const { authUser } = useAuth();
@@ -40,11 +43,12 @@ const RoleManager = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Role Manager</h1>
-        <div className="text-sm text-gray-600">Current User: {authUser?.email} • Role: {authUser?.role}</div>
-      </div>
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader>
+        <CardTitle>Role Manager</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-sm text-gray-600 mb-4">Current User: {authUser?.email} • Role: {authUser?.role}</div>
       {error && <div className="mb-3 text-red-600">{error}</div>}
       {loading ? (
         <div>Loading users…</div>
@@ -81,13 +85,7 @@ const RoleManager = () => {
                   </td>
                   <td className="px-4 py-2 text-right">
                     {canEdit ? (
-                      <button
-                        onClick={() => onAssign(u.email)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
-                        disabled={!pending[u.email] || pending[u.email] === u.role}
-                      >
-                        Assign
-                      </button>
+                      <Button onClick={() => onAssign(u.email)} disabled={!pending[u.email] || pending[u.email] === u.role}>Assign</Button>
                     ) : (
                       <span className="text-xs text-gray-400">Read-only</span>
                     )}
@@ -101,7 +99,8 @@ const RoleManager = () => {
       {!canEdit && (
         <div className="mt-3 text-sm text-gray-500">Only super_admin can change roles.</div>
       )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export function Card({ className = '', children, ...props }) {
   return (
@@ -29,5 +31,22 @@ export function CardContent({ className = '', children, ...props }) {
     </div>
   );
 }
+
+Card.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+CardHeader.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+CardTitle.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+CardContent.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
 
 

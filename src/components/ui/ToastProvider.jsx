@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const ToastContext = createContext(null);
 
@@ -65,6 +66,10 @@ export const ToastProvider = ({ children }) => {
       </div>
     </ToastContext.Provider>
   );
+};
+
+ToastProvider.propTypes = {
+  children: PropTypes.node,
 };
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import googleAuthService from '../../services/googleAuth';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
@@ -17,7 +17,7 @@ const AdminSettings = () => {
     const run = async () => {
       try {
         await Promise.all([loadStatus(), loadConfig()]);
-      } catch (e) {
+      } catch {
         setError('Failed to load system settings');
       }
     };
@@ -53,7 +53,7 @@ const AdminSettings = () => {
       });
       if (!res.ok) throw new Error('save');
       await loadConfig();
-    } catch (e) {
+    } catch {
       setError('Failed to save configuration');
     } finally {
       setSaving(false);
@@ -71,7 +71,7 @@ const AdminSettings = () => {
       });
       if (!res.ok) throw new Error('restart');
       await loadStatus();
-    } catch (e) {
+    } catch {
       setError('Failed to restart system');
     }
   }
