@@ -3,7 +3,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backen
 export function getAuthToken() {
   try {
     return localStorage.getItem('adminToken') || localStorage.getItem('userToken') || null;
-  } catch (_) {
+  } catch {
     return null;
   }
 }

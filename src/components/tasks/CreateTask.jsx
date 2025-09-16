@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { apiPost } from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 
 const CreateTask = () => {
   const { show } = useToast();
@@ -35,8 +37,11 @@ const CreateTask = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
-      <h1 className="text-2xl font-bold mb-4">Create New Task</h1>
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Create New Task</CardTitle>
+      </CardHeader>
+      <CardContent>
       {error && (
         <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded p-3">{error}</div>
       )}
@@ -64,13 +69,14 @@ const CreateTask = () => {
           </div>
         </div>
         <div className="flex gap-3">
-          <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+          <Button disabled={loading}>
             {loading ? 'Creating…' : 'Create Task'}
-          </button>
-          <button type="button" onClick={() => navigate(-1)} className="px-4 py-2 border rounded">Cancel</button>
+          </Button>
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
         </div>
       </form>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

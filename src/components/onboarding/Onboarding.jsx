@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { apiGet, apiPost } from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
 
 const Onboarding = () => {
   const { authUser } = useAuth();
@@ -51,8 +53,11 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
-      <h1 className="text-2xl font-bold mb-4">Onboarding</h1>
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Onboarding</CardTitle>
+      </CardHeader>
+      <CardContent>
       {error && <div className="mb-3 text-red-600">{error}</div>}
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
@@ -68,14 +73,15 @@ const Onboarding = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">Describe your use-case</label>
           <textarea value={useCase} onChange={(e) => setUseCase(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="e.g., Manage project tasks via WhatsApp, daily summaries, etc." />
         </div>
-        <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+        <Button disabled={loading}>
           {loading ? 'Saving…' : 'Save Preferences'}
-        </button>
+        </Button>
       </form>
       {!loaded && (
         <div className="mt-3 text-sm text-gray-500">Loading existing preferences…</div>
       )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

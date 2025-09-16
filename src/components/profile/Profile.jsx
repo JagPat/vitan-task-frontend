@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../ui/ToastProvider';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
 
@@ -53,8 +55,11 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>My Profile</CardTitle>
+      </CardHeader>
+      <CardContent>
       {loading && <div>Loading profile…</div>}
       {error && <div className="text-red-600">{error}</div>}
       {!loading && !error && (
@@ -82,12 +87,13 @@ const Profile = () => {
               <option value="ar">العربية</option>
             </select>
           </div>
-          <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+          <Button disabled={loading}>
             {loading ? 'Saving…' : 'Save Profile'}
-          </button>
+          </Button>
         </form>
       )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

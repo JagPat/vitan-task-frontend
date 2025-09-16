@@ -30,7 +30,7 @@ export async function fetchQuickStatsWithFallback() {
         teamCollaboration: Number(data?.teamCollaboration) || 0,
       };
     }
-  } catch (_) { /* ignore and fallback */ }
+  } catch { /* ignore and fallback */ }
 
   // Always try to compute task counts to populate the user cards
   try {
