@@ -3,6 +3,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
 import { useNavigate } from 'react-router-dom';
 import { fetchQuickStatsWithFallback } from '../../services/dashboardApi';
+import { Button } from '../ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 
 const UserDashboard = () => {
   const { authUser, logout } = useAuth();
@@ -88,12 +90,9 @@ const UserDashboard = () => {
               </div>
               </div>
               
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-              >
+              <Button variant="destructive" onClick={handleLogout}>
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -103,12 +102,14 @@ const UserDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Loading / Error States */}
         {loading && (
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Fetching latest stats…</span>
-            </div>
-          </div>
+          <Card className="mb-6">
+            <CardContent>
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Fetching latest stats…</span>
+              </div>
+            </CardContent>
+          </Card>
         )}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">
@@ -117,18 +118,20 @@ const UserDashboard = () => {
           </div>
         )}
         {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Welcome back, {authUser.email}!
-          </h2>
-          <p className="text-gray-600">
-            Here's an overview of your tasks and projects.
-          </p>
-        </div>
+        <Card className="mb-8">
+          <CardContent>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Welcome back, {authUser.email}!
+            </h2>
+            <p className="text-gray-600">
+              Here's an overview of your tasks and projects.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,9 +143,9 @@ const UserDashboard = () => {
                 <p className="text-2xl font-semibold text-gray-900">{stats.totalTasks}</p>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
                 <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,9 +157,9 @@ const UserDashboard = () => {
                 <p className="text-2xl font-semibold text-gray-900">{stats.completedTasks}</p>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
                 <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,9 +171,9 @@ const UserDashboard = () => {
                 <p className="text-2xl font-semibold text-gray-900">{stats.pendingTasks}</p>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
                 <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +185,7 @@ const UserDashboard = () => {
                 <p className="text-2xl font-semibold text-gray-900">{stats.projects}</p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Empty State */}
@@ -194,38 +197,29 @@ const UserDashboard = () => {
         )}
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-          </div>
-          <div className="p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button
-                onClick={() => navigate('/tasks/new')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button onClick={() => navigate('/tasks/new')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="font-medium text-gray-900">Create New Task</div>
                 <div className="text-sm text-gray-500">Add a new task to your list</div>
-              </button>
+              </Button>
               
-              <button
-                onClick={() => navigate('/projects')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button onClick={() => navigate('/projects')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="font-medium text-gray-900">View Projects</div>
                 <div className="text-sm text-gray-500">Browse your active projects</div>
-              </button>
+              </Button>
               
-              <button
-                onClick={() => navigate('/profile')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button onClick={() => navigate('/profile')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="font-medium text-gray-900">Update Profile</div>
                 <div className="text-sm text-gray-500">Manage your account settings</div>
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

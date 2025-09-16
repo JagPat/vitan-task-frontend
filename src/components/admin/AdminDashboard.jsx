@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import googleAuthService from '../../services/googleAuth';
+import { Button } from '../ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -147,12 +149,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-xl mb-4">{error}</div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Refresh Page
-          </button>
+          <Button onClick={() => window.location.reload()}>Refresh Page</Button>
         </div>
       </div>
     );
@@ -202,12 +199,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
               
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-              >
-                Logout
-              </button>
+              <Button variant="destructive" onClick={handleLogout}>Logout</Button>
             </div>
           </div>
         </div>
@@ -218,7 +210,7 @@ const AdminDashboard = () => {
         {/* Quick Stats (Dashboard) */}
         {quickStats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <span className="text-blue-600 text-xl">📈</span>
@@ -228,8 +220,8 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{quickStats.completionRate}%</p>
                 </div>
               </div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6">
+            </Card>
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-green-100 rounded-lg">
                   <span className="text-green-600 text-xl">🚀</span>
@@ -239,8 +231,8 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{quickStats.activeProjects}</p>
                 </div>
               </div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6">
+            </Card>
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <span className="text-purple-600 text-xl">👥</span>
@@ -250,14 +242,14 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{quickStats.teamCollaboration}</p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         )}
 
         {/* Stats Grid */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,9 +261,9 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-green-100 rounded-lg">
                   <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,9 +275,9 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{stats.totalTasks}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,9 +289,9 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-gray-900">{stats.totalProjects}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <Card className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-yellow-100 rounded-lg">
                   <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,45 +303,33 @@ const AdminDashboard = () => {
                   <p className="text-2xl font-semibold text-green-600">{stats.systemHealth}</p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         )}
 
         {/* Admin Actions */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Admin Actions</h3>
-          </div>
-          <div className="p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Admin Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button
-                data-testid="admin-action-users"
-                onClick={() => navigate('/admin/roles')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button data-testid="admin-action-users" onClick={() => navigate('/admin/roles')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="font-medium text-gray-900">User Management</div>
                 <div className="text-sm text-gray-500">Manage users and permissions</div>
-              </button>
+              </Button>
               
-              <button
-                data-testid="admin-action-settings"
-                onClick={() => navigate('/admin/settings')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button data-testid="admin-action-settings" onClick={() => navigate('/admin/settings')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="font-medium text-gray-900">System Settings</div>
                 <div className="text-sm text-gray-500">Configure system parameters</div>
-              </button>
+              </Button>
               
-              <button
-                data-testid="admin-action-analytics"
-                onClick={() => navigate('/admin/analytics')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
-              >
+              <Button data-testid="admin-action-analytics" onClick={() => navigate('/admin/analytics')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
                 <div className="text-sm text-gray-500">View system logs and analytics</div>
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
