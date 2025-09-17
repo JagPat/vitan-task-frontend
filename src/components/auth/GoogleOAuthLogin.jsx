@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import googleAuthService from '../../services/googleAuth';
 import { useAuth } from '../../hooks/useAuth';
 
 const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const buttonRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
     const handleLoginSuccess = async (event) => {
       try {
         setIsLoading(false);
-        setError(null);
+        setErrorMsg(null);
         
         // Login through our auth hook
         const user = await login(event.detail);
@@ -35,15 +35,14 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
         if (onLoginSuccess) {
           onLoginSuccess(event.detail);
         }
-      } catch (error) {
-        console.error('Login error:', error);
-        setError('Login failed. Please try again.');
+      } catch {
+        setErrorMsg('Login failed. Please try again.');
       }
     };
 
     const handleLoginError = (event) => {
       setIsLoading(false);
-      setError(event.detail.error);
+      setErrorMsg(event.detail.error);
       if (onLoginError) {
         onLoginError(event.detail.error);
       }
@@ -56,7 +55,7 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
       window.removeEventListener('adminLoginSuccess', handleLoginSuccess);
       window.removeEventListener('adminLoginError', handleLoginError);
     };
-  }, [onLoginSuccess, onLoginError]);
+  }, [onLoginSuccess, onLoginError, login, navigate]);
 
   const initializeGoogleOAuth = async () => {
     try {
@@ -69,11 +68,10 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
         googleAuthService.renderButton(buttonRef.current.id);
       }
     } catch (error) {
-      console.error('Failed to initialize Google OAuth:', error);
       const message = error?.message?.includes('Client ID')
         ? 'Google Sign-In not configured. Please set VITE_GOOGLE_CLIENT_ID.'
         : 'Failed to initialize Google OAuth';
-      setError(message);
+      setErrorMsg(message);
     } finally {
       setIsLoading(false);
     }
@@ -81,16 +79,16 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
 
   const handleManualLogin = async () => {
     if (!isInitialized) {
-      setError('Google OAuth not initialized');
+      setErrorMsg('Google OAuth not initialized');
       return;
     }
 
     try {
       setIsLoading(true);
-      setError(null);
+      setErrorMsg(null);
       googleAuthService.prompt();
-    } catch (error) {
-      setError('Failed to prompt Google OAuth');
+    } catch {
+      setErrorMsg('Failed to prompt Google OAuth');
       setIsLoading(false);
     }
   };
@@ -104,11 +102,11 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
     );
   }
 
-  if (error) {
+  if (errorMsg) {
     return (
       <div className={`text-center p-4 ${className}`}>
-        <div className="text-red-600 mb-2">{error}</div>
-        {error?.includes('VITE_GOOGLE_CLIENT_ID') && (
+        <div className="text-red-600 mb-2">{errorMsg}</div>
+        {errorMsg?.includes('VITE_GOOGLE_CLIENT_ID') && (
           <div className="text-xs text-gray-500 mb-2">
             Configure an OAuth Client ID in your environment.
           </div>
@@ -208,6 +206,12 @@ const GoogleOAuthLogin = ({ onLoginSuccess, onLoginError, className = '' }) => {
       </div>
     </div>
   );
+};
+
+GoogleOAuthLogin.propTypes = {
+  onLoginSuccess: PropTypes.func,
+  onLoginError: PropTypes.func,
+  className: PropTypes.string,
 };
 
 export default GoogleOAuthLogin;

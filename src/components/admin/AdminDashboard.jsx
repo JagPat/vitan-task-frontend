@@ -91,7 +91,7 @@ const AdminDashboard = () => {
       }
       // Fallback to deriving from tasks
       await deriveQuickStatsFromTasks();
-    } catch (_e) {
+    } catch {
       console.warn('Quick-stats fetch failed, deriving from tasks');
       await deriveQuickStatsFromTasks();
     }
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
         // Deriving teamCollaboration requires richer telemetry; default to 0 here.
         teamCollaboration: 0,
       });
-    } catch (_e) {
+    } catch {
       // setQsError('Quick stats unavailable');
       setQuickStats({ completionRate: 0, activeProjects: 0, teamCollaboration: 0 });
     }

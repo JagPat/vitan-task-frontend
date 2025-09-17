@@ -33,20 +33,15 @@ export async function fetchQuickStatsWithFallback() {
   } catch { /* ignore and fallback */ }
 
   // Always try to compute task counts to populate the user cards
-  try {
-    const counts = await fetchTasksCounts();
-    return {
-      totalTasks: counts.totalTasks,
-      completedTasks: counts.completedTasks,
-      pendingTasks: counts.pendingTasks,
-      // Prefer quick-stats projects if available; otherwise derived projects
-      projects: quick ? quick.activeProjects : counts.projects,
-      source: quick ? 'quick-stats+tasks' : 'tasks-only',
-    };
-  } catch (err) {
-    // As a last resort, return zeros with a clear error
-    throw err;
-  }
+  const counts = await fetchTasksCounts();
+  return {
+    totalTasks: counts.totalTasks,
+    completedTasks: counts.completedTasks,
+    pendingTasks: counts.pendingTasks,
+    // Prefer quick-stats projects if available; otherwise derived projects
+    projects: quick ? quick.activeProjects : counts.projects,
+    source: quick ? 'quick-stats+tasks' : 'tasks-only',
+  };
 }
 
 

@@ -113,7 +113,7 @@ const UserDashboard = () => {
         )}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">
-            <div className="font-medium">We couldn't load your stats.</div>
+            <div className="font-medium">We couldn&apos;t load your stats.</div>
             <div className="text-sm">{error}</div>
           </div>
         )}
@@ -124,7 +124,7 @@ const UserDashboard = () => {
               Welcome back, {authUser.email}!
             </h2>
             <p className="text-gray-600">
-              Here's an overview of your tasks and projects.
+              Here&apos;s an overview of your tasks and projects.
             </p>
           </CardContent>
         </Card>

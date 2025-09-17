@@ -28,7 +28,7 @@ class GoogleAuthService {
       await this.loadGoogleScript();
     }
     
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       window.google.accounts.id.initialize({
         client_id: this.clientId,
         callback: this.handleCredentialResponse.bind(this),
