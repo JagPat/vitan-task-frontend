@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import AppSidebar from './AppSidebar';
 import AppHeader from './AppHeader';
 import Breadcrumbs from './Breadcrumbs';
-import useIsMobile from '@/hooks/useIsMobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 const AppLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
