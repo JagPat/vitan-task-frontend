@@ -38,7 +38,7 @@ jobs:
           VITE_DEV_MODE: true
         run: |
           cd frontend
-          npx playwright test --reporter=line
+          npx playwright test tests --reporter=line
 
       - name: Upload screenshots
         if: always()
@@ -55,4 +55,3 @@ jobs:
         with:
           name: playwright-screenshots
           path: frontend/tests/screenshots/
-

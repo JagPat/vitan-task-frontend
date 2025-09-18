@@ -18,6 +18,7 @@ import UserDashboard from './components/user/UserDashboard';
 import CreateTask from './components/tasks/CreateTask';
 import TaskList from './components/tasks/TaskList';
 import ProjectsList from './components/projects/ProjectsList';
+import ProjectDetail from './components/projects/ProjectDetail';
 import Profile from './components/profile/Profile';
 import Onboarding from './components/onboarding/Onboarding';
 
@@ -99,6 +100,14 @@ function App() {
               element={
                 <UserRoute>
                   <ProjectsList />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/projects/:id"
+              element={
+                <UserRoute>
+                  <ProjectDetail />
                 </UserRoute>
               }
             />
