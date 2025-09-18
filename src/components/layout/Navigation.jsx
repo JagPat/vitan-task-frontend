@@ -1,208 +1,278 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  CheckSquare,
+  FolderOpen,
+  User,
+  Settings,
+  BarChart3,
+  Users,
+  ClipboardPlus,
+  GraduationCap,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  Bell,
+  Search,
+} from 'lucide-react';
+
 import { useAuth } from '../../hooks/useAuth';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Input } from '../ui/input';
+import { cn } from '../../lib/utils';
 
-const Navigation = () => {
-  const { authUser, isAuthenticated, isAdmin, logout } = useAuth();
-  const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+const userNav = [
+  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, testId: 'nav-link-dashboard' },
+  { label: 'Tasks', to: '/tasks', icon: CheckSquare, testId: 'nav-link-tasks' },
+  { label: 'Projects', to: '/projects', icon: FolderOpen, testId: 'nav-link-projects' },
+  { label: 'Profile', to: '/profile', icon: User, testId: 'nav-link-profile' },
+  { label: 'Onboarding', to: '/onboarding', icon: GraduationCap, testId: 'nav-link-onboarding' },
+  { label: 'Create Task', to: '/tasks/new', icon: ClipboardPlus, testId: 'nav-link-create-task' },
+];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+const adminNav = [
+  { label: 'Admin Dashboard', to: '/admin/dashboard', icon: LayoutDashboard, testId: 'nav-link-admin-dashboard' },
+  { label: 'Admin Roles', to: '/admin/roles', icon: Users, testId: 'nav-link-admin-roles' },
+  { label: 'Admin Settings', to: '/admin/settings', icon: Settings, testId: 'nav-link-admin-settings' },
+  { label: 'Admin Analytics', to: '/admin/analytics', icon: BarChart3, testId: 'nav-link-admin-analytics' },
+];
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  if (!isAuthenticated()) {
-    return (
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <Link to="/" className="text-xl font-bold text-gray-900">
-                WhatsTask
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Login
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+const SidebarSection = ({ collapsed, title, items }) => {
+  const location = useLocation();
 
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <div className="flex items-center space-x-8">
-            <Link to="/" className="text-xl font-bold text-gray-900">
-              WhatsTask
-            </Link>
-            
-            {/* Navigation Links */}
-            <div className="flex items-center space-x-6">
-              {/* User routes (visible to all authenticated users including admins) */}
-              <Link
-                to="/dashboard"
-                data-testid="nav-link-dashboard"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
+    <div className="space-y-1">
+      {!collapsed && (
+        <div className="px-2 pb-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+        </div>
+      )}
+      {items.map((item) => {
+        const Icon = item.icon;
+        const isActive = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`);
+        return (
+          <NavLink key={item.to} to={item.to} data-testid={item.testId} className="block">
+            {({ isActive: navIsActive }) => (
+              <Button
+                variant={navIsActive || isActive ? 'secondary' : 'ghost'}
+                className={cn(
+                  'w-full justify-start gap-2 text-sm',
+                  collapsed ? 'px-2' : 'px-3',
+                  (navIsActive || isActive) && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                )}
               >
-                Dashboard
-              </Link>
-              <Link
-                to="/tasks"
-                data-testid="nav-link-tasks"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Tasks
-              </Link>
-              <Link
-                to="/projects"
-                data-testid="nav-link-projects"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Projects
-              </Link>
-              <Link
-                to="/profile"
-                data-testid="nav-link-profile"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Profile
-              </Link>
-              <Link
-                to="/onboarding"
-                data-testid="nav-link-onboarding"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Onboarding
-              </Link>
-              {/* Optional: Create Task quick link */}
-              <Link
-                to="/tasks/new"
-                data-testid="nav-link-create-task"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Create Task
-              </Link>
+                <Icon className="h-4 w-4" />
+                {!collapsed && <span>{item.label}</span>}
+              </Button>
+            )}
+          </NavLink>
+        );
+      })}
+    </div>
+  );
+};
 
-              {/* Admin-only additional routes */}
-              {isAdmin() && (
-                <>
-                  <Link
-                    to="/admin/dashboard"
-                    data-testid="nav-link-admin-dashboard"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Admin Dashboard
-                  </Link>
-                  <Link
-                    to="/admin/roles"
-                    data-testid="nav-link-admin-roles"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Admin Roles
-                  </Link>
-                  <Link
-                    to="/admin/settings"
-                    data-testid="nav-link-admin-settings"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Admin Settings
-                  </Link>
-                  <Link
-                    to="/admin/analytics"
-                    data-testid="nav-link-admin-analytics"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    Admin Analytics
-                  </Link>
-                </>
-              )}
+SidebarSection.propTypes = {
+  collapsed: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      to: PropTypes.string.isRequired,
+      icon: PropTypes.elementType.isRequired,
+      testId: PropTypes.string,
+    })
+  ).isRequired,
+};
+
+const Navigation = ({ children }) => {
+  const { authUser, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setMobileOpen(false);
+    }
+  }, [isMobile]);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  const initials = useMemo(() => {
+    if (!authUser?.email) return 'VT';
+    return authUser.email
+      .split('@')[0]
+      .split('.')
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 2);
+  }, [authUser]);
+
+  const sidebarContent = (
+    <div className={cn('flex h-full flex-col border-r bg-sidebar transition-all duration-300', collapsed ? 'w-16' : 'w-64')}>
+      <div className="flex h-16 items-center justify-between px-4 border-b">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <CheckSquare className="h-4 w-4" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif text-lg font-bold leading-tight">VitanTask</span>
+              <span className="text-xs text-muted-foreground">Workflows</span>
+            </div>
+          </div>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Toggle sidebar"
+          onClick={() => setCollapsed((prev) => !prev)}
+          className="h-8 w-8"
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
+      </div>
+      <div className="flex-1 overflow-y-auto py-4">
+        <nav className="space-y-6 px-2">
+          <SidebarSection collapsed={collapsed} title="Overview" items={userNav} />
+          {isAdmin() && (
+            <>
+              <Separator className={cn('my-2', collapsed && 'mx-auto h-8 w-px')} />
+              <SidebarSection collapsed={collapsed} title="Admin" items={adminNav} />
+            </>
+          )}
+        </nav>
+      </div>
+      <div className="border-t px-3 py-4">
+        <div className={cn('flex items-center gap-3', collapsed && 'justify-center')}>
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={authUser?.picture || ''} alt={authUser?.email || 'User avatar'} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">{authUser?.email}</p>
+              <p className="text-xs capitalize text-muted-foreground">{authUser?.role || 'member'}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex min-h-screen bg-background text-foreground">
+      {!isMobile && sidebarContent}
+      {isMobile && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Open navigation"
+            className="fixed left-4 top-4 z-40 h-10 w-10 bg-background shadow-md lg:hidden"
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          {mobileOpen && (
+            <div className="fixed inset-0 z-50 flex">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
+              <div className="relative h-full w-64 max-w-[75vw] bg-sidebar shadow-xl">
+                {sidebarContent}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="flex flex-1 flex-col">
+        <header className="flex h-16 items-center justify-between border-b bg-background px-4 lg:px-6">
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:block">
+              <Badge variant="secondary">{isAdmin() ? 'Admin Access' : 'User Access'}</Badge>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search tasks, projects..."
+                className="w-56 pl-9 text-sm"
+              />
             </div>
           </div>
 
-          {/* User Menu */}
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setIsMenuOpen((v) => !v)}
-              className="flex items-center gap-3 focus:outline-none"
-              aria-haspopup="menu"
-              aria-expanded={isMenuOpen}
-            >
-              <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">
-                  {authUser?.email?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="hidden md:block text-left">
-                <div className="text-sm font-medium text-gray-900 leading-tight">{authUser?.email}</div>
-                <div className="text-xs text-gray-500 capitalize leading-tight">{authUser?.role}{isAdmin() ? ' (Admin)' : ''}</div>
-              </div>
-              <svg className={`h-4 w-4 text-gray-500 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
-              </svg>
-            </button>
-
-            {isMenuOpen && (
-              <div
-                role="menu"
-                className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none z-50"
-              >
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm text-gray-500">Signed in as</p>
-                  <p className="truncate text-sm font-medium text-gray-900">{authUser?.email}</p>
-                </div>
-                <div className="py-1" role="none">
-                  <Link
-                    to="/profile"
-                    data-testid="nav-dropdown-profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                    role="menuitem"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                </div>
-                <div className="py-1 border-t border-gray-100" role="none">
-                  <button
-                    onClick={handleLogout}
-                    data-testid="nav-dropdown-logout"
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    role="menuitem"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">
+                3
+              </span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={authUser?.picture || ''} alt={authUser?.email || 'User avatar'} />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <span className="hidden text-sm font-medium sm:inline">{authUser?.email}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuLabel>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">{authUser?.email}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{authUser?.role || 'member'}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {userNav.slice(0, 4).map((item) => (
+                  <DropdownMenuItem key={item.to} onSelect={() => navigate(item.to)} data-testid={`${item.testId}-menu`}>
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-destructive" onSelect={handleLogout} data-testid="nav-dropdown-logout">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto bg-muted/30">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8">
+            {children}
+          </div>
+        </main>
       </div>
-    </nav>
+    </div>
   );
+};
+
+Navigation.propTypes = {
+  children: PropTypes.node,
 };
 
 export default Navigation;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { apiGet } from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 const TaskList = () => {
   const { show } = useToast();
@@ -11,7 +13,8 @@ const TaskList = () => {
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true); setError(null);
+        setLoading(true);
+        setError(null);
         const res = await apiGet('/api/modules/tasks');
         const list = Array.isArray(res?.data) ? res.data : [];
         setTasks(list);
@@ -24,44 +27,64 @@ const TaskList = () => {
     })();
   }, [show]);
 
+  const renderStatusBadge = (status) => {
+    const normalized = (status || 'pending').toLowerCase();
+    const variant = normalized === 'completed' ? 'secondary' : normalized === 'in-progress' ? 'outline' : 'muted';
+    return <Badge variant={variant} className="capitalize">{normalized}</Badge>;
+  };
+
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Tasks</h1>
-        <div className="text-sm text-gray-500">{tasks.length} items</div>
-      </div>
-      {loading && <div>Loading tasks…</div>}
-      {error && <div className="text-red-600">{error}</div>}
-      {!loading && tasks.length === 0 && (
-        <div className="text-gray-600">No tasks yet. Create one from the dashboard.</div>
-      )}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {tasks.map(t => (
-              <tr key={t.id || `${t.title}-${t.created_at}`}>
-                <td className="px-4 py-2">{t.title}</td>
-                <td className="px-4 py-2 capitalize">{t.status || 'pending'}</td>
-                <td className="px-4 py-2 capitalize">{t.priority || 'medium'}</td>
-                <td className="px-4 py-2">{t.project_id || '—'}</td>
-                <td className="px-4 py-2 text-sm text-gray-500">{t.created_at ? new Date(t.created_at).toLocaleString() : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <Card className="mx-auto max-w-6xl">
+      <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <CardTitle>Tasks</CardTitle>
+          <p className="text-sm text-muted-foreground">Stay aligned with everything assigned to you.</p>
+        </div>
+        <Badge variant="outline">{tasks.length} items</Badge>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {loading && <div className="text-sm text-muted-foreground">Loading tasks…</div>}
+        {error && (
+          <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+        {!loading && !error && tasks.length === 0 && (
+          <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+            No tasks yet. Create one from the dashboard to get started.
+          </div>
+        )}
+        {tasks.length > 0 && (
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full min-w-max text-sm">
+              <thead className="bg-muted/40 text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">Title</th>
+                  <th className="px-4 py-3 text-left font-medium">Status</th>
+                  <th className="px-4 py-3 text-left font-medium">Priority</th>
+                  <th className="px-4 py-3 text-left font-medium">Project</th>
+                  <th className="px-4 py-3 text-left font-medium">Created</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border bg-card">
+                {tasks.map((task) => (
+                  <tr key={task.id || `${task.title}-${task.created_at}`} className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-medium text-foreground">{task.title}</td>
+                    <td className="px-4 py-3">{renderStatusBadge(task.status)}</td>
+                    <td className="px-4 py-3 capitalize text-muted-foreground">{task.priority || 'medium'}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{task.project_id || '—'}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">
+                      {task.created_at ? new Date(task.created_at).toLocaleString() : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
 export default TaskList;
-

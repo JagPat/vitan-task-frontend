@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 
-const SCREENSHOT_DIR = 'tests/__screenshots__';
+const SCREENSHOT_DIR = 'tests/screenshots';
 
 test.beforeEach(async ({ page }) => {
   // Dev quick login as super_admin
@@ -11,6 +12,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Admin actions navigation', () => {
+  test.beforeAll(async () => {
+    await fs.mkdir(SCREENSHOT_DIR, { recursive: true });
+  });
   test('User Management navigates to /admin/roles', async ({ page }) => {
     await page.goto('/admin/dashboard');
     await page.getByTestId('admin-action-users').click();
@@ -34,6 +38,7 @@ test.describe('Admin actions navigation', () => {
     await page.screenshot({ path: `${SCREENSHOT_DIR}/admin-analytics.png` });
   });
 });
+
 
 
 

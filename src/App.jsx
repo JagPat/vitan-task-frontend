@@ -22,21 +22,36 @@ import Profile from './components/profile/Profile';
 import Onboarding from './components/onboarding/Onboarding';
 
 // Layout Components
-import Navigation from './components/layout/Navigation';
+import AppLayout from './components/layout/AppLayout';
 
-// Loading Component
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  <div className="flex min-h-screen items-center justify-center">
+    <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
     <span className="ml-3 text-lg">Loading...</span>
   </div>
 );
 
-// Main App Component
+const ProtectedAppLayout = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <AppLayout>
+      <Outlet />
+    </AppLayout>
+  );
+};
+
 function App() {
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
 
-  // Show loading spinner while auth is initializing
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -44,105 +59,122 @@ function App() {
   return (
     <ToastProvider>
       <Router>
-        <div className="App">
-          <Navigation />
-          <Routes>
-          {/* Public Routes */}
-          <Route 
-            path="/login" 
-            element={
-              isAuthenticated() ? (
-                <Navigate to={isAdmin() ? "/admin/dashboard" : "/dashboard"} replace />
+        <Routes>
+          <Route
+            path="/login"
+            element={isAuthenticated() ? (
+                <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
               ) : (
                 <GoogleOAuthLogin />
-              )
-            } 
+              )}
           />
 
-          {/* Protected Admin Routes (nested) */}
-          <Route path="/admin" element={<AdminRoute><Outlet /></AdminRoute>}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="roles" element={<RoleManager />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route element={<ProtectedAppLayout />}>
+            <Route
+              path="/dashboard"
+              element={
+                <UserRoute>
+                  <UserDashboard />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/tasks/new"
+              element={
+                <UserRoute>
+                  <CreateTask />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <UserRoute>
+                  <TaskList />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <UserRoute>
+                  <ProjectsList />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <UserRoute>
+                  <Profile />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/onboarding"
+              element={
+                <UserRoute>
+                  <Onboarding />
+                </UserRoute>
+              }
+            />
+
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/roles"
+              element={
+                <AdminRoute>
+                  <RoleManager />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <AdminRoute>
+                  <AdminSettings />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <AdminRoute>
+                  <AdminAnalytics />
+                </AdminRoute>
+              }
+            />
           </Route>
 
-          {/* Protected User Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <UserRoute>
-                <UserDashboard />
-              </UserRoute>
-            } 
-          />
           <Route
-            path="/tasks/new"
-            element={
-              <UserRoute>
-                <CreateTask />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/projects"
-            element={
-              <UserRoute>
-                <ProjectsList />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/tasks"
-            element={
-              <UserRoute>
-                <TaskList />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <UserRoute>
-                <Profile />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/onboarding"
-            element={
-              <UserRoute>
-                <Onboarding />
-              </UserRoute>
-            }
-          />
-
-          {/* Default Routes */}
-          <Route 
-            path="/" 
+            path="/"
             element={
               isAuthenticated() ? (
-                <Navigate to={isAdmin() ? "/admin/dashboard" : "/dashboard"} replace />
+                <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
               ) : (
                 <Navigate to="/login" replace />
               )
-            } 
+            }
           />
 
-          {/* Catch all - redirect to appropriate dashboard */}
-          <Route 
-            path="*" 
+          <Route
+            path="*"
             element={
               isAuthenticated() ? (
-                <Navigate to={isAdmin() ? "/admin/dashboard" : "/dashboard"} replace />
+                <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
               ) : (
                 <Navigate to="/login" replace />
               )
-            } 
+            }
           />
-          </Routes>
-        </div>
+        </Routes>
       </Router>
     </ToastProvider>
   );

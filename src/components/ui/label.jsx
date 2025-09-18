@@ -1,8 +1,19 @@
-// Re-export v0.dev Label primitive for JS consumers
-import * as V0 from './v0/label';
+/* eslint-disable react/prop-types */
+import React from 'react';
+import * as LabelPrimitive from '@radix-ui/react-label';
+import { cn } from '@/lib/utils';
 
-export const Label = V0.Label;
+const Label = React.forwardRef(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root
+    ref={ref}
+    data-slot="label"
+    className={cn('text-foreground text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70', className)}
+    {...props}
+  />
+));
+
+Label.displayName = 'Label';
+
+export { Label };
 export default Label;
-
-
 

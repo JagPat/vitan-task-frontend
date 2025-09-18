@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://vitan-task-backend-production.up.railway.app';
 
@@ -57,43 +58,50 @@ const Profile = () => {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="mx-auto max-w-2xl">
       <CardHeader>
         <CardTitle>My Profile</CardTitle>
       </CardHeader>
       <CardContent>
-      {loading && <div>Loading profile…</div>}
-      {error && <div className="text-red-600">{error}</div>}
-      {!loading && !error && (
-        <form onSubmit={onSave} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="mb-1 block">Email</Label>
-              <Input value={user?.email || ''} disabled className="bg-gray-50" />
+        {loading && <div className="text-sm text-muted-foreground">Loading profile…</div>}
+        {error && (
+          <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+        {!loading && !error && (
+          <form onSubmit={onSave} className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-1">
+                <Label>Email</Label>
+                <Input value={user?.email || ''} disabled />
+              </div>
+              <div className="space-y-1">
+                <Label>Role</Label>
+                <Input value={user?.role || 'user'} disabled className="capitalize" />
+              </div>
             </div>
-            <div>
-              <Label className="mb-1 block">Role</Label>
-              <Input value={user?.role || 'user'} disabled className="bg-gray-50 capitalize" />
+            <div className="space-y-1">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </div>
-          </div>
-          <div>
-            <Label className="mb-1 block">Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-          </div>
-          <div>
-            <Label className="mb-1 block">Preferred Language</Label>
-            <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full border rounded px-3 py-2">
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="hi">हिन्दी</option>
-              <option value="ar">العربية</option>
-            </select>
-          </div>
-          <Button disabled={loading}>
-            {loading ? 'Saving…' : 'Save Profile'}
-          </Button>
-        </form>
-      )}
+            <div className="space-y-1">
+              <Label>Preferred Language</Label>
+              <Select value={language} onValueChange={(value) => setLanguage(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                  <SelectItem value="hi">हिन्दी</SelectItem>
+                  <SelectItem value="ar">العربية</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button disabled={loading}>{loading ? 'Saving…' : 'Save Profile'}</Button>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

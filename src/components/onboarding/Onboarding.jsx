@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Onboarding = () => {
   const { authUser } = useAuth();
@@ -55,37 +56,47 @@ const Onboarding = () => {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="mx-auto max-w-2xl">
       <CardHeader>
         <CardTitle>Onboarding</CardTitle>
       </CardHeader>
       <CardContent>
-      {error && <div className="mb-3 text-red-600">{error}</div>}
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div>
-          <Label className="mb-1 block">Preferred Language</Label>
-          <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full border rounded px-3 py-2">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="hi">हिन्दी</option>
-            <option value="ar">العربية</option>
-          </select>
-        </div>
-        <div>
-          <Label className="mb-1 block">Describe your use-case</Label>
-          <Textarea value={useCase} onChange={(e) => setUseCase(e.target.value)} placeholder="e.g., Manage project tasks via WhatsApp, daily summaries, etc." />
-        </div>
-        <Button disabled={loading}>
-          {loading ? 'Saving…' : 'Save Preferences'}
-        </Button>
-      </form>
-      {!loaded && (
-        <div className="mt-3 text-sm text-gray-500">Loading existing preferences…</div>
-      )}
+        {error && (
+          <div className="mb-3 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-1">
+            <Label>Preferred Language</Label>
+            <Select value={language} onValueChange={(value) => setLanguage(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="hi">हिन्दी</SelectItem>
+                <SelectItem value="ar">العربية</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label>Describe your use-case</Label>
+            <Textarea
+              value={useCase}
+              onChange={(e) => setUseCase(e.target.value)}
+              placeholder="e.g., Manage project tasks via WhatsApp, daily summaries, etc."
+            />
+          </div>
+          <Button disabled={loading}>{loading ? 'Saving…' : 'Save Preferences'}</Button>
+        </form>
+        {!loaded && (
+          <div className="mt-3 text-sm text-muted-foreground">Loading existing preferences…</div>
+        )}
       </CardContent>
     </Card>
   );
 };
 
 export default Onboarding;
-

@@ -11,49 +11,6 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initialize auth state from localStorage
-  useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
-        if (token) {
-          const decoded = jwt_decode(token);
-          const now = Date.now() / 1000;
-          
-          if (decoded.exp > now) {
-            // Token is valid
-            const user = {
-              id: decoded.userId,
-              email: decoded.email,
-              role: decoded.role,
-              loginMethod: decoded.loginMethod,
-              token,
-              exp: decoded.exp
-            };
-            setAuthUser(user);
-          } else {
-            // Token expired, clear it
-            logout();
-          }
-        } else if (DEV_MODE) {
-          // Dev quick-login support
-          const storedUser = localStorage.getItem('authUser');
-          if (storedUser) {
-            const user = JSON.parse(storedUser);
-            setAuthUser(user);
-          }
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        logout();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
-
   // Login function
   const login = useCallback((userData) => {
     try {
@@ -88,6 +45,46 @@ export const useAuth = () => {
     setAuthUser(null);
     setError(null);
   }, []);
+  // Initialize auth state from localStorage
+  useEffect(() => {
+    const initializeAuth = () => {
+      try {
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+        if (token) {
+          const decoded = jwt_decode(token);
+          const now = Date.now() / 1000;
+
+          if (decoded.exp > now) {
+            const user = {
+              id: decoded.userId,
+              email: decoded.email,
+              role: decoded.role,
+              loginMethod: decoded.loginMethod,
+              token,
+              exp: decoded.exp,
+            };
+            setAuthUser(user);
+          } else {
+            logout();
+          }
+        } else if (DEV_MODE) {
+          const storedUser = localStorage.getItem('authUser');
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            setAuthUser(user);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+  }, [DEV_MODE, logout]);
+
 
   // Check if user is authenticated
   const isAuthenticated = useCallback(() => {
@@ -165,6 +162,7 @@ export const useAuth = () => {
   }, [logout]);
 
   // Auto-refresh token before expiry
+   
   useEffect(() => {
     if (!authUser?.exp) return;
 
@@ -211,4 +209,3 @@ export const useAuth = () => {
 };
 
 export default useAuth;
-

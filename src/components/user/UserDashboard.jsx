@@ -1,21 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/ToastProvider';
-import { useNavigate } from 'react-router-dom';
 import { fetchQuickStatsWithFallback } from '../../services/dashboardApi';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
+const defaultStats = { totalTasks: 0, completedTasks: 0, pendingTasks: 0, projects: 0 };
 
 const UserDashboard = () => {
   const { authUser, logout } = useAuth();
   const { show } = useToast();
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalTasks: 0,
-    completedTasks: 0,
-    pendingTasks: 0,
-    projects: 0
-  });
+  const [stats, setStats] = useState(defaultStats);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,14 +24,14 @@ const UserDashboard = () => {
         setLoading(true);
         setError(null);
         show({ title: 'Loading dashboard…', type: 'info', duration: 1200 });
-        const s = await fetchQuickStatsWithFallback();
+        const result = await fetchQuickStatsWithFallback();
         setStats({
-          totalTasks: s.totalTasks,
-          completedTasks: s.completedTasks,
-          pendingTasks: s.pendingTasks,
-          projects: s.projects,
+          totalTasks: result.totalTasks,
+          completedTasks: result.completedTasks,
+          pendingTasks: result.pendingTasks,
+          projects: result.projects,
         });
-        show({ title: 'Dashboard updated', description: `Source: ${s.source}`, type: 'success', duration: 1800 });
+        show({ title: 'Dashboard updated', description: `Source: ${result.source}`, type: 'success', duration: 1800 });
       } catch (err) {
         setError(err.message || 'Failed to load stats');
         show({ title: 'Failed to load stats', description: err.message, type: 'error', duration: 3000 });
@@ -40,187 +39,181 @@ const UserDashboard = () => {
         setLoading(false);
       }
     };
+
     fetchStats();
   }, [show]);
+
+  const initials = useMemo(() => {
+    if (!authUser?.email) return 'VT';
+    return authUser.email
+      .split('@')[0]
+      .split('.')
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 2);
+  }, [authUser]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      // Redirect will be handled by the auth hook
       show({ title: 'Logged out', type: 'success', duration: 1500 });
-    } catch (error) {
-      console.error('Logout error:', error);
-      show({ title: 'Logout failed', description: error.message, type: 'error' });
+    } catch (err) {
+      console.error('Logout error:', err);
+      show({ title: 'Logout failed', description: err.message, type: 'error' });
     }
   };
 
   if (!authUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-600 text-xl mb-4">Loading user dashboard...</div>
-        </div>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-muted-foreground">Loading user dashboard…</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">User Dashboard</h1>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                User Access
-              </span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">
-                    {authUser.email.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              <div className="text-sm">
-                <div className="font-medium text-gray-900">{authUser.email}</div>
-                <div className="text-gray-500 capitalize">{authUser.role || 'user'}</div>
-              </div>
-              </div>
-              
-              <Button variant="destructive" onClick={handleLogout}>
-                Logout
-              </Button>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Welcome back</h1>
+          <p className="text-sm text-muted-foreground">
+            Stay on top of your work with a quick snapshot of tasks and projects.
+          </p>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Loading / Error States */}
-        {loading && (
-          <Card className="mb-6">
-            <CardContent>
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Fetching latest stats…</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">
-            <div className="font-medium">We couldn&apos;t load your stats.</div>
-            <div className="text-sm">{error}</div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge variant="secondary">User Access</Badge>
+          <div className="flex items-center gap-3 rounded-full border px-3 py-2">
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={authUser?.picture || ''} alt={authUser?.email || 'User avatar'} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-foreground">{authUser?.email}</p>
+              <p className="text-xs capitalize text-muted-foreground">{authUser?.role || 'member'}</p>
+            </div>
           </div>
-        )}
-        {/* Welcome Section */}
-        <Card className="mb-8">
-          <CardContent>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Welcome back, {authUser.email}!
-            </h2>
-            <p className="text-gray-600">
-              Here&apos;s an overview of your tasks and projects.
-            </p>
+          <Button variant="destructive" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+      </div>
+
+      {loading && (
+        <Card className="border-dashed">
+          <CardContent className="flex items-center gap-3 py-6">
+            <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
+            <span className="text-sm text-muted-foreground">Fetching the latest stats…</span>
           </CardContent>
         </Card>
+      )}
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Tasks</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalTasks}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Completed</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.completedTasks}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Pending</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.pendingTasks}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Projects</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.projects}</p>
-              </div>
-            </div>
-          </Card>
+      {error && (
+        <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          We couldn&apos;t load your stats right now. {error}
         </div>
+      )}
 
-        {/* Empty State */}
-        {!loading && !error && stats.totalTasks === 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-            <div className="font-medium text-blue-900">No tasks yet</div>
-            <div className="text-sm text-blue-800">Create your first task to get started.</div>
-          </div>
-        )}
+      <Card>
+        <CardContent className="space-y-2 py-6">
+          <h2 className="text-xl font-semibold text-foreground">Hello, {authUser.email}</h2>
+          <p className="text-sm text-muted-foreground">
+            Here&apos;s an overview of your workload for this week.
+          </p>
+        </CardContent>
+      </Card>
 
-        {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button onClick={() => navigate('/tasks/new')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
-                <div className="font-medium text-gray-900">Create New Task</div>
-                <div className="text-sm text-gray-500">Add a new task to your list</div>
-              </Button>
-              
-              <Button onClick={() => navigate('/projects')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
-                <div className="font-medium text-gray-900">View Projects</div>
-                <div className="text-sm text-gray-500">Browse your active projects</div>
-              </Button>
-              
-              <Button onClick={() => navigate('/profile')} variant="outline" className="justify-start h-auto py-4 px-4 text-left">
-                <div className="font-medium text-gray-900">Update Profile</div>
-                <div className="text-sm text-gray-500">Manage your account settings</div>
-              </Button>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              📋
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Tasks</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.totalTasks}</p>
             </div>
           </CardContent>
         </Card>
-      </main>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/15 text-green-600">
+              ✅
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Completed</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.completedTasks}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400/15 text-yellow-500">
+              ⏳
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pending</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.pendingTasks}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent">
+              📁
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Projects</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.projects}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {!loading && !error && stats.totalTasks === 0 && (
+        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+          No tasks yet — create your first task to get started.
+        </div>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <Button
+              onClick={() => navigate('/tasks/new')}
+              variant="outline"
+              className="h-auto justify-start gap-3 rounded-xl border-dashed px-4 py-5 text-left"
+            >
+              <div>
+                <p className="font-medium text-foreground">Create New Task</p>
+                <p className="text-sm text-muted-foreground">Add a new task to your list</p>
+              </div>
+            </Button>
+            <Button
+              onClick={() => navigate('/projects')}
+              variant="outline"
+              className="h-auto justify-start gap-3 rounded-xl border-dashed px-4 py-5 text-left"
+            >
+              <div>
+                <p className="font-medium text-foreground">View Projects</p>
+                <p className="text-sm text-muted-foreground">Browse your active projects</p>
+              </div>
+            </Button>
+            <Button
+              onClick={() => navigate('/profile')}
+              variant="outline"
+              className="h-auto justify-start gap-3 rounded-xl border-dashed px-4 py-5 text-left"
+            >
+              <div>
+                <p className="font-medium text-foreground">Update Profile</p>
+                <p className="text-sm text-muted-foreground">Manage your account settings</p>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
