@@ -4,6 +4,7 @@ import { LayoutDashboard, CheckSquare, FolderOpen, User, Settings, BarChart3, Us
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import useAuth from '@/hooks/useAuth';
 
 const userNav = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, testId: 'nav-link-dashboard' },
@@ -24,6 +25,7 @@ const adminNav = [
 const AppSidebar = ({ isCollapsed, onToggle }) => {
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(isCollapsed);
+  const { isAdmin } = useAuth();
 
   const toggle = () => {
     setCollapsed(!collapsed);
@@ -89,7 +91,7 @@ const AppSidebar = ({ isCollapsed, onToggle }) => {
       <div className="flex-1 overflow-y-auto py-4 px-2">
         <NavSection title="Main" items={userNav} />
         <Separator className="my-4" />
-        <NavSection title="Admin" items={adminNav} />
+        {isAdmin() && <NavSection title="Admin" items={adminNav} />}
       </div>
     </div>
   );
