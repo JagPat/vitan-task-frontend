@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 const userNav = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, testId: 'nav-link-dashboard' },
   { title: 'Tasks', href: '/tasks', icon: CheckSquare, testId: 'nav-link-tasks' },
+  { title: 'Create Task', href: '/tasks/new', icon: CheckSquare, testId: 'nav-link-create-task' },
   { title: 'Projects', href: '/projects', icon: FolderOpen, testId: 'nav-link-projects' },
   { title: 'Profile', href: '/profile', icon: User, testId: 'nav-link-profile' },
   { title: 'Onboarding', href: '/onboarding', icon: User, testId: 'nav-link-onboarding' },
