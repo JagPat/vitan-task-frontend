@@ -14,14 +14,32 @@ async function quickLogin(page, role: 'user' | 'admin') {
     await page.waitForLoadState('networkidle');
     return;
   } catch {
-    // Fallback: set token/user in localStorage and navigate directly
-    const user = role === 'admin'
+    // Fallback: craft a minimal unsigned JWT that jwt_decode can parse in production
+    const now = Math.floor(Date.now() / 1000);
+    const exp = now + 60 * 60; // +1h
+    const u = role === 'admin'
       ? { email: 'admin@demo.local', role: 'admin', name: 'Admin' }
       : { email: 'user@demo.local', role: 'user', name: 'User' };
-    await page.addInitScript((u) => {
-      localStorage.setItem('adminToken', 'dev-token');
-      localStorage.setItem('adminUser', JSON.stringify(u));
-    }, user);
+
+    function b64url(obj: any) {
+      const json = JSON.stringify(obj);
+      return Buffer.from(json).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+    }
+    const header = { alg: 'none', typ: 'JWT' };
+    const payload = { userId: 'dev', email: u.email, role: u.role, loginMethod: 'dev', exp };
+    const token = `${b64url(header)}.${b64url(payload)}.`;
+
+    await page.addInitScript((args) => {
+      const { token, role, user } = args as any;
+      if (role === 'admin') {
+        localStorage.setItem('adminToken', token);
+      } else {
+        localStorage.setItem('userToken', token);
+      }
+      // Optional convenience for UI
+      localStorage.setItem('authUser', JSON.stringify({ ...user, token }));
+    }, { token, role, user: u });
+
     await page.goto(role === 'admin' ? '/admin/dashboard' : '/dashboard');
     await page.waitForLoadState('networkidle');
   }
