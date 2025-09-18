@@ -31,12 +31,15 @@ async function quickLogin(page, role: 'user' | 'admin') {
 
     await page.addInitScript((args) => {
       const { token, role, user } = args as any;
+      // Ensure no stale admin state when logging in as user
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
       if (role === 'admin') {
         localStorage.setItem('adminToken', token);
       } else {
         localStorage.setItem('userToken', token);
       }
-      // Optional convenience for UI
+      // Optional convenience for UI-only state
       localStorage.setItem('authUser', JSON.stringify({ ...user, token }));
     }, { token, role, user: u });
 
